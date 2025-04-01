@@ -5,8 +5,6 @@ import {create} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {date} from "../classes/time";
-import {InputType} from "../lib/fjsc/src/Types";
 import {Api} from "../classes/api";
 import {toast} from "../classes/ui";
 
@@ -18,16 +16,16 @@ export class ChatTemplates {
             .classes("flex-v", "flex-grow", "main-panel", "panel")
             .children(
                 GenericTemplates.heading(1, greeting),
-                ChatTemplates.chatBox()
+                ChatTemplates.chatBox(),
+                ChatTemplates.chatInput(),
             ).build();
     }
 
     static chatBox() {
         return create("div")
-            .classes("flex-v", "flex-grow", "space-between")
+            .classes("flex-v", "flex-grow")
             .children(
                 compute(c => ChatTemplates.chatHistory(c), context),
-                ChatTemplates.chatInput(),
             ).build();
     }
 
@@ -47,7 +45,7 @@ export class ChatTemplates {
 
     private static chatMessage(message: ChatMessage) {
         return create("div")
-            .classes("flex-v", "small-gap")
+            .classes("flex-v", "small-gap", "chat-message")
             .children(
                 create("span")
                     .classes("time")
