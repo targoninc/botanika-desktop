@@ -1,15 +1,14 @@
 import {AnyNode, create, StringOrSignal} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {pages} from "../enums/pages";
-import {configuration} from "../classes/store";
 import {SettingsTemplates} from "./settings.templates";
-import {getGreeting} from "../classes/greetings";
-import {Signal, signal, compute} from "../lib/fjsc/src/signals";
+import {Signal, signal} from "../lib/fjsc/src/signals";
+import {ChatTemplates} from "./chat.templates";
 
 export class LayoutTemplates {
     static app(activePage: Signal<string>) {
         const tabs = [
-            LayoutTemplates.home(activePage),
+            ChatTemplates.chat(activePage),
             SettingsTemplates.settings(activePage),
         ];
 
@@ -39,16 +38,6 @@ export class LayoutTemplates {
             ).build();
 
         return self;
-    }
-
-    static home(activePage: Signal<string>) {
-        const greeting = compute(c => getGreeting(c.displayname), configuration);
-
-        return create("div")
-            .classes("flex-v", "flex-grow", "main-panel", "panel")
-            .children(
-                GenericTemplates.heading(1, greeting),
-            ).build();
     }
 
     static card(title: StringOrSignal, children: (AnyNode)[]) {
