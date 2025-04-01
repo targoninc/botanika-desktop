@@ -36,15 +36,12 @@
     "vite-plugin-native": "^2.2.2"
   },
   "dependencies": {
-    "@pdfme/common": "^5.3.8",
-    "@pdfme/generator": "^5.3.8",
-    "@pdfme/schemas": "^5.3.8",
+    "@ai-sdk/groq": "^1.2.3",
     "@types/uuid": "^10.0.0",
+    "ai": "^4.2.10",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7",
     "uuid": "^11.1.0",
     "vite": "^6.1.1"
   }

@@ -34,13 +34,6 @@ export function dayAsTime(offset = 0, hour = 12) {
     return new Date(day(offset, hour)).getTime();
 }
 
-export function getPastDateWarning(date: number) {
-    if (new Date(date).getTime() < dayAsTime(0, 0)) {
-        return "Date is in the past";
-    }
-    return null;
-}
-
 export function getWeekDayNames() {
     const days = Array.from({length: 7}, (_, i) => i);
     const today = date(0, 0);

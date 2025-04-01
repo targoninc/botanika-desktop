@@ -1,5 +1,6 @@
-import {Application} from "express";
-import {getConfig, getConfigKey, setConfigKey} from "./configuration";
+import { Application } from "express";
+import { getConfig, getConfigKey, setConfigKey } from "./configuration";
+import {chatEndpoint} from "./ai/endpoints";
 
 export function createEndpoints(app: Application) {
     app.get('/config', async (req, res) => {
@@ -17,4 +18,6 @@ export function createEndpoints(app: Application) {
         setConfigKey(key, value);
         res.status(200).send(getConfigKey(key));
     });
+
+    app.post('/chat', chatEndpoint);
 }

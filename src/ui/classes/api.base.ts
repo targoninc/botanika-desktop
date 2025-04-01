@@ -4,6 +4,21 @@ import {ToastType} from "../enums/ToastType";
 export class ApiBase {
     static baseUrl = "http://localhost:48678";
 
+    static async stream(url: string, data = {}, sendCredentials = false) {
+        const res = await fetch(ApiBase.baseUrl + url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data),
+            credentials: sendCredentials ? 'include' : 'omit'
+        });
+        if (!res.ok) {
+            throw new Error(res.statusText + " (" + res.body + ")");
+        }
+        return res.body;
+    }
+
     static async post(url: string, data = {}, sendCredentials = false) {
         const res = await fetch(ApiBase.baseUrl + url, {
             method: 'POST',
