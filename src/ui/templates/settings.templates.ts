@@ -138,7 +138,7 @@ export class SettingsTemplates {
 
     static configuredApisInternal(apis: Record<string, boolean>) {
         return create("div")
-            .classes("flex-v")
+            .classes("flex-v", "card")
             .children(
                 create("p")
                     .text("Configured APIs:"),

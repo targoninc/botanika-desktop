@@ -1,6 +1,6 @@
 import {Application, Request, Response} from "express";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {getModel, initializeLlms, tryCallTool, streamResponseAsMessage, getAvailableModels} from "./llms/models";
+import {getAvailableModels, getModel, initializeLlms, streamResponseAsMessage, tryCallTool} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
@@ -12,6 +12,7 @@ import {v4 as uuidv4} from "uuid";
 import {ChatToolResult} from "../../models/chat/ChatToolResult";
 import {initializeAi} from "./initializer";
 import {CLI} from "../CLI";
+import {LlmProvider} from "../../models/llmProvider";
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
@@ -93,7 +94,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
 
     const model = getModel(provider, modelName);
     if (modelDefinition.supportsTools) {
-        const calls = await tryCallTool(model, getPromptMessages(chatContext.history), tools);
+        const calls = await tryCallTool(getModel(LlmProvider.groq, "llama-3.1-8b-instant"), getPromptMessages(chatContext.history), tools);
         if (calls.length > 0) {
             await addToolCallsToContext(calls, chatId, res, chatContext);
         }
