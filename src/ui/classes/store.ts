@@ -6,13 +6,14 @@ import {signal} from "../lib/fjsc/src/signals";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
+import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
 configuration.subscribe(c => {
     language.value = c.language as Language;
 });
-export const context = signal<ChatContext>({} as ChatContext);
+export const context = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
 
 export function initializeStore() {
@@ -34,7 +35,7 @@ export function loadChats() {
         for (const chatId of chatIds.data) {
             const chatContext = await Api.getChat(chatId);
             if (chatContext.success) {
-                chats.value = [...chats.value, chatContext.data as ChatContext];
+                chats.value = [...chats.value, chatContext.data as ChatContext].sort((a, b) => b.createdAt - a.createdAt);
             }
         }
     });
@@ -80,7 +81,7 @@ export function deleteChat(chatId: string) {
     Api.deleteChat(chatId).then(() => {
         chats.value = chats.value.filter(c => c.id !== chatId);
         if (context.value.id === chatId) {
-            context.value = null;
+            context.value = INITIAL_CONTEXT;
         }
     });
 }

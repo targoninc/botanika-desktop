@@ -1,4 +1,4 @@
-import {CoreMessage, generateText, LanguageModelV1, streamText, ToolSet} from "ai"
+import {CoreMessage, generateText, LanguageModelV1, streamText, ToolResultUnion, ToolSet} from "ai"
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {v4 as uuidv4} from "uuid";
 import {groq} from "@ai-sdk/groq";
@@ -19,11 +19,21 @@ export async function getModel(providerName: LlmProvider, model: string): Promis
     return provider.languageModel(model);
 }
 
-export async function streamResponseAsMessage(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Signal<ChatMessage>> {
-    const { textStream } = streamText({
+export async function maybeCallTool(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Array<ToolResultUnion<ToolSet>>> {
+    const res = await generateText({
         model,
         messages,
         tools,
+        toolChoice: "auto"
+    });
+
+    return res.toolResults;
+}
+
+export async function streamResponseAsMessage(model: LanguageModelV1, messages: CoreMessage[]): Promise<Signal<ChatMessage>> {
+    const { textStream } = streamText({
+        model,
+        messages,
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
         temperature: 0.9,
@@ -33,7 +43,7 @@ export async function streamResponseAsMessage(model: LanguageModelV1, messages: 
     const messageId = uuidv4();
     const message = signal<ChatMessage>({
         id: messageId,
-        type: "bot",
+        type: "assistant",
         text: "",
         time: Date.now(),
         references: [],

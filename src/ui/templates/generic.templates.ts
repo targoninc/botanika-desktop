@@ -163,39 +163,6 @@ export class GenericTemplates {
             ).build();
     }
 
-    static propertyList(object: any, classes: StringOrSignal[] = []) {
-        const keys = Object.keys(object);
-        return create("div")
-            .classes("flex-v", "property-list", ...classes)
-            .children(
-                ...keys.map(key => {
-                    let value = object[key];
-                    if (value.constructor === Array) {
-                        value = value.length + " items";
-                    } else if (value.constructor === Object) {
-                        value = value.length + " properties";
-                    }
-
-                    return GenericTemplates.property(key, value);
-                })
-            ).build();
-    }
-
-    static property(key: StringOrSignal, value: StringOrSignal) {
-        return create("div")
-            .classes("flex", "space-between", "property")
-            .children(
-                create("span")
-                    .classes("property-key")
-                    .text(key)
-                    .build(),
-                create("span")
-                    .classes("property-value")
-                    .text(value)
-                    .build(),
-            ).build();
-    }
-
     static confirmModalWithContent(title: StringOrSignal, content: AnyNode|AnyNode[], confirmText = "Confirm", cancelText = "Cancel",
                                    confirmCallback = () => {}, cancelCallback = () => {}) {
         return create("div")
@@ -428,5 +395,74 @@ export class GenericTemplates {
             .classes("error-indicator")
             .text(errorCount)
             .build();
+    }
+
+    static properties(data: any) {
+        if (Object.keys(data).length === 0) {
+            return create("td")
+                .classes("log-properties")
+                .build();
+        }
+        const shown = signal(false);
+
+        return create("td")
+            .classes("flex-v")
+            .styles("position", "relative")
+            .children(
+                FJSC.button({
+                    text: "Info",
+                    icon: { icon: "info" },
+                    onclick: () => {
+                        shown.value = !shown.value;
+                    }
+                }),
+                ifjs(shown, create("div")
+                    .classes("flex-v", "card", "popout-below", "log-properties")
+                    .children(
+                        ...Object.keys(data).map(k => {
+                            return GenericTemplates.property(k, data[k]);
+                        })
+                    ).build()),
+            ).build();
+    }
+
+    static property(key: string, value: any): AnyElement {
+        if (value === null) {
+            value = "null";
+        }
+
+        let valueChild, showKey = true;
+        if (typeof value !== "object") {
+            valueChild = create("span")
+                .classes("property-value")
+                .text(value)
+                .build();
+        } else {
+            showKey = false;
+            valueChild = create("details")
+                .children(
+                    create("summary")
+                        .classes("property-value")
+                        .text(key)
+                        .build(),
+                    create("div")
+                        .classes("property-value", "flex-v")
+                        .children(
+                            ...Object.keys(value).map((k: string) => {
+                                return GenericTemplates.property(k, value[k]) as any;
+                            })
+                        ).build()
+                ).build();
+        }
+
+        return create("div")
+            .classes("property", "flex")
+            .children(
+                showKey ? create("span")
+                    .classes("property-key")
+                    .text(key)
+                    .build() : null,
+                valueChild
+            ).build();
     }
 }

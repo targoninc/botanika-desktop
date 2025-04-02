@@ -10,6 +10,7 @@ import {FJSC} from "../lib/fjsc";
 import {marked} from "marked";
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
+import {ResourceReference} from "../../models/chat/ResourceReference";
 
 export class ChatTemplates {
     static chat(activePage: Signal<string>) {
@@ -56,6 +57,24 @@ export class ChatTemplates {
     }
 
     private static chatMessage(message: ChatMessage) {
+        if (message.type === "tool") {
+            const textIsJson = typeof message.text.constructor === "object";
+
+            return create("div")
+                .classes("flex-v")
+                .children(
+                    create("div")
+                        .classes("flex", "align-center", "chat-message", message.type)
+                        .children(
+                            GenericTemplates.icon("build_circle"),
+                            textIsJson ? GenericTemplates.properties(JSON.parse(message.text))
+                                : create("span")
+                                    .text(message.text)
+                                    .build(),
+                        ).build(),
+                    ...message.references.map(r => ChatTemplates.reference(r))
+                ).build();
+        }
         const rawMdParsed = marked.parse(message.text, {
             async: false
         });
@@ -216,6 +235,19 @@ export class ChatTemplates {
                         })
                     ).build(),
                 ChatTemplates.date(chat.createdAt),
+            ).build();
+    }
+
+    private static reference(r: ResourceReference) {
+        return create("div")
+            .classes("flex", "padded", "rounded")
+            .children(
+                GenericTemplates.icon("link"),
+                create("a")
+                    .href(r.link)
+                    .target("_blank")
+                    .text(r.name)
+                    .build(),
             ).build();
     }
 }

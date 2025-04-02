@@ -496,7 +496,7 @@ kbd {
     position: relative;
 }
 
-.chat-message:last-child {
+.chat-message:last-child:not(.chat-message.tool) {
     margin-bottom: 30%;
 }
 
@@ -507,6 +507,12 @@ kbd {
 
 .chat-message.user {
     align-self: flex-end;
+}
+
+.chat-message.tool {
+    opacity: 0.75;
+    font-size: 0.8em;
+    font-weight: 400;
 }
 
 .chat-message:hover .card {
@@ -569,4 +575,26 @@ code:not(pre code) {
 pre {
     border-radius: var(--input-border-radius);
     overflow: hidden;
+}
+
+
+.property-key {
+    font-weight: bold;
+}
+
+.fixed-bar-content {
+    margin-top: 4em;
+}
+
+.log-properties {
+    resize: both;
+    overflow: auto;
+    right: 0;
+    max-width: 50dvw;
+    max-height: 50dvh;
+    flex-wrap: nowrap;
+}
+
+.property-value {
+    border-radius: var(--input-border-radius);
 }
