@@ -598,3 +598,38 @@ pre {
 .property-value {
     border-radius: var(--input-border-radius);
 }
+
+.reference-preview {
+    display: none;
+    background: var(--bg);
+    border-radius: var(--input-border-radius);
+}
+
+.reference.expanded .reference-preview {
+    display: flex;
+}
+
+.reference {
+    border-radius: var(--input-border-radius);
+    border: 1px solid transparent;
+}
+
+.reference:hover, .reference.expanded {
+    background: var(--bg);
+    border-color: var(--blue);
+}
+
+.snippet {
+    font-size: .8em;
+    color: var(--text-3);
+}
+
+.thumbnail {
+    max-height: 5em;
+    max-width: 5em;
+    align-self: center;
+}
+
+.clickable {
+    cursor: pointer;
+}

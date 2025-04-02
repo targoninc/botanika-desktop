@@ -61,7 +61,7 @@ export class ChatTemplates {
             const textIsJson = typeof message.text.constructor === "object";
 
             return create("div")
-                .classes("flex-v")
+                .classes("flex-v", "small-gap")
                 .children(
                     create("div")
                         .classes("flex", "align-center", "chat-message", message.type)
@@ -239,15 +239,48 @@ export class ChatTemplates {
     }
 
     private static reference(r: ResourceReference) {
+        const expanded = signal(false);
+        const expandedClass = compute((e): string => e ? "expanded" : "_", expanded);
+
         return create("div")
-            .classes("flex", "padded", "rounded")
+            .classes("flex-v", "no-gap", "relative", "reference", r.link ? "clickable" : "_", expandedClass)
+            .onclick(() => {
+                if (!r.snippet) {
+                    return;
+                }
+
+                expanded.value = !expanded.value;
+            })
             .children(
-                GenericTemplates.icon("link"),
-                create("a")
-                    .href(r.link)
-                    .target("_blank")
-                    .text(r.name)
-                    .build(),
+                create("div")
+                    .classes("flex", "padded", "rounded", "no-wrap")
+                    .children(
+                        r.link ? GenericTemplates.icon("link") : null,
+                        r.link ? create("a")
+                                .href(r.link)
+                                .target("_blank")
+                                .title(r.name)
+                                .text(r.link)
+                                .build()
+                            : create("span")
+                                .text(r.name)
+                                .build(),
+                    ).build(),
+                r.snippet ? create("div")
+                    .classes("flex", "small-gap", "reference-preview", "card")
+                    .children(
+                        r.imageUrl ? create("img")
+                                .classes("thumbnail")
+                                .src(r.imageUrl)
+                                .alt(r.name)
+                                .build()
+                            : null,
+                        create("span")
+                            .classes("snippet")
+                            .text(r.snippet)
+                            .build(),
+                    ).build()
+                    : null,
             ).build();
     }
 }

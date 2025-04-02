@@ -1,4 +1,4 @@
-import {BrowserWindow} from "electron";
+import {BrowserWindow, shell} from "electron";
 import {createEndpoints} from "./api/endpoints";
 import express from "express";
 import path from "path";
@@ -61,6 +61,11 @@ export function createWindow() {
     } else {
         win.loadFile(path.join(process.env.DIST, 'index.html'))
     }
+
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        shell.openExternal(url);
+        return { action: 'deny' };
+    });
 
     return win;
 }

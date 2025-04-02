@@ -75,6 +75,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         };
         res.write(chunk(JSON.stringify(update)));
         updateContext(chatContext, update);
+        await ChatStorage.writeChatContext(chatId, chatContext);
     }
 
     promptMsgs = getPromptMessages(chatContext.history);
