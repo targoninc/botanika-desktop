@@ -31,7 +31,7 @@ export class ChatTemplates {
 
     static chatBox() {
         return create("div")
-            .classes("flex-v", "flex-grow", "bordered-panel", "relative")
+            .classes("flex-v", "flex-grow", "bordered-panel", "relative", "chat-box")
             .children(
                 compute(c => ChatTemplates.chatHistory(c), context),
                 ChatTemplates.chatInput(),
@@ -54,7 +54,7 @@ export class ChatTemplates {
 
     private static chatMessage(message: ChatMessage) {
         return create("div")
-            .classes("flex-v", "small-gap", "chat-message")
+            .classes("flex-v", "small-gap", "chat-message", message.type)
             .children(
                 ChatTemplates.date(message.time),
                 create("div")
@@ -64,6 +64,25 @@ export class ChatTemplates {
                             .text(message.text)
                             .build()
                     ).build(),
+                ChatTemplates.messageActions(message),
+            ).build();
+    }
+
+    private static messageActions(message: ChatMessage) {
+        return create("div")
+            .classes("message-actions")
+            .children(
+                FJSC.button({
+                    icon: {
+                        icon: "content_copy",
+                    },
+                    text: "Copy",
+                    classes: ["flex", "align-center"],
+                    onclick: async (e) => {
+                        e.stopPropagation();
+                        await navigator.clipboard.writeText(message.text);
+                    }
+                }),
             ).build();
     }
 
@@ -143,7 +162,6 @@ export class ChatTemplates {
             .classes("flex-v", "small-gap", "chat-list-item", activeClass)
             .onclick(() => activateChat(chat))
             .children(
-                ChatTemplates.date(chat.createdAt),
                 create("div")
                     .classes("flex", "align-center", "no-wrap")
                     .children(
@@ -155,7 +173,7 @@ export class ChatTemplates {
                             icon: {
                                 icon: "delete",
                             },
-                            classes: ["negative"],
+                            classes: ["negative", "flex", "align-center"],
                             onclick: (e) => {
                                 e.stopPropagation();
                                 createModal(GenericTemplates.confirmModalWithContent("Delete chat", create("div")
@@ -169,7 +187,8 @@ export class ChatTemplates {
                                 }));
                             }
                         })
-                    ).build()
+                    ).build(),
+                ChatTemplates.date(chat.createdAt),
             ).build();
     }
 }

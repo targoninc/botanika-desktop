@@ -491,12 +491,39 @@ kbd {
     line-height: 1.4;
     font-size: .9em;
     width: min(50%, 600px);
+    position: relative;
+}
+
+.chat-message.user {
+    align-self: flex-end;
+}
+
+.chat-message:hover .card {
+    box-shadow: 0 0 30px -10px rgba(125, 125, 125, 0.2);
+}
+
+.message-actions {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transform: translateY(calc(100% + var(--gap-h)));
+}
+
+.chat-message:hover .message-actions {
+    display: flex;
+}
+
+.chat-box {
+    width: 70%;
+    max-width: max(70%, 600px);
 }
 
 .chat-list {
     height: 100%;
     max-height: 100%;
-    width: max(30%, 200px);
+    width: max-content;
+    max-width: max(30%, 200px);
     overflow-y: auto;
 }
 
@@ -504,7 +531,9 @@ kbd {
     cursor: pointer;
     border-radius: var(--input-border-radius);
     border: 1px solid var(--grey-darker);
-    padding: var(--gap-v) var(--gap-h);
+    padding: var(--gap-v);
+    width: max-content;
+    max-width: 100%;
 }
 
 .chat-list-item:hover {
@@ -513,4 +542,5 @@ kbd {
 
 .chat-list-item.active {
     border-color: var(--purple);
+    background: var(--purple);
 }
