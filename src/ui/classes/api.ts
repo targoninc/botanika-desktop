@@ -1,7 +1,7 @@
 import { ApiBase } from "./api.base";
 import {Configuration} from "../../models/Configuration";
 import {ChatContext} from "../../models/chat/ChatContext";
-import {ModelDefinition} from "./modelDefinition";
+import {ModelDefinition} from "../../models/modelDefinition";
 
 export class Api extends ApiBase {
     static getConfig() {

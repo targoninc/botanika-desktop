@@ -1,6 +1,6 @@
 import {Application, Request, Response} from "express";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {getModel, initializeLlms, maybeCallTool, streamResponseAsMessage} from "./llms/models";
+import {getModel, initializeLlms, tryCallTool, streamResponseAsMessage} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
@@ -83,7 +83,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
 
     const model = getModel(provider, modelName);
     let promptMsgs = getPromptMessages(chatContext.history);
-    const calls = await maybeCallTool(model, promptMsgs, tools);
+    const calls = await tryCallTool(model, promptMsgs, tools);
     if (calls.length > 0) {
         await addToolCallsToContext(calls, chatId, res, chatContext);
     }

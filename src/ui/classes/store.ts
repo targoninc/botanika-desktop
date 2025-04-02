@@ -7,7 +7,7 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {ModelDefinition} from "./modelDefinition";
+import {ModelDefinition} from "../../models/modelDefinition";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);

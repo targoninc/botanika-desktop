@@ -7,7 +7,7 @@ import {LlmProvider} from "../../../models/llmProvider";
 import {ProviderV1} from "@ai-sdk/provider";
 import {Signal, signal} from "../../../ui/lib/fjsc/src/signals";
 import {getGroqModels} from "./providers/groq";
-import {ModelDefinition} from "../../../ui/classes/modelDefinition";
+import {ModelDefinition} from "../../../models/modelDefinition";
 import {getOpenaiModels} from "./providers/openai";
 
 export const providerMap: Record<LlmProvider, ProviderV1> = {
@@ -44,7 +44,7 @@ export async function initializeLlms() {
     return models;
 }
 
-export async function maybeCallTool(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Array<ToolResultUnion<ToolSet>>> {
+export async function tryCallTool(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Array<ToolResultUnion<ToolSet>>> {
     const res = await generateText({
         model,
         messages,
