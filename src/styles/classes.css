@@ -496,6 +496,10 @@ kbd {
     position: relative;
 }
 
+.chat-message:last-child {
+    margin-bottom: 30%;
+}
+
 .message-content {
     width: 100%;
     overflow-x: auto;
