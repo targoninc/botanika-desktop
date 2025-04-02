@@ -492,7 +492,7 @@ kbd {
 .chat-message {
     line-height: 1.4;
     font-size: .9em;
-    width: min(50%, 600px);
+    width: min(100%, 800px);
     position: relative;
 }
 
@@ -551,4 +551,18 @@ kbd {
 .chat-list-item.active {
     border-color: var(--purple);
     background: var(--purple);
+}
+
+code:not(pre code) {
+    background: var(--bg);
+    color: var(--text);
+    padding: 1px 4px;
+    border-radius: var(--input-border-radius);
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+pre {
+    border-radius: var(--input-border-radius);
+    overflow: hidden;
 }

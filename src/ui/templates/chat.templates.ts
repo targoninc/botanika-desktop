@@ -1,12 +1,5 @@
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
-import {
-    activateChat,
-    chats,
-    context,
-    deleteChat,
-    target,
-    updateContextFromStream
-} from "../classes/store";
+import {activateChat, chats, context, deleteChat, target, updateContextFromStream} from "../classes/store";
 import {create, ifjs} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
@@ -16,6 +9,7 @@ import {createModal, toast} from "../classes/ui";
 import {FJSC} from "../lib/fjsc";
 import {marked} from "marked";
 import DOMPurify from 'dompurify';
+import hljs from 'highlight.js';
 
 export class ChatTemplates {
     static chat(activePage: Signal<string>) {
@@ -48,6 +42,10 @@ export class ChatTemplates {
                 .text("No messages yet")
                 .build();
         }
+
+        setTimeout(() => {
+            hljs.highlightAll();
+        });
 
         return create("div")
             .classes("flex-v", "flex-grow")
