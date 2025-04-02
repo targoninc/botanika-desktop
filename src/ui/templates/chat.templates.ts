@@ -1,5 +1,13 @@
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
-import {activateChat, chats, context, deleteChat, target, updateContextFromStream} from "../classes/store";
+import {
+    activateChat, availableModels,
+    chats,
+    configuration,
+    context,
+    deleteChat,
+    target,
+    updateContextFromStream
+} from "../classes/store";
 import {create, ifjs} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
@@ -11,18 +19,18 @@ import {marked} from "marked";
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
 import {ResourceReference} from "../../models/chat/ResourceReference";
+import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
+import {modelOptions} from "../../models/llms/modelOptions";
+import {ModelDefinition} from "../classes/modelDefinition";
+import {LlmProvider} from "../../models/llmProvider";
 
 export class ChatTemplates {
     static chat(activePage: Signal<string>) {
         return create("div")
-            .classes("flex-v", "flex-grow", "main-panel", "panel", "relative")
+            .classes("flex", "flex-grow", "no-wrap", "relative")
             .children(
-                create("div")
-                    .classes("flex", "flex-grow", "no-wrap")
-                    .children(
-                        ChatTemplates.chatList(),
-                        ChatTemplates.chatBox(),
-                    ).build(),
+                ChatTemplates.chatList(),
+                ChatTemplates.chatBox(),
             ).build();
     }
 
@@ -61,7 +69,7 @@ export class ChatTemplates {
             const textIsJson = typeof message.text.constructor === "object";
 
             return create("div")
-                .classes("flex-v", "small-gap")
+                .classes("flex-v", "small-gap", "bordered-panel")
                 .children(
                     create("div")
                         .classes("flex", "align-center", "chat-message", message.type)
@@ -132,9 +140,11 @@ export class ChatTemplates {
     static chatInput() {
         const input = signal("");
         const chatId = compute(c => c?.id, context);
+        const provider = compute(c => c.provider, configuration);
+        const model = compute(c => c.model, configuration);
         const send = () => {
             try {
-                Api.sendMessage(input.value, chatId.value).then(updateContextFromStream);
+                Api.sendMessage(input.value, provider.value, model.value, chatId.value).then(updateContextFromStream);
             } catch (e) {
                 toast(e.toString());
             }
@@ -153,11 +163,12 @@ export class ChatTemplates {
         }
 
         return create("div")
-            .classes("chat-input")
-            .onclick(focusInput)
+            .classes("chat-input", "flex-v")
             .children(
+                ChatTemplates.llmSelector(),
                 create("div")
                     .classes("flex", "space-between")
+                    .onclick(focusInput)
                     .children(
                         create("textarea")
                             .attributes("rows", "3")
@@ -181,10 +192,59 @@ export class ChatTemplates {
             ).build();
     }
 
+    static llmSelector() {
+        const provider = compute(c => c.provider ?? "groq", configuration);
+
+        return create("div")
+            .classes("flex")
+            .children(
+                GenericTemplates.select("Provider", Object.values(LlmProvider).map(m => {
+                    return {
+                        value: m,
+                        text: m
+                    };
+                }), provider, async (newProvider) => {
+                    configuration.value = {
+                        ...configuration.value,
+                        provider: newProvider
+                    };
+                    await Api.setConfigKey("provider", newProvider);
+                }),
+                compute((p, a) => ChatTemplates.modelSelector(a[p] ?? []), provider, availableModels)
+            ).build();
+    }
+
+    private static modelSelector(models: ModelDefinition[]) {
+        const model = compute(c => c.model, configuration);
+
+        return GenericTemplates.select("Model", models.filter(m => m.active)
+            .sort((a, b) => a.id.localeCompare(b.id))
+            .map(m => {
+                return {
+                    value: m.id,
+                    text: m.id
+                };
+            }), model, async (newModel) => {
+            configuration.value = {
+                ...configuration.value,
+                model: newModel
+            };
+            await Api.setConfigKey("model", newModel);
+        });
+    }
+
     private static chatList() {
         return create("div")
             .classes("flex-v", "bordered-panel", "chat-list")
             .children(
+                FJSC.button({
+                    icon: {icon: "create"},
+                    text: "New chat",
+                    classes: ["positive", "flex", "align-center"],
+                    onclick: () => {
+                        context.value = INITIAL_CONTEXT;
+                    }
+                }),
                 compute(c => ChatTemplates.chatListItems(c), chats),
             ).build();
     }
@@ -195,7 +255,8 @@ export class ChatTemplates {
             .children(
                 ifjs(chat.length === 0, create("span")
                     .text("No chats yet")
-                    .build()),
+                    .build()
+                ),
                 ...chat.map(chatId => ChatTemplates.chatListItem(chatId))
             ).build();
     }
@@ -267,19 +328,19 @@ export class ChatTemplates {
                                 .build(),
                     ).build(),
                 r.snippet ? create("div")
-                    .classes("flex", "small-gap", "reference-preview", "card")
-                    .children(
-                        r.imageUrl ? create("img")
-                                .classes("thumbnail")
-                                .src(r.imageUrl)
-                                .alt(r.name)
-                                .build()
-                            : null,
-                        create("span")
-                            .classes("snippet")
-                            .text(r.snippet)
-                            .build(),
-                    ).build()
+                        .classes("flex", "small-gap", "reference-preview", "card")
+                        .children(
+                            r.imageUrl ? create("img")
+                                    .classes("thumbnail")
+                                    .src(r.imageUrl)
+                                    .alt(r.name)
+                                    .build()
+                                : null,
+                            create("span")
+                                .classes("snippet")
+                                .text(r.snippet)
+                                .build(),
+                        ).build()
                     : null,
             ).build();
     }

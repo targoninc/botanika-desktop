@@ -44,6 +44,7 @@
     "dompurify": "^3.2.4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "groq-sdk": "^0.18.0",
     "highlight.js": "^11.11.1",
     "marked": "^15.0.7",
     "uuid": "^11.1.0",

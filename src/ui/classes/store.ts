@@ -7,6 +7,7 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
+import {ModelDefinition} from "./modelDefinition";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -15,6 +16,7 @@ configuration.subscribe(c => {
 });
 export const context = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
+export const availableModels = signal<Record<string, ModelDefinition[]>>({});
 
 export function initializeStore() {
     Api.getConfig().then(conf => {
@@ -22,6 +24,12 @@ export function initializeStore() {
             configuration.value = conf.data as Configuration;
         }
     });
+
+    Api.getModels().then(m => {
+        if (m.data) {
+            availableModels.value = m.data as Record<string, ModelDefinition[]>;
+        }
+    })
 
     loadChats();
 }
@@ -66,6 +74,13 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
             const cs = chats.value;
             if (!cs.find(c => c.id === update.chatId)) {
                 loadChats();
+            } else {
+                chats.value = chats.value.map(c => {
+                    if (c.id === update.chatId) {
+                        updateContext(c, update);
+                    }
+                    return c;
+                });
             }
         } catch (e) {
             console.log("Error parsing update: ", lastUpdate, e.toString());

@@ -470,7 +470,7 @@ kbd {
     width: 100%;
     border: 1px solid var(--bg-4);
     border-top: 1px solid var(--bg-4);
-    border-radius: 0 0 var(--input-border-radius) var(--input-border-radius);
+    border-radius: var(--input-border-radius);
     padding: var(--gap-v);
     background: var(--bg);
 }
@@ -503,6 +503,11 @@ kbd {
 .message-content {
     width: 100%;
     overflow-x: auto;
+}
+
+.message-content > div {
+    line-break: anywhere;
+    max-width: 100%;
 }
 
 .chat-message.user {

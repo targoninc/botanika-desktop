@@ -64,7 +64,7 @@ export class SettingsTemplates {
     }
 
     static setting(sc: SettingsConfiguration, loading: Signal<boolean>) {
-        const updateKey = async (key: string, value: any) => {
+        async function updateKey(key: string, value: any) {
             loading.value = true;
             configuration.value = {
                 ...configuration.value,
@@ -72,7 +72,7 @@ export class SettingsTemplates {
             };
             await Api.setConfigKey(key, value);
             loading.value = false;
-        };
+        }
         const value = compute(c => c[sc.key] ?? null, configuration);
 
         return create("div")

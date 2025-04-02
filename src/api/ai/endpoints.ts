@@ -1,7 +1,6 @@
 import {Request, Response} from "express";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {maybeCallTool, streamResponseAsMessage} from "./llms/models";
-import {groq} from "@ai-sdk/groq";
+import {getModel, initializeModels, maybeCallTool, streamResponseAsMessage} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
@@ -45,7 +44,10 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         }
     }
 
-    const model = groq("llama-3.1-8b-instant");
+    const provider = req.body.provider ?? "groq";
+    const modelName = req.body.model ?? "llama-3.1-8b-instant";
+
+    const model = getModel(provider, modelName);
     const tools = getTools();
     let promptMsgs = getPromptMessages(chatContext.history);
     const calls = await maybeCallTool(model, promptMsgs, tools)
@@ -132,4 +134,12 @@ export function deleteChatEndpoint(req: Request, res: Response) {
     ChatStorage.deleteChatContext(chatId).then(() => {
         res.status(200).send('Chat deleted');
     });
+}
+
+let models = {};
+initializeModels().then(m => {
+    models = m;
+});
+export function getModelsEndpoint(req: Request, res: Response) {
+    res.status(200).send(models);
 }

@@ -1,6 +1,7 @@
 import { ApiBase } from "./api.base";
 import {Configuration} from "../../models/Configuration";
 import {ChatContext} from "../../models/chat/ChatContext";
+import {ModelDefinition} from "./modelDefinition";
 
 export class Api extends ApiBase {
     static getConfig() {
@@ -15,9 +16,11 @@ export class Api extends ApiBase {
         return this.put(`/config/${key}`, { value });
     }
 
-    static sendMessage(message: string, chatId: string = null) {
+    static sendMessage(message: string, provider: string, model: string, chatId: string = null) {
         return this.stream(`/chat`, {
             message,
+            provider,
+            model,
             chatId
         });
     }
@@ -32,5 +35,9 @@ export class Api extends ApiBase {
 
     static deleteChat(chatId: string) {
         return this.delete(`/chat/${chatId}`);
+    }
+
+    static getModels() {
+        return this.get<Record<string, ModelDefinition[]>>(`/models`);
     }
 }

@@ -2,21 +2,41 @@ import {CoreMessage, generateText, LanguageModelV1, streamText, ToolResultUnion,
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {v4 as uuidv4} from "uuid";
 import {groq} from "@ai-sdk/groq";
-import {LlmProvider} from "./models/llmProvider";
+import {LlmProvider} from "../../../models/llmProvider";
 import {ProviderV1} from "@ai-sdk/provider";
 import {Signal, signal} from "../../../ui/lib/fjsc/src/signals";
+import {getGroqModels} from "./providers/groq";
+import {ModelDefinition} from "../../../ui/classes/modelDefinition";
 
 export const providerMap: Record<LlmProvider, ProviderV1> = {
     [LlmProvider.groq]: groq
 }
 
-export async function getModel(providerName: LlmProvider, model: string): Promise<LanguageModelV1> {
+export function getModel(providerName: LlmProvider, model: string): LanguageModelV1 {
     const provider = providerMap[providerName];
     if (!provider) {
         throw new Error("Invalid LLM provider");
     }
 
     return provider.languageModel(model);
+}
+
+export async function getAvailableModels(provider: string) {
+    switch (provider) {
+        case LlmProvider.groq:
+            return await getGroqModels();
+        default:
+            throw new Error("Unsupported LLM provider");
+    }
+}
+
+export async function initializeModels() {
+    const availableProviders = Object.values(LlmProvider);
+    const models: Record<string, ModelDefinition[]> = {};
+    for (const provider of availableProviders) {
+        models[provider] = await getAvailableModels(provider);
+    }
+    return models;
 }
 
 export async function maybeCallTool(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Array<ToolResultUnion<ToolSet>>> {

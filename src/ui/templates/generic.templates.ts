@@ -352,7 +352,7 @@ export class GenericTemplates {
             .children(
                 tabButtons,
                 create("div")
-                    .classes("flex-v", "flex-grow", "main-panel", "bordered-panel")
+                    .classes("flex-v", "flex-grow")
                     .children(
                         ...tabs.map((tab, i) => {
                             const tabDef = tabDefs.value[i];
