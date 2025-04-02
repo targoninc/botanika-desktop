@@ -6,4 +6,5 @@ export interface ChatMessage {
     text: string;
     time: number;
     id: string;
+    finished: boolean;
 }

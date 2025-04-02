@@ -1,4 +1,4 @@
-import {CoreMessage, LanguageModelV1, streamText, ToolSet} from "ai"
+import {CoreMessage, generateText, LanguageModelV1, streamText, ToolSet} from "ai"
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {v4 as uuidv4} from "uuid";
 import {groq} from "@ai-sdk/groq";
@@ -19,7 +19,7 @@ export async function getModel(providerName: LlmProvider, model: string): Promis
     return provider.languageModel(model);
 }
 
-export async function* getResponse(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): AsyncGenerator<Signal<ChatMessage>> {
+export async function streamResponseAsMessage(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Signal<ChatMessage>> {
     const { textStream } = streamText({
         model,
         messages,
@@ -36,7 +36,8 @@ export async function* getResponse(model: LanguageModelV1, messages: CoreMessage
         type: "bot",
         text: "",
         time: Date.now(),
-        references: []
+        references: [],
+        finished: false
     });
 
     updateMessageFromStream(message, textStream).then();
@@ -49,13 +50,26 @@ export async function updateMessageFromStream(message: Signal<ChatMessage>, stre
 
     while (true) {
         const { value, done } = await reader.read();
+        const m = message.value;
         if (done) {
+            message.value = {
+                ...m,
+                finished: true
+            }
             break;
         }
-        const m = message.value;
         message.value = {
             ...m,
             text: m.text + value
         }
     }
+}
+
+export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMessage[]): Promise<string> {
+    const res = await generateText({
+        model,
+        messages
+    });
+
+    return res.text;
 }

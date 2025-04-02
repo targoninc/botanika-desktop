@@ -1,5 +1,6 @@
 import { ApiBase } from "./api.base";
 import {Configuration} from "../../models/Configuration";
+import {ChatContext} from "../../models/chat/ChatContext";
 
 export class Api extends ApiBase {
     static getConfig() {
@@ -19,5 +20,17 @@ export class Api extends ApiBase {
             message,
             chatId
         });
+    }
+
+    static getChatIds() {
+        return this.get<string[]>("/chats");
+    }
+
+    static getChat(chatId: string) {
+        return this.get<ChatContext>(`/chat/${chatId}`);
+    }
+
+    static deleteChat(chatId: string) {
+        return this.delete(`/chat/${chatId}`);
     }
 }

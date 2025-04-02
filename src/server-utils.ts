@@ -49,15 +49,18 @@ export function createWindow() {
         },
         icon: 'src/assets/icon_512.png',
     });
+    win.maximize();
 
+    startServer().then();
+    win.show();
     if (process.env.VITE_DEV_SERVER_URL) {
         win.loadURL(process.env.VITE_DEV_SERVER_URL)
-        win.webContents.openDevTools()
+        setTimeout(() => {
+            win.webContents.openDevTools()
+        }, 1000);
     } else {
         win.loadFile(path.join(process.env.DIST, 'index.html'))
     }
-
-    startServer().then();
 
     return win;
 }

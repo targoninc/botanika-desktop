@@ -1,31 +1,40 @@
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
-import {getGreeting} from "../classes/greetings";
-import {configuration, context, target, updateContextFromStream} from "../classes/store";
+import {
+    activateChat,
+    chats,
+    context,
+    deleteChat,
+    target,
+    updateContextFromStream
+} from "../classes/store";
 import {create} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
 import {Api} from "../classes/api";
-import {toast} from "../classes/ui";
+import {createModal, toast} from "../classes/ui";
+import {FJSC} from "../lib/fjsc";
 
 export class ChatTemplates {
     static chat(activePage: Signal<string>) {
-        const greeting = compute(c => getGreeting(c.displayname), configuration);
-
         return create("div")
-            .classes("flex-v", "flex-grow", "main-panel", "panel")
+            .classes("flex-v", "flex-grow", "main-panel", "panel", "relative")
             .children(
-                GenericTemplates.heading(1, greeting),
-                ChatTemplates.chatBox(),
-                ChatTemplates.chatInput(),
+                create("div")
+                    .classes("flex", "flex-grow", "no-wrap")
+                    .children(
+                        ChatTemplates.chatList(),
+                        ChatTemplates.chatBox(),
+                    ).build(),
             ).build();
     }
 
     static chatBox() {
         return create("div")
-            .classes("flex-v", "flex-grow")
+            .classes("flex-v", "flex-grow", "bordered-panel", "relative")
             .children(
                 compute(c => ChatTemplates.chatHistory(c), context),
+                ChatTemplates.chatInput(),
             ).build();
     }
 
@@ -47,18 +56,7 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "small-gap", "chat-message")
             .children(
-                create("span")
-                    .classes("time")
-                    .text(new Date(message.time).toLocaleString("default", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                        second: "numeric",
-                    }))
-                    .build(),
+                ChatTemplates.date(message.time),
                 create("div")
                     .classes("flex", "align-center", "card")
                     .children(
@@ -69,9 +67,24 @@ export class ChatTemplates {
             ).build();
     }
 
+    private static date(time: number) {
+        return create("span")
+            .classes("time")
+            .text(new Date(time).toLocaleString("default", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric",
+            }))
+            .build();
+    }
+
     static chatInput() {
         const input = signal("");
-        const chatId = compute(context => context.id, context);
+        const chatId = compute(c => c?.id, context);
         const send = () => {
             try {
                 Api.sendMessage(input.value, chatId.value).then(updateContextFromStream);
@@ -103,6 +116,60 @@ export class ChatTemplates {
                             .build(),
                         GenericTemplates.buttonWithIcon("send", "Send", send, ["positive"]),
                     ).build(),
+            ).build();
+    }
+
+    private static chatList() {
+        return create("div")
+            .classes("flex-v", "bordered-panel", "chat-list")
+            .children(
+                compute(c => ChatTemplates.chatListItems(c), chats),
+            ).build();
+    }
+
+    static chatListItems(chat: ChatContext[]) {
+        return create("div")
+            .classes("flex-v", "flex-grow")
+            .children(
+                ...chat.map(chatId => ChatTemplates.chatListItem(chatId))
+            ).build();
+    }
+
+    static chatListItem(chat: ChatContext) {
+        const active = compute(c => c && c.id === chat.id, context);
+        const activeClass = compute((c): string => c ? "active" : "_", active);
+
+        return create("div")
+            .classes("flex-v", "small-gap", "chat-list-item", activeClass)
+            .onclick(() => activateChat(chat))
+            .children(
+                ChatTemplates.date(chat.createdAt),
+                create("div")
+                    .classes("flex", "align-center", "no-wrap")
+                    .children(
+                        create("span")
+                            .classes("text-small")
+                            .text(chat.name)
+                            .build(),
+                        FJSC.button({
+                            icon: {
+                                icon: "delete",
+                            },
+                            classes: ["negative"],
+                            onclick: (e) => {
+                                e.stopPropagation();
+                                createModal(GenericTemplates.confirmModalWithContent("Delete chat", create("div")
+                                    .classes("flex-v")
+                                    .children(
+                                        create("p")
+                                            .text(`Are you sure you want to delete this chat?`)
+                                            .build(),
+                                    ).build(), "Yes", "No", () => {
+                                    deleteChat(chat.id);
+                                }));
+                            }
+                        })
+                    ).build()
             ).build();
     }
 }

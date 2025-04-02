@@ -1,6 +1,6 @@
 import { Application } from "express";
 import { getConfig, getConfigKey, setConfigKey } from "./configuration";
-import {chatEndpoint} from "./ai/endpoints";
+import {chatEndpoint, deleteChatEndpoint, getChatEndpoint, getChatIdsEndpoint} from "./ai/endpoints";
 
 export function createEndpoints(app: Application) {
     app.get('/config', async (req, res) => {
@@ -20,4 +20,7 @@ export function createEndpoints(app: Application) {
     });
 
     app.post('/chat', chatEndpoint);
+    app.get('/chat/:chatId', getChatEndpoint);
+    app.get('/chats', getChatIdsEndpoint);
+    app.delete('/chat/:chatId', deleteChatEndpoint);
 }

@@ -1,8 +1,7 @@
 import {LayoutTemplates} from "./templates/layout.templates";
 import {closeModal} from "./classes/ui";
-import {activePage, initializeStore} from "./classes/store";
+import {activePage, initializeStore, target} from "./classes/store";
 import {pages} from "./enums/pages";
-import {target} from "./classes/store";
 
 initializeStore();
 

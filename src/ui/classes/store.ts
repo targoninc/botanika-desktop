@@ -4,8 +4,8 @@ import {language} from "./i8n/translation";
 import {Language} from "./i8n/language";
 import {signal} from "../lib/fjsc/src/signals";
 import {ChatContext} from "../../models/chat/ChatContext";
-import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
+import {updateContext} from "../../models/updateContext";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -13,11 +13,29 @@ configuration.subscribe(c => {
     language.value = c.language as Language;
 });
 export const context = signal<ChatContext>({} as ChatContext);
+export const chats = signal<ChatContext[]>([]);
 
 export function initializeStore() {
     Api.getConfig().then(conf => {
         if (conf.data) {
             configuration.value = conf.data as Configuration;
+        }
+    });
+
+    loadChats();
+}
+
+export function loadChats() {
+    chats.value = [];
+    Api.getChatIds().then(async chatIds => {
+        if (!chatIds.success) {
+            return;
+        }
+        for (const chatId of chatIds.data) {
+            const chatContext = await Api.getChat(chatId);
+            if (chatContext.success) {
+                chats.value = [...chats.value, chatContext.data as ChatContext];
+            }
         }
     });
 }
@@ -26,38 +44,6 @@ export type Callback<Args extends unknown[]> = (...args: Args) => void;
 
 export function target(e: Event) {
     return e.target as HTMLInputElement;
-}
-
-export function updateContext(update: ChatUpdate) {
-    const c = context.value;
-    if (c.id && c.id !== update.chatId) {
-        return;
-    }
-
-    if (!c.id) {
-        c.id = update.chatId;
-    }
-
-    if (!c.history) {
-        c.history = [];
-    }
-    for (const message of update.messages) {
-        const existingMsg = c.history.find(m => m.id === message.id);
-        if (existingMsg) {
-            c.history = c.history.map(m => {
-                if (m.id === message.id) {
-                    return message;
-                }
-                return m;
-            });
-        } else {
-            c.history.push(message);
-        }
-    }
-    c.history = c.history.sort((a, b) => a.time - b.time);
-    context.value = {
-        ...c
-    };
 }
 
 export async function updateContextFromStream(body: ReadableStream<Uint8Array>) {
@@ -75,9 +61,26 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
         }
         try {
             const update = JSON.parse(lastUpdate.trim());
-            updateContext(update);
+            updateContext(context.value, update);
+            const cs = chats.value;
+            if (!cs.find(c => c.id === update.chatId)) {
+                loadChats();
+            }
         } catch (e) {
             console.log("Error parsing update: ", lastUpdate, e.toString());
         }
     }
+}
+
+export function activateChat(chat: ChatContext) {
+    context.value = chat;
+}
+
+export function deleteChat(chatId: string) {
+    Api.deleteChat(chatId).then(() => {
+        chats.value = chats.value.filter(c => c.id !== chatId);
+        if (context.value.id === chatId) {
+            context.value = null;
+        }
+    });
 }
