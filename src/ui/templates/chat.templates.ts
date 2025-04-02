@@ -81,6 +81,7 @@ export class ChatTemplates {
                     onclick: async (e) => {
                         e.stopPropagation();
                         await navigator.clipboard.writeText(message.text);
+                        toast("Copied to clipboard");
                     }
                 }),
             ).build();

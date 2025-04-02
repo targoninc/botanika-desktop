@@ -507,7 +507,8 @@ kbd {
     position: absolute;
     bottom: 0;
     right: 0;
-    transform: translateY(calc(100% + var(--gap-h)));
+    padding-top: var(--gap-h);
+    transform: translateY(calc(100%));
 }
 
 .chat-message:hover .message-actions {
