@@ -20,7 +20,6 @@ import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
 import {ResourceReference} from "../../models/chat/ResourceReference";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {modelOptions} from "../../models/llms/modelOptions";
 import {ModelDefinition} from "../../models/modelDefinition";
 import {LlmProvider} from "../../models/llmProvider";
 

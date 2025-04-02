@@ -9,6 +9,7 @@ import {Signal, signal} from "../../../ui/lib/fjsc/src/signals";
 import {getGroqModels} from "./providers/groq";
 import {ModelDefinition} from "../../../models/modelDefinition";
 import {getOpenaiModels} from "./providers/openai";
+import {CLI} from "../../CLI";
 
 export const providerMap: Record<LlmProvider, ProviderV1> = {
     [LlmProvider.groq]: groq,
@@ -27,9 +28,9 @@ export function getModel(providerName: LlmProvider, model: string): LanguageMode
 export async function getAvailableModels(provider: string): Promise<ModelDefinition[]> {
     switch (provider) {
         case LlmProvider.groq:
-            return await getGroqModels();
+            return getGroqModels();
         case LlmProvider.openai:
-            return await getOpenaiModels();
+            return getOpenaiModels();
         default:
             throw new Error("Unsupported LLM provider");
     }
@@ -56,6 +57,7 @@ export async function tryCallTool(model: LanguageModelV1, messages: CoreMessage[
 }
 
 export async function streamResponseAsMessage(model: LanguageModelV1, messages: CoreMessage[]): Promise<Signal<ChatMessage>> {
+    CLI.debug("Streaming response...");
     const { textStream } = streamText({
         model,
         messages,

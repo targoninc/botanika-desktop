@@ -1,14 +1,21 @@
 import {experimental_createMCPClient as createMCPClient, ToolSet} from 'ai';
-import {McpConfiguration} from "./mcpConfiguration";
-import {TempMcpClient} from "./TempMcpClient";
 import {getMcpConfig} from "./clientConfig";
+import {TempMcpClient} from "./models/TempMcpClient";
+import {McpConfiguration} from "./models/McpConfiguration";
+import {CLI} from "../../CLI";
 
 export async function createClient(url: string): Promise<TempMcpClient> {
     return await createMCPClient({
         transport: {
             type: 'sse',
             url,
+            headers: {
+                "Content-Type": "application/json"
+            }
         },
+        onUncaughtError: (e) => {
+            CLI.error(`Error in MCP client: ${e}`);
+        }
     }) as unknown as TempMcpClient;
 }
 

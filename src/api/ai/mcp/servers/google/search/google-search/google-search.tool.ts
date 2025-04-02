@@ -1,9 +1,10 @@
-import {tool} from "ai";
 import {z} from "zod";
 import axios from "axios";
 import {GoogleSearchResult} from "./google-search.models";
-import {ResourceReference} from "../../../../models/chat/ResourceReference";
-import {ChatToolResult} from "../../../../models/chat/ChatToolResult";
+import {ResourceReference} from "../../../../../../../models/chat/ResourceReference";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 async function search(query: string): Promise<GoogleSearchResult> {
     try {
@@ -31,15 +32,15 @@ async function search(query: string): Promise<GoogleSearchResult> {
 }
 
 export function googleSearchTool() {
-    return tool({
+    return {
         id: "google.search-engine",
         description: "Web search. Useful for when you need to answer questions about current events. Input should be a search query.",
-        parameters: z.object({
+        parameters: {
             query: z.string().describe('The query to search for'),
-        }),
-        execute: async ({ query }): Promise<ChatToolResult> => {
+        },
+        execute: async ({ query }: { query: string }): Promise<any> => {
             const result = await search(query);
-            return {
+            const output = {
                 text: "Google search results",
                 references: result.items.map(i => {
                     return <ResourceReference>{
@@ -51,6 +52,7 @@ export function googleSearchTool() {
                     }
                 }),
             };
+            return output;
         }
-    });
+    };
 }

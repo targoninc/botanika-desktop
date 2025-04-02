@@ -1,4 +1,6 @@
-export async function getOpenaiModels() {
+import {ModelDefinition} from "../../../../models/modelDefinition";
+
+export function getOpenaiModels(): ModelDefinition[] {
     return [
         {
             id: "o3-mini-2025-01-31",
@@ -18,17 +20,17 @@ export async function getOpenaiModels() {
         {
             id: "gpt-4o-mini-search-preview",
             displayName: "GPT 4o-mini-search-preview",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-4o-mini-search-preview-2025-03-11",
             displayName: "GPT 4o-mini-search-preview-2025-03-11",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-4o-2024-11-20",
             displayName: "GPT 4o-2024-11-20",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-3.5-turbo-0125",
@@ -38,12 +40,7 @@ export async function getOpenaiModels() {
         {
             id: "gpt-4o-2024-05-13",
             displayName: "GPT 4o-2024-05-13",
-            supportsTools: false
-        },
-        {
-            id: "gpt-3.5-turbo-16k",
-            displayName: "GPT 3.5-turbo-16k",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "o1-preview",
@@ -53,12 +50,12 @@ export async function getOpenaiModels() {
         {
             id: "gpt-4o-search-preview",
             displayName: "GPT 4o-search-preview",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-4o-search-preview-2025-03-11",
             displayName: "GPT 4o-search-preview-2025-03-11",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "o1-2024-12-17",
@@ -83,22 +80,22 @@ export async function getOpenaiModels() {
         {
             id: "gpt-4o",
             displayName: "GPT 4o",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-4o-mini",
             displayName: "GPT 4o-mini",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-4o-2024-08-06",
             displayName: "GPT 4o-2024-08-06",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "gpt-4o-mini-2024-07-18",
             displayName: "GPT 4o-mini-2024-07-18",
-            supportsTools: false
+            supportsTools: true
         },
         {
             id: "o1-mini",

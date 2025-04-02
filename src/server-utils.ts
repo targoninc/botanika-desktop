@@ -4,10 +4,14 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import cors from "cors";
+import {createMcpServers} from "./api/ai/mcp/servers/createServers";
 
 dotenv.config();
 
-async function startServer(port = 48678) {
+const APP_PORT = Number(process.env.PORT || "48678");
+
+async function startServer() {
+    const port = APP_PORT;
     try {
         const test = await fetch(`http://localhost:${port}`);
         if (test.status === 200) {
@@ -30,6 +34,7 @@ async function startServer(port = 48678) {
         res.send('API up and running');
     });
 
+    createMcpServers(app);
     createEndpoints(app);
     app.listen(port, () => {
         console.log("Server started");

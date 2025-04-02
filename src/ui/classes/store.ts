@@ -8,6 +8,7 @@ import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 import {ModelDefinition} from "../../models/modelDefinition";
+import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -17,6 +18,7 @@ configuration.subscribe(c => {
 export const context = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
 export const availableModels = signal<Record<string, ModelDefinition[]>>({});
+export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
 
 export function initializeStore() {
     Api.getConfig().then(conf => {
@@ -29,7 +31,13 @@ export function initializeStore() {
         if (m.data) {
             availableModels.value = m.data as Record<string, ModelDefinition[]>;
         }
-    })
+    });
+
+    Api.getMcpConfig().then(mcpConf => {
+        if (mcpConf.data) {
+            mcpConfig.value = mcpConf.data as McpConfiguration;
+        }
+    });
 
     loadChats();
 }
@@ -94,9 +102,9 @@ export function activateChat(chat: ChatContext) {
 
 export function deleteChat(chatId: string) {
     Api.deleteChat(chatId).then(() => {
-        chats.value = chats.value.filter(c => c.id !== chatId);
         if (context.value.id === chatId) {
             context.value = INITIAL_CONTEXT;
         }
+        chats.value = [...chats.value].filter(c => c.id !== chatId);
     });
 }

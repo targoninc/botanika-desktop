@@ -1,6 +1,6 @@
 import {Application, Request, Response} from "express";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {getModel, initializeLlms, tryCallTool, streamResponseAsMessage} from "./llms/models";
+import {getModel, initializeLlms, tryCallTool, streamResponseAsMessage, getAvailableModels} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
@@ -11,6 +11,7 @@ import {ToolResultUnion, ToolSet} from "ai";
 import {v4 as uuidv4} from "uuid";
 import {ChatToolResult} from "../../models/chat/ChatToolResult";
 import {initializeAi} from "./initializer";
+import {CLI} from "../CLI";
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
@@ -58,7 +59,9 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
+    CLI.debug(`Chat request received.`);
     const { tools } = await initializeAi();
+    CLI.debug(`Tools initialized.`);
 
     let chatId = req.body.chatId;
     let chatContext: ChatContext;
@@ -81,15 +84,22 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     const provider = req.body.provider ?? "groq";
     const modelName = req.body.model ?? "llama-3.1-8b-instant";
 
-    const model = getModel(provider, modelName);
-    let promptMsgs = getPromptMessages(chatContext.history);
-    const calls = await tryCallTool(model, promptMsgs, tools);
-    if (calls.length > 0) {
-        await addToolCallsToContext(calls, chatId, res, chatContext);
+    const availableModels = await getAvailableModels(provider);
+    const modelDefinition = availableModels.find(m => m.id === modelName);
+    if (!modelDefinition) {
+        res.status(404).send('Model not found');
+        return;
     }
 
-    promptMsgs = getPromptMessages(chatContext.history);
-    const responseMsg = await streamResponseAsMessage(model, promptMsgs);
+    const model = getModel(provider, modelName);
+    if (modelDefinition.supportsTools) {
+        const calls = await tryCallTool(model, getPromptMessages(chatContext.history), tools);
+        if (calls.length > 0) {
+            await addToolCallsToContext(calls, chatId, res, chatContext);
+        }
+    }
+
+    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history));
 
     responseMsg.subscribe(async (m: ChatMessage) => {
         const update = <ChatUpdate>{

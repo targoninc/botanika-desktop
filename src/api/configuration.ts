@@ -49,7 +49,8 @@ export function addConfigEndpoints(app: Application) {
         res.status(200).send(getConfigKey(key));
     });
 
-    app.get('/config/apis', async (req, res) => {
-        res.status(200).send(getConfiguredApis());
+    app.get('/configuredApis', async (req, res) => {
+        const apis = getConfiguredApis();
+        res.status(200).json(apis);
     });
 }

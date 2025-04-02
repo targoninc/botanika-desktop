@@ -1,4 +1,4 @@
-import {McpServerConfig} from "./mcpServerConfig";
+import {McpServerConfig} from "./McpServerConfig";
 
 export interface McpConfiguration {
     servers: McpServerConfig[];

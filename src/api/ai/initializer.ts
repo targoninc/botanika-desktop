@@ -1,6 +1,6 @@
 import {createClients, getAllMcpTools} from "./mcp/createClient";
-import {getBuiltinTools} from "../storage/helpers";
 import {ToolSet} from "ai";
+import {CLI} from "../CLI";
 
 let initialized = false;
 let output: {
@@ -18,13 +18,14 @@ export async function initializeAi() {
     initialized = true;
 
     // Add MCP clients + tools
+    await reinitializeMcpClients();
+
+    return output;
+}
+
+export async function reinitializeMcpClients() {
+    CLI.debug(`Initializing MCP clients...`);
     const mcpClients = await createClients();
     output.mcpTools = await getAllMcpTools(mcpClients);
     Object.assign(output.tools, output.mcpTools);
-
-    // Add builtin tools
-    const builtinTools = getBuiltinTools();
-    Object.assign(output.tools, builtinTools);
-
-    return output;
 }

@@ -1,11 +1,10 @@
 import {v4 as uuidv4} from "uuid";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "./ChatStorage";
-import {CoreMessage, ToolSet} from "ai";
+import {CoreMessage} from "ai";
 import {getSimpleResponse} from "../ai/llms/models";
 import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {googleSearchTool} from "../ai/tools/google-search/google-search.tool";
 
 export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 50);
@@ -59,10 +58,4 @@ export function getChatNameMessages(message: string): CoreMessage[] {
             content: message
         }
     ];
-}
-
-export function getBuiltinTools(): ToolSet {
-    return {
-        "search-engine": googleSearchTool()
-    };
 }

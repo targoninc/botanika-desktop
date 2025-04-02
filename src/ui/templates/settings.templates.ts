@@ -2,9 +2,11 @@ import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
-import {configuration} from "../classes/store";
+import {configuration, mcpConfig} from "../classes/store";
 import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
+import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
+import {FJSC} from "../lib/fjsc";
 
 export class SettingsTemplates {
     static settings(activePage: Signal<string>) {
@@ -45,6 +47,8 @@ export class SettingsTemplates {
                         ifjs(loading, GenericTemplates.spinner()),
                     ).build(),
                 ...settings.map(s => SettingsTemplates.setting(s, loading)),
+                SettingsTemplates.configuredApis(),
+                SettingsTemplates.mcpConfig(),
                 create("p")
                     .classes("align-center", "flex")
                     .children(
@@ -115,5 +119,103 @@ export class SettingsTemplates {
             default:
                 return nullElement();
         }
+    }
+
+    static configuredApis() {
+        const apis = signal<Record<string, boolean>>({});
+        Api.getConfiguredApis().then(res => {
+            if (res.data) {
+                apis.value = res.data as Record<string, boolean>;
+            }
+        });
+
+        return create("div")
+            .classes("flex-v")
+            .children(
+                compute(a => SettingsTemplates.configuredApisInternal(a), apis)
+            ).build();
+    }
+
+    static configuredApisInternal(apis: Record<string, boolean>) {
+        return create("div")
+            .classes("flex-v")
+            .children(
+                create("p")
+                    .text("Configured APIs:"),
+                ...Object.keys(apis).map(api => {
+                    const name = api;
+                    const enabled = apis[api];
+
+                    return create("div")
+                        .classes("flex", enabled ? "positive" : "negative")
+                        .children(
+                            GenericTemplates.icon(enabled ? "check" : "key_off", [enabled ? "positive" : "negative"]),
+                            create("b")
+                                .text(name),
+                            create("span")
+                                .text(enabled ? "Enabled" : "Disabled"),
+                        ).build();
+                })
+            ).build();
+    }
+
+    static mcpConfig() {
+        return create("div")
+            .children(
+                compute(c => SettingsTemplates.mcpConfigInternal(c), mcpConfig)
+            ).build();
+    }
+
+    static mcpConfigInternal(c: McpConfiguration) {
+        return create("div")
+            .classes("flex-v")
+            .children(
+                create("p")
+                    .text("Configured MCP servers:"),
+                ...Object.keys(c?.servers ?? {}).map(server => {
+                    const name = c.servers[server].name;
+                    const url = c.servers[server].url;
+
+                    return create("div")
+                        .classes("flex", "card", "align-center", name ? "positive" : "negative")
+                        .children(
+                            GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
+                            FJSC.input({
+                                type: InputType.text,
+                                value: name,
+                                name: "name",
+                                label: "Name",
+                                placeholder: "Name",
+                                onchange: (value) => {
+                                    c.servers[server].name = value;
+                                    Api.updateMcpServer(c.servers[server]).then(() => {
+                                        Api.getMcpConfig().then(mcpConf => {
+                                            if (mcpConf.data) {
+                                                mcpConfig.value = mcpConf.data as McpConfiguration;
+                                            }
+                                        });
+                                    });
+                                }
+                            }),
+                            FJSC.input({
+                                type: InputType.text,
+                                value: url,
+                                name: "url",
+                                label: "URL",
+                                placeholder: "URL",
+                                onchange: (value) => {
+                                    c.servers[server].url = value;
+                                    Api.updateMcpServer(c.servers[server]).then(() => {
+                                        Api.getMcpConfig().then(mcpConf => {
+                                            if (mcpConf.data) {
+                                                mcpConfig.value = mcpConf.data as McpConfiguration;
+                                            }
+                                        });
+                                    });
+                                }
+                            }),
+                        ).build();
+                })
+            ).build();
     }
 }

@@ -638,3 +638,11 @@ pre {
 .clickable {
     cursor: pointer;
 }
+
+.positive {
+    color: var(--green);
+}
+
+.negative {
+    color: var(--red);
+}
