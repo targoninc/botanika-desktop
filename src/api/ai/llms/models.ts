@@ -65,10 +65,11 @@ export async function updateMessageFromStream(message: Signal<ChatMessage>, stre
     }
 }
 
-export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMessage[]): Promise<string> {
+export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMessage[], maxTokens: number = 1000): Promise<string> {
     const res = await generateText({
         model,
-        messages
+        messages,
+        maxTokens
     });
 
     return res.text;

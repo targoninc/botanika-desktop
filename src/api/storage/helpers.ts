@@ -6,7 +6,7 @@ import {getSimpleResponse} from "../ai/llms/models";
 import {groq} from "@ai-sdk/groq";
 
 export async function getChatName(message: string): Promise<string> {
-    return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message));
+    return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 50);
 }
 
 export async function createChat(message: string): Promise<ChatContext> {
@@ -48,7 +48,7 @@ export function getChatNameMessages(message: string): CoreMessage[] {
     return [
         {
             role: "system",
-            content: "You are a chat name generator. Generate a short name for the following chat message that describes the content in 3-4 words. Only output the name and nothing else or my employer will fire me. Do not include 'Chat' in the name."
+            content: "You are a chat name generator. Generate a short name for the following chat message that describes the content in 3-4 words. Only output the name (no special characters) and nothing else or my employer will fire me. Do not include 'Chat' in the name."
         },
         {
             role: "user",

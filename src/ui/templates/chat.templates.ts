@@ -14,6 +14,8 @@ import {ChatMessage} from "../../models/chat/ChatMessage";
 import {Api} from "../classes/api";
 import {createModal, toast} from "../classes/ui";
 import {FJSC} from "../lib/fjsc";
+import {marked} from "marked";
+import DOMPurify from 'dompurify';
 
 export class ChatTemplates {
     static chat(activePage: Signal<string>) {
@@ -41,27 +43,35 @@ export class ChatTemplates {
     static chatHistory(context: ChatContext) {
         if (!context || !context.history) {
             return create("div")
+                .classes("flex-v", "flex-grow")
+                .styles("overflow-y", "auto")
                 .text("No messages yet")
                 .build();
         }
 
         return create("div")
             .classes("flex-v", "flex-grow")
+            .styles("overflow-y", "auto")
             .children(
                 ...context.history.map(message => ChatTemplates.chatMessage(message))
             ).build();
     }
 
     private static chatMessage(message: ChatMessage) {
+        const rawMdParsed = marked.parse(message.text, {
+            async: false
+        });
+        const sanitized = DOMPurify.sanitize(rawMdParsed);
+
         return create("div")
             .classes("flex-v", "small-gap", "chat-message", message.type)
             .children(
                 ChatTemplates.date(message.time),
                 create("div")
-                    .classes("flex", "align-center", "card")
+                    .classes("flex", "align-center", "card", "message-content")
                     .children(
-                        create("span")
-                            .text(message.text)
+                        create("div")
+                            .html(sanitized)
                             .build()
                     ).build(),
                 ChatTemplates.messageActions(message),
@@ -182,7 +192,7 @@ export class ChatTemplates {
             .onclick(() => activateChat(chat))
             .children(
                 create("div")
-                    .classes("flex", "align-center", "no-wrap")
+                    .classes("flex", "align-center", "no-wrap", "space-between")
                     .children(
                         create("span")
                             .classes("text-small")

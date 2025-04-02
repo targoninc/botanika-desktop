@@ -468,12 +468,11 @@ kbd {
 
 .chat-input {
     width: 100%;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    border: 1px solid var(--bg-4);
     border-top: 1px solid var(--bg-4);
+    border-radius: 0 0 var(--input-border-radius) var(--input-border-radius);
     padding: var(--gap-v);
+    background: var(--bg);
 }
 
 .chat-input-field {
@@ -482,6 +481,7 @@ kbd {
     font-family: var(--default-font-family);
     font-size: var(--font-size-base);
     padding: var(--gap-h);
+    background: transparent;
 }
 
 .time {
@@ -494,6 +494,11 @@ kbd {
     font-size: .9em;
     width: min(50%, 600px);
     position: relative;
+}
+
+.message-content {
+    width: 100%;
+    overflow-x: auto;
 }
 
 .chat-message.user {
@@ -536,8 +541,7 @@ kbd {
     border-radius: var(--input-border-radius);
     border: 1px solid var(--grey-darker);
     padding: var(--gap-v);
-    width: max-content;
-    max-width: 100%;
+    width: 100%;
 }
 
 .chat-list-item:hover {
