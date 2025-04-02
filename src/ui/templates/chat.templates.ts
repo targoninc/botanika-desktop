@@ -7,7 +7,7 @@ import {
     target,
     updateContextFromStream
 } from "../classes/store";
-import {create} from "../lib/fjsc/src/f2";
+import {create, ifjs} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
@@ -113,19 +113,34 @@ export class ChatTemplates {
             }
             input.value = "";
         }
+        const focusInput = () => {
+            document.getElementById("chat-input-field")?.focus();
+        }
+        const updateInputHeight = () => {
+            const input = document.getElementById("chat-input-field");
+            if (!input) {
+                return;
+            }
+            input.style.height = "auto";
+            input.style.height = Math.min(input.scrollHeight, 300) + "px";
+        }
 
         return create("div")
-            .classes("chat-input", "bordered-panel")
+            .classes("chat-input")
+            .onclick(focusInput)
             .children(
                 create("div")
                     .classes("flex", "space-between")
                     .children(
                         create("textarea")
+                            .attributes("rows", "3")
+                            .id("chat-input-field")
                             .classes("flex-grow", "chat-input-field")
                             .styles("resize", "none")
                             .value(input)
                             .oninput((e: any) => {
                                 input.value = target(e).value;
+                                updateInputHeight();
                             })
                             .onkeydown((e: any) => {
                                 if (e.key === "Enter" && !e.shiftKey) {
@@ -151,6 +166,9 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "flex-grow")
             .children(
+                ifjs(chat.length === 0, create("span")
+                    .text("No chats yet")
+                    .build()),
                 ...chat.map(chatId => ChatTemplates.chatListItem(chatId))
             ).build();
     }
