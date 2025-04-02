@@ -20,7 +20,9 @@
   "build": {
     "icon": "src/assets/icon_256.png",
     "win": {
-      "publish": "always"
+      "publish": [
+        "github"
+      ]
     }
   },
   "devDependencies": {
