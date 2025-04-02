@@ -217,7 +217,7 @@ export class ChatTemplates {
     private static modelSelector(models: ModelDefinition[]) {
         const model = compute(c => c.model, configuration);
 
-        return GenericTemplates.select("Model", models.filter(m => m.active)
+        return GenericTemplates.select("Model", models
             .sort((a, b) => a.id.localeCompare(b.id))
             .map(m => {
                 return {

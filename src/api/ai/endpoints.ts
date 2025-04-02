@@ -1,18 +1,50 @@
-import {Request, Response} from "express";
+import {Application, Request, Response} from "express";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {getModel, initializeModels, maybeCallTool, streamResponseAsMessage} from "./llms/models";
+import {getModel, initializeLlms, maybeCallTool, streamResponseAsMessage} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
-import {createChat, getPromptMessages, getTools} from "../storage/helpers";
+import {createChat, getPromptMessages} from "../storage/helpers";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
 import {ToolResultUnion, ToolSet} from "ai";
 import {v4 as uuidv4} from "uuid";
 import {ChatToolResult} from "../../models/chat/ChatToolResult";
+import {initializeAi} from "./initializer";
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
+}
+
+async function addToolCallsToContext(calls: Array<ToolResultUnion<ToolSet>>, chatId: string, res: Response, chatContext: ChatContext) {
+    const messages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
+        // @ts-ignore
+        const result = toolCall.result as ChatToolResult;
+        // @ts-ignore
+        const text = result.text ?? toolCall.toolName;
+        let references = [];
+        if (result.references) {
+            references = result.references;
+        }
+
+        return <ChatMessage>{
+            type: "tool",
+            text,
+            toolResult: toolCall,
+            finished: true,
+            time: Date.now(),
+            references,
+            id: uuidv4()
+        }
+    });
+    const update = <ChatUpdate>{
+        chatId,
+        timestamp: Date.now(),
+        messages
+    };
+    res.write(chunk(JSON.stringify(update)));
+    updateContext(chatContext, update);
+    await ChatStorage.writeChatContext(chatId, chatContext);
 }
 
 export const chatEndpoint = async (req: Request, res: Response) => {
@@ -25,6 +57,8 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+
+    const { tools } = await initializeAi();
 
     let chatId = req.body.chatId;
     let chatContext: ChatContext;
@@ -48,36 +82,10 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     const modelName = req.body.model ?? "llama-3.1-8b-instant";
 
     const model = getModel(provider, modelName);
-    const tools = getTools();
     let promptMsgs = getPromptMessages(chatContext.history);
-    const calls = await maybeCallTool(model, promptMsgs, tools)
+    const calls = await maybeCallTool(model, promptMsgs, tools);
     if (calls.length > 0) {
-        const messages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
-            const result = toolCall.result as ChatToolResult;
-            const text = result.text ?? toolCall.toolName;
-            let references = [];
-            if (result.references) {
-                references = result.references;
-            }
-
-            return <ChatMessage>{
-                type: "tool",
-                text,
-                toolResult: toolCall,
-                finished: true,
-                time: Date.now(),
-                references,
-                id: uuidv4()
-            }
-        });
-        const update = <ChatUpdate>{
-            chatId,
-            timestamp: Date.now(),
-            messages
-        };
-        res.write(chunk(JSON.stringify(update)));
-        updateContext(chatContext, update);
-        await ChatStorage.writeChatContext(chatId, chatContext);
+        await addToolCallsToContext(calls, chatId, res, chatContext);
     }
 
     promptMsgs = getPromptMessages(chatContext.history);
@@ -137,9 +145,17 @@ export function deleteChatEndpoint(req: Request, res: Response) {
 }
 
 let models = {};
-initializeModels().then(m => {
-    models = m;
-});
-export function getModelsEndpoint(req: Request, res: Response) {
+export async function getModelsEndpoint(req: Request, res: Response) {
+    if (Object.keys(models).length === 0) {
+        models = await initializeLlms();
+    }
     res.status(200).send(models);
+}
+
+export function addChatEndpoints(app: Application) {
+    app.post('/chat', chatEndpoint);
+    app.get('/chat/:chatId', getChatEndpoint);
+    app.get('/chats', getChatIdsEndpoint);
+    app.delete('/chat/:chatId', deleteChatEndpoint);
+    app.get('/models', getModelsEndpoint);
 }

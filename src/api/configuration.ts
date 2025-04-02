@@ -4,6 +4,8 @@ import {Configuration} from "../models/Configuration";
 import {defaultConfig} from "../ui/enums/DefaultConfig";
 import {appDataPath} from "./appData";
 import {CLI} from "./CLI";
+import {Application} from "express";
+import {getConfiguredApis} from "./configuredApis";
 
 const configPath = path.join(appDataPath, 'config.json');
 CLI.log('Config path: ' + configPath);
@@ -28,4 +30,26 @@ export function setConfigKey(key: string, value: any) {
 
 export function getConfigKey(key: string) {
     return config[key];
+}
+
+export function addConfigEndpoints(app: Application) {
+    app.get('/config', async (req, res) => {
+        res.status(200).send(getConfig());
+    });
+
+    app.get('/config/:key', async (req, res) => {
+        const key = req.params.key;
+        res.status(200).send(getConfigKey(key));
+    });
+
+    app.put('/config/:key', async (req, res) => {
+        const key = req.params.key;
+        const value = req.body.value;
+        setConfigKey(key, value);
+        res.status(200).send(getConfigKey(key));
+    });
+
+    app.get('/config/apis', async (req, res) => {
+        res.status(200).send(getConfiguredApis());
+    });
 }

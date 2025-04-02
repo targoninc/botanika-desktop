@@ -61,7 +61,7 @@ export function getChatNameMessages(message: string): CoreMessage[] {
     ];
 }
 
-export function getTools(): ToolSet {
+export function getBuiltinTools(): ToolSet {
     return {
         "search-engine": googleSearchTool()
     };
