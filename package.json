@@ -18,7 +18,10 @@
     "email": "alex@targoninc.com"
   },
   "build": {
-    "icon": "src/assets/icon_256.png"
+    "icon": "src/assets/icon_256.png",
+    "win": {
+      "publish": "always"
+    }
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
