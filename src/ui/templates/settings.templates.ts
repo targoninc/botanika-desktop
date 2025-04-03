@@ -238,34 +238,40 @@ export class SettingsTemplates {
 
                     return SettingsTemplates.existingMcpServer(c, name, server, url);
                 }),
-                SettingsTemplates.addMcpServer(c)
+                SettingsTemplates.addMcpServer()
             ).build();
     }
 
-    private static addMcpServer(c: McpConfiguration) {
+    private static addMcpServer() {
         const name = signal("");
         const url = signal("http://localhost:MCP_PORT/path/sse");
 
         return create("div")
-            .classes("flex", "card", "align-center", name ? "positive" : "negative")
+            .classes("flex-v", "bordered-panel")
             .children(
-                GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
-                FJSC.input({
-                    type: InputType.text,
-                    value: name,
-                    name: "name",
-                    label: "Name",
-                    placeholder: "Name",
-                    onchange: (value) => name.value = value
-                }),
-                FJSC.input({
-                    type: InputType.text,
-                    value: url,
-                    name: "url",
-                    label: "URL",
-                    placeholder: "URL",
-                    onchange: (value) => url.value = value
-                }),
+                create("p")
+                    .text("Add a new MCP server:"),
+                create("div")
+                    .classes("flex", "align-center")
+                    .children(
+                        GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
+                        FJSC.input({
+                            type: InputType.text,
+                            value: name,
+                            name: "name",
+                            label: "Name",
+                            placeholder: "Name",
+                            onchange: (value) => name.value = value
+                        }),
+                        FJSC.input({
+                            type: InputType.text,
+                            value: url,
+                            name: "url",
+                            label: "URL",
+                            placeholder: "URL",
+                            onchange: (value) => url.value = value
+                        })
+                    ).build(),
                 FJSC.button({
                     text: "Add",
                     disabled: compute((n, u) => n.length === 0 || u.length === 0, name, url),
