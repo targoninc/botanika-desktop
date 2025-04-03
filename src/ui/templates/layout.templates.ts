@@ -39,18 +39,4 @@ export class LayoutTemplates {
 
         return self;
     }
-
-    static card(title: StringOrSignal, children: (AnyNode)[]) {
-        return create("div")
-            .classes("card", "flex-v")
-            .children(
-                create("h2")
-                    .text(title)
-                    .build(),
-                create("div")
-                    .classes("flex")
-                    .children(...children)
-                    .build()
-            ).build();
-    }
 }

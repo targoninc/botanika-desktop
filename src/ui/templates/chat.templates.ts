@@ -3,7 +3,7 @@ import {
     activateChat, availableModels,
     chats,
     configuration,
-    context, currentlyPlayingAudio,
+    chatContext, currentlyPlayingAudio,
     deleteChat,
     target,
     updateContextFromStream
@@ -38,7 +38,7 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "flex-grow", "bordered-panel", "relative", "chat-box", "no-gap")
             .children(
-                compute(c => ChatTemplates.chatHistory(c), context),
+                compute(c => ChatTemplates.chatHistory(c), chatContext),
                 ChatTemplates.chatInput(),
             ).build();
     }
@@ -159,7 +159,7 @@ export class ChatTemplates {
 
     static chatInput() {
         const input = signal("");
-        const chatId = compute(c => c?.id, context);
+        const chatId = compute(c => c?.id, chatContext);
         const provider = compute(c => c.provider, configuration);
         const model = compute(c => c.model, configuration);
         const send = () => {
@@ -185,7 +185,12 @@ export class ChatTemplates {
         return create("div")
             .classes("chat-input", "flex-v")
             .children(
-                ChatTemplates.llmSelector(),
+                create("div")
+                    .classes("flex", "space-between")
+                    .children(
+                        ChatTemplates.llmSelector(),
+                        GenericTemplates.verticalButtonWithIcon("arrow_upward", "", send, ["send-button"]),
+                    ).build(),
                 create("div")
                     .classes("flex", "space-between")
                     .onclick(focusInput)
@@ -195,6 +200,7 @@ export class ChatTemplates {
                             .id("chat-input-field")
                             .classes("flex-grow", "chat-input-field")
                             .styles("resize", "none")
+                            .placeholder("How can I help you?")
                             .value(input)
                             .oninput((e: any) => {
                                 input.value = target(e).value;
@@ -207,7 +213,6 @@ export class ChatTemplates {
                                 }
                             })
                             .build(),
-                        GenericTemplates.verticalButtonWithIcon("arrow_upward", "Send", send, ["positive"]),
                     ).build(),
             ).build();
     }
@@ -253,12 +258,22 @@ export class ChatTemplates {
     }
 
     private static chatList() {
+        const newDisabled = compute(c => Object.keys(c).length === 0, chatContext);
+
         return create("div")
             .classes("flex-v", "bordered-panel", "chat-list")
             .children(
-                GenericTemplates.buttonWithIcon("create", "New chat", () => {
-                    context.value = INITIAL_CONTEXT;
-                }, ["positive"]),
+                FJSC.button({
+                    disabled: newDisabled,
+                    icon: {
+                        icon: "create"
+                    },
+                    text: "New chat",
+                    classes: ["flex", "align-center", "positive"],
+                    onclick: () => {
+                        chatContext.value = INITIAL_CONTEXT;
+                    }
+                }),
                 compute(c => ChatTemplates.chatListItems(c), chats),
             ).build();
     }
@@ -276,7 +291,7 @@ export class ChatTemplates {
     }
 
     static chatListItem(chat: ChatContext) {
-        const active = compute(c => c && c.id === chat.id, context);
+        const active = compute(c => c && c.id === chat.id, chatContext);
         const activeClass = compute((c): string => c ? "active" : "_", active);
 
         return create("div")

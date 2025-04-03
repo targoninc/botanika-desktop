@@ -17,7 +17,7 @@ export const configuration = signal<Configuration>({} as Configuration);
 configuration.subscribe(c => {
     language.value = c.language as Language;
 });
-export const context = signal<ChatContext>(INITIAL_CONTEXT);
+export const chatContext = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
 export const availableModels = signal<Record<string, ModelDefinition[]>>({});
 export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
@@ -81,7 +81,7 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
         }
         try {
             const update = JSON.parse(lastUpdate.trim()) as ChatUpdate;
-            updateContext(context.value, update);
+            updateContext(chatContext.value, update);
             const cs = chats.value;
             if (!cs.find(c => c.id === update.chatId)) {
                 loadChats();
@@ -106,13 +106,13 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
 }
 
 export function activateChat(chat: ChatContext) {
-    context.value = chat;
+    chatContext.value = chat;
 }
 
 export function deleteChat(chatId: string) {
     Api.deleteChat(chatId).then(() => {
-        if (context.value.id === chatId) {
-            context.value = INITIAL_CONTEXT;
+        if (chatContext.value.id === chatId) {
+            chatContext.value = INITIAL_CONTEXT;
         }
         chats.value = [...chats.value].filter(c => c.id !== chatId);
     });

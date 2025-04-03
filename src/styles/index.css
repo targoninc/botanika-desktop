@@ -1,7 +1,7 @@
 :root {
-    --black: #0e150c;
-    --black-2: #212521;
-    --black-3: #2d322c;
+    --black: #080d07;
+    --black-2: #192019;
+    --black-3: #212520;
     --black-4: #414641;
     --black-trans: rgba(10, 10, 13, 0.9);
     --white: #efe9e7ff;
@@ -13,34 +13,25 @@
     --grey-darker: #4c4848;
     --grey-darkest: #2f2e2e;
 
+    --gradient-1: linear-gradient(-180deg, var(--black), color-mix(in oklab, var(--black), var(--black-2) 50%));
+    --gradient-2: linear-gradient(-180deg, var(--black-2), color-mix(in oklab, var(--black-2), var(--black-3) 50%));
+
     --blue: #0b72bc;
-    --green: #69c732;
+    --green: #3ebf06;
+    --green-present: #5ead3a;
+    --green-muted: #415638;
     --red: #c43e40;
     --yellow: #f0c929ff;
     --orange: #f09029;
     --purple: #6a4c93ff;
 
-    --tag-blue: #0c446d;
-    --tag-green: #4b6a0c;
-    --tag-red: #6d0c0c;
-    --tag-yellow: #6a4b0c;
-    --tag-purple: #4b0c6d;
-    --tag-teal: #0c6d4b;
-    --tag-magenta: #6d0c6d;
-
-    --job-disposition: linear-gradient(to right, var(--tag-green), var(--tag-teal));
-    --job-disposition-border: var(--tag-green);
-
-    --job-draft: linear-gradient(to right, var(--grey-darker), var(--grey-darkest));
-    --job-draft-border: var(--grey-darker);
-
     --font-size-base: 18px;
     --gap-h: 7px;
     --gap-v: 14px;
     --fjsc-gap: var(--gap-h);
-    --input-padding-h: 0.5rem;
+    --input-padding-h: 0.75rem;
     --input-padding-v: 0.25rem;
-    --input-border-radius: 5px;
+    --input-border-radius: 1em;
     --input-border-width: 1px;
     --avatar-border-width: 2px;
     --animation-time: 0.25s;
@@ -49,6 +40,8 @@
     --tab-padding: .3em .8em;
 
     --fjsc-border-radius-small: var(--input-border-radius);
+    --fjsc-interactive-border-focused: var(--green-present);
+    --fjsc-interactive-border-active: var(--green-present);
 
     --default-font-family: "Inter Tight", serif;
     --fjsc-font: var(--default-font-family);
@@ -94,7 +87,7 @@ html, body {
 }
 
 body {
-    background-color: var(--bg);
+    background: var(--gradient-1);
     color: var(--text);
     font-size: var(--font-size-base);
     margin: 0;
@@ -117,6 +110,9 @@ h1 {
 
 h2 {
     font-size: 1.75rem;
+    margin-top: 1em;
+    font-weight: 500;
+    margin-left: calc(var(--gap-h) * 2);
 }
 
 h3 {
@@ -153,9 +149,19 @@ button.no-border, input.no-border, textarea.no-border, select.no-border {
     background: transparent;
 }
 
+.fjsc {
+    color: inherit;
+}
+
 button.positive, input.positive, textarea.positive, select.positive {
-    border: var(--input-border-width) solid var(--green);
+    border: var(--input-border-width) solid var(--green-muted);
     color: var(--green);
+    background: var(--gradient-1);
+}
+
+button.positive:hover, button.fjsc.positive:hover {
+    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--green-muted) 50%, transparent 50%);
+    background: var(--gradient-2);
 }
 
 button.negative, input.negative, textarea.negative, select.negative {

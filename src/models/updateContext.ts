@@ -1,5 +1,5 @@
 import {ChatUpdate} from "./chat/ChatUpdate";
-import {context} from "../ui/classes/store";
+import {chatContext} from "../ui/classes/store";
 import {ChatContext} from "./chat/ChatContext";
 
 export function updateContext(c: ChatContext, update: ChatUpdate) {
@@ -30,7 +30,7 @@ export function updateContext(c: ChatContext, update: ChatUpdate) {
         }
     }
     c.history = c.history.sort((a, b) => a.time - b.time);
-    context.value = {
+    chatContext.value = {
         ...c
     };
 }

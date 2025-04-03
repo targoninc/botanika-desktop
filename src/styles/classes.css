@@ -149,11 +149,12 @@
 .panel, .bordered-panel, .card, .secondary-card {
     padding: var(--gap-v);
     border-radius: var(--input-border-radius);
-    background: var(--bg-2);
+    background: var(--gradient-2);
 }
 
 .card {
     background: var(--bg-3);
+    border: 1px solid var(--green-muted);
 }
 
 .secondary-card {
@@ -185,7 +186,7 @@
 }
 
 .bordered-panel {
-    border: 1px solid var(--bg-4);
+    border: 1px solid var(--green-muted);
 }
 
 .title {
@@ -472,7 +473,7 @@ kbd {
     border-top: 1px solid var(--bg-4);
     border-radius: var(--input-border-radius);
     padding: var(--gap-v);
-    background: var(--bg);
+    background: var(--gradient-1);
 }
 
 .chat-input-field {
@@ -480,8 +481,9 @@ kbd {
     color: var(--text);
     font-family: var(--default-font-family);
     font-size: var(--font-size-base);
-    padding: var(--gap-h);
+    padding: 0;
     background: transparent;
+    border-radius: 0;
 }
 
 .time {
@@ -495,6 +497,26 @@ kbd {
     width: min(100%, 800px);
     position: relative;
     max-height: max-content;
+}
+
+.send-button {
+    border-radius: var(--input-border-radius);
+    background: var(--gradient-1);
+    color: var(--green-present);
+    border: 1px solid var(--green-muted);
+    height: 1.5em;
+    width: 1.5em;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 1.5em;
+    transition: background var(--animation-duration) ease;
+}
+
+.send-button:hover {
+    background: var(--gradient-2);
+    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--green-present) 50%, transparent 50%);
 }
 
 .chat-message:last-child:not(.chat-message.tool) {
@@ -543,7 +565,7 @@ kbd {
 .chat-list-item {
     cursor: pointer;
     border-radius: var(--input-border-radius);
-    border: 1px solid var(--grey-darker);
+    border: 1px solid var(--green-muted);
     padding: var(--gap-v);
     width: 100%;
 }
@@ -553,7 +575,7 @@ kbd {
 }
 
 .chat-list-item.active {
-    border-color: var(--green);
+    border-color: var(--green-present);
     background: var(--bg);
 }
 

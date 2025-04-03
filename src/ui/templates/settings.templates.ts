@@ -56,6 +56,7 @@ export class SettingsTemplates {
                             .build(),
                         ifjs(loading, GenericTemplates.spinner()),
                     ).build(),
+                GenericTemplates.heading(2, "General"),
                 ...settings.map(s => SettingsTemplates.setting(s, loading)),
                 SettingsTemplates.configuredApis(),
                 SettingsTemplates.mcpConfig(),
@@ -154,15 +155,14 @@ export class SettingsTemplates {
         return create("div")
             .classes("flex-v")
             .children(
-                create("p")
-                    .text("Configured APIs:"),
+                GenericTemplates.heading(2, "Configured APIs:"),
                 GenericTemplates.warning("You might have to restart the application after changing environment variables"),
                 ...Object.keys(apis).map(api => {
                     const name = api;
                     const feature = apis[api] as FeatureConfigurationInfo;
 
                     return create("div")
-                        .classes("flex-v", "bordered-panel")
+                        .classes("flex-v", "card")
                         .children(
                             create("div")
                                 .classes("flex", feature.enabled ? "positive" : "negative")
@@ -170,8 +170,6 @@ export class SettingsTemplates {
                                     GenericTemplates.icon(feature.enabled ? "check" : "key_off", [feature.enabled ? "positive" : "negative"]),
                                     create("b")
                                         .text(name),
-                                    create("span")
-                                        .text(feature.enabled ? "Enabled" : "Disabled"),
                                 ).build(),
                             create("div")
                                 .classes("flex-v")
@@ -230,8 +228,7 @@ export class SettingsTemplates {
         return create("div")
             .classes("flex-v")
             .children(
-                create("p")
-                    .text("Configured MCP servers:"),
+                GenericTemplates.heading(2, "Configured MCP servers:"),
                 ...Object.keys(c?.servers ?? {}).map(server => {
                     const name = c.servers[server].name;
                     const url = c.servers[server].url;
@@ -247,7 +244,7 @@ export class SettingsTemplates {
         const url = signal("http://localhost:MCP_PORT/path/sse");
 
         return create("div")
-            .classes("flex-v", "bordered-panel")
+            .classes("flex-v", "card")
             .children(
                 create("p")
                     .text("Add a new MCP server:"),
@@ -293,7 +290,7 @@ export class SettingsTemplates {
 
     private static existingMcpServer(c: McpConfiguration, name: string, server: string, url: string) {
         return create("div")
-            .classes("flex", "card", "align-center", name ? "positive" : "negative")
+            .classes("flex", "bordered-panel", "align-center", name ? "positive" : "negative")
             .children(
                 GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
                 FJSC.input({
