@@ -1,6 +1,6 @@
 import {Application, Request, Response} from "express";
 import {ChatMessage} from "../../models/chat/ChatMessage";
-import {getAvailableModels, getModel, initializeLlms, streamResponseAsMessage, tryCallTool} from "./llms/models";
+import {getAvailableModels, getModel, initializeLlms} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
@@ -13,6 +13,7 @@ import {ChatToolResult} from "../../models/chat/ChatToolResult";
 import {initializeAi} from "./initializer";
 import {CLI} from "../CLI";
 import {LlmProvider} from "../../models/llmProvider";
+import {streamResponseAsMessage, tryCallTool} from "./llms/functions";
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
@@ -20,9 +21,7 @@ export function chunk(content: string) {
 
 async function addToolCallsToContext(calls: Array<ToolResultUnion<ToolSet>>, chatId: string, res: Response, chatContext: ChatContext) {
     const messages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
-        // @ts-ignore
         const result = toolCall.result as ChatToolResult;
-        // @ts-ignore
         const text = result.text ?? toolCall.toolName;
         let references = [];
         if (result.references) {
@@ -100,7 +99,9 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         }
     }
 
-    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history));
+    const msgs = getPromptMessages(chatContext.history);
+    console.log(msgs);
+    const responseMsg = await streamResponseAsMessage(model, msgs);
 
     responseMsg.subscribe(async (m: ChatMessage) => {
         const update = <ChatUpdate>{

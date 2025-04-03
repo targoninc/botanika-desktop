@@ -566,8 +566,8 @@ kbd {
 }
 
 .chat-list-item.active {
-    border-color: var(--purple);
-    background: var(--purple);
+    border-color: var(--green);
+    background: var(--bg);
 }
 
 code:not(pre code) {
@@ -582,6 +582,7 @@ code:not(pre code) {
 pre {
     border-radius: var(--input-border-radius);
     overflow: hidden;
+    margin: var(--gap-v) 0;
 }
 
 
@@ -623,7 +624,7 @@ pre {
 
 .reference:hover, .reference.expanded {
     background: var(--bg);
-    border-color: var(--blue);
+    border-color: var(--green);
 }
 
 .snippet {

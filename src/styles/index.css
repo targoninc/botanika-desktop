@@ -197,6 +197,7 @@ a .material-symbols-outlined {
 
 a:hover {
     text-decoration: underline;
+    color: var(--green);
 }
 
 .align-center {

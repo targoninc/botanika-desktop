@@ -309,7 +309,7 @@ export class ChatTemplates {
             })
             .children(
                 create("div")
-                    .classes("flex", "padded", "rounded", "no-wrap")
+                    .classes("flex", "align-center", "padded", "rounded", "no-wrap")
                     .children(
                         r.link ? GenericTemplates.icon("link") : null,
                         r.link ? create("a")

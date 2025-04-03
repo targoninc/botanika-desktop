@@ -2,9 +2,9 @@ import {v4 as uuidv4} from "uuid";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "./ChatStorage";
 import {CoreMessage} from "ai";
-import {getSimpleResponse} from "../ai/llms/models";
 import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../models/chat/ChatMessage";
+import {getSimpleResponse} from "../ai/llms/functions";
 
 export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 50);
@@ -36,9 +36,16 @@ export function getPromptMessages(messages: ChatMessage[]): CoreMessage[] {
     return [
         {
             role: "system",
-            content: "You are a helpful assistant."
+            content: "You are a helpful assistant. If the last messages were tool calls, give the user a summary of what you did."
         },
         ...messages.map(m => {
+            if (m.type === "tool") {
+                return {
+                    role: m.type,
+                    content: [m.toolResult]
+                }
+            }
+
             return {
                 role: m.type,
                 content: m.text

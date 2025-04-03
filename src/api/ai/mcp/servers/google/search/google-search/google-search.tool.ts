@@ -3,6 +3,9 @@ import axios from "axios";
 import {GoogleSearchResult} from "./google-search.models";
 import {ResourceReference} from "../../../../../../../models/chat/ResourceReference";
 import dotenv from "dotenv";
+import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
+import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
+import {ConfiguredApi} from "../../../../../../features/configuredApis";
 
 dotenv.config();
 
@@ -39,8 +42,12 @@ export function googleSearchTool() {
             query: z.string().describe('The query to search for'),
         },
         execute: async ({ query }: { query: string }): Promise<any> => {
+            if (!getConfiguredApis()[ConfiguredApi.GoogleSearch].enabled) {
+                throw new Error("Google Search API is not enabled.");
+            }
+
             const result = await search(query);
-            const output = {
+            return <ChatToolResult>{
                 text: "Google search results",
                 references: result.items.map(i => {
                     return <ResourceReference>{
@@ -52,7 +59,6 @@ export function googleSearchTool() {
                     }
                 }),
             };
-            return output;
         }
     };
 }

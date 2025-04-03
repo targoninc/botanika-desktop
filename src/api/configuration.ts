@@ -5,7 +5,7 @@ import {defaultConfig} from "../ui/enums/DefaultConfig";
 import {appDataPath} from "./appData";
 import {CLI} from "./CLI";
 import {Application} from "express";
-import {getConfiguredApis} from "./configuredApis";
+import {getConfiguredApis} from "./features/configuredFeatures";
 
 const configPath = path.join(appDataPath, 'config.json');
 CLI.log('Config path: ' + configPath);
