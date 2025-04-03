@@ -136,9 +136,8 @@ export const chatEndpoint = async (req: Request, res: Response) => {
 export async function getAudio(lastMessage: ChatMessage): Promise<string> {
     if (lastMessage.type === "assistant") {
         const blob = await getTtsAudio(lastMessage.text);
-        const id = uuidv4();
-        await AudioStorage.writeAudio(id, blob);
-        return AudioStorage.getLocalFileUrl(id);
+        await AudioStorage.writeAudio(lastMessage.id, blob);
+        return AudioStorage.getLocalFileUrl(lastMessage.id);
     }
 
     return null;
@@ -147,11 +146,20 @@ export async function getAudio(lastMessage: ChatMessage): Promise<string> {
 export async function sendAudioAndStop(chatContext: ChatContext, lastMessage: ChatMessage, res: Response) {
     const audioUrl = await getAudio(lastMessage);
     if (audioUrl) {
-        res.write(chunk(JSON.stringify(<ChatUpdate>{
+        const update = <ChatUpdate>{
             chatId: chatContext.id,
             timestamp: lastMessage.time,
-            audioUrl
-        })));
+            playLastAudio: true,
+            messages: [
+                {
+                    ...lastMessage,
+                    hasAudio: true
+                }
+            ]
+        };
+        updateContext(chatContext, update);
+        res.write(chunk(JSON.stringify(update)));
+        await ChatStorage.writeChatContext(chatContext.id, chatContext);
     }
 
     res.end();
@@ -196,18 +204,6 @@ export async function getModelsEndpoint(req: Request, res: Response) {
         models = await initializeLlms();
     }
     res.status(200).send(models);
-}
-
-export async function getAudioEndpoint(req: Request, res: Response) {
-    const chatId = req.params.chatId;
-    const chatContext = await ChatStorage.readChatContext(chatId);
-
-    if (!chatContext) {
-        res.status(404).send("Chat not found");
-        return;
-    }
-
-
 }
 
 export function addChatEndpoints(app: Application) {

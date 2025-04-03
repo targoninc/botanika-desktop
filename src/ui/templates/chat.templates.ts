@@ -3,7 +3,7 @@ import {
     activateChat, availableModels,
     chats,
     configuration,
-    context,
+    context, currentlyPlayingAudio,
     deleteChat,
     target,
     updateContextFromStream
@@ -22,6 +22,7 @@ import {ResourceReference} from "../../models/chat/ResourceReference";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 import {ModelDefinition} from "../../models/modelDefinition";
 import {LlmProvider} from "../../models/llmProvider";
+import {playAudio, stopAudio} from "../classes/audio";
 
 export class ChatTemplates {
     static chat(activePage: Signal<string>) {
@@ -88,19 +89,39 @@ export class ChatTemplates {
             async: false
         });
         const sanitized = DOMPurify.sanitize(rawMdParsed);
+        const audioDisabled = compute(a => !!a && a !== message.id, currentlyPlayingAudio);
 
         return create("div")
             .classes("flex-v", "small-gap", "chat-message", message.type)
             .children(
-                ChatTemplates.date(message.time),
                 create("div")
-                    .classes("flex", "align-center", "card", "message-content")
+                    .classes("flex", "align-center")
+                    .children(
+                        ChatTemplates.date(message.time),
+                        message.hasAudio ? FJSC.button({
+                            disabled: audioDisabled,
+                            icon: { icon: compute(a => a === message.id ? "stop_circle" : "volume_up", currentlyPlayingAudio) },
+                            onclick: () => {
+                                if (currentlyPlayingAudio.value === message.id) {
+                                    stopAudio();
+                                } else {
+                                    playAudio(message.id).then();
+                                }
+                            },
+                            classes: ["flex", "align-center"]
+                        }) : null,
+                    ).build(),
+                create("div")
                     .children(
                         create("div")
-                            .html(sanitized)
-                            .build()
+                            .classes("flex", "align-center", "card", "message-content")
+                            .children(
+                                create("div")
+                                    .html(sanitized)
+                                    .build(),
+                            ).build(),
+                        ChatTemplates.messageActions(message),
                     ).build(),
-                ChatTemplates.messageActions(message),
             ).build();
     }
 

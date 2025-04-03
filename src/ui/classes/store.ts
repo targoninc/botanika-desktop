@@ -10,6 +10,7 @@ import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 import {ModelDefinition} from "../../models/modelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {playAudio} from "./audio";
+import {ChatUpdate} from "../../models/chat/ChatUpdate";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -20,6 +21,7 @@ export const context = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
 export const availableModels = signal<Record<string, ModelDefinition[]>>({});
 export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
+export const currentlyPlayingAudio = signal<string>(null);
 
 export function initializeStore() {
     Api.getConfig().then(conf => {
@@ -78,7 +80,7 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
             continue;
         }
         try {
-            const update = JSON.parse(lastUpdate.trim());
+            const update = JSON.parse(lastUpdate.trim()) as ChatUpdate;
             updateContext(context.value, update);
             const cs = chats.value;
             if (!cs.find(c => c.id === update.chatId)) {
@@ -92,8 +94,9 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
                 });
             }
 
-            if (update.audioUrl) {
-                playAudio(update.audioUrl).then();
+            const playableMessage = update.messages?.find(m => m.hasAudio);
+            if (playableMessage) {
+                playAudio(playableMessage.id).then();
             }
         } catch (e) {
             console.log("Error parsing update: ", lastUpdate, e.toString());

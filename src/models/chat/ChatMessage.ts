@@ -9,4 +9,5 @@ export interface ChatMessage {
     time: number;
     id: string;
     finished: boolean;
+    hasAudio?: boolean;
 }

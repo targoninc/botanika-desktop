@@ -2,17 +2,17 @@ import { Application, Request, Response } from "express";
 import { createReadStream, existsSync, statSync } from "fs";
 import { extname, resolve } from "path";
 import {CLI} from "../../CLI";
+import {appDataPath} from "../../appData";
 
 export async function getAudioEndpoint(req: Request, res: Response) {
-    const file = req.query.file as string;
-    if (!file) {
+    const id = req.query.file as string;
+    if (!id) {
         res.status(400).send("Missing file parameter");
         return;
     }
 
-    CLI.debug(`Audio playback requested for file ${file}`);
-
-    const filePath = resolve(file);
+    CLI.debug(`Audio playback requested for message ID ${id}`);
+    const filePath = resolve(`${appDataPath}/audio/${id}.mp3`);
     if (!existsSync(filePath)) {
         res.status(404).send("File not found");
         return;
