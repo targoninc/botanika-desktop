@@ -6,6 +6,7 @@
   "asar": false,
   "productName": "Botanika",
   "copyright": "Copyright © 2025 ${author}",
+  "icon": "src/assets/icon_256.png",
   "directories": {
     "output": "release/${version}"
   },
@@ -22,12 +23,6 @@
     ],
     "requestedExecutionLevel": "requireAdministrator",
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
-  },
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
   },
   "mac": {
     "target": ["dmg"],

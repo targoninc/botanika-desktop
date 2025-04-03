@@ -2,12 +2,15 @@ import {OpenAI} from "openai";
 import dotenv from "dotenv";
 
 dotenv.config();
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+let openai;
 
 export async function getTtsAudioOpenAi(text: string): Promise<Blob> {
+    if (!openai) {
+        openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+    }
+
     const response = await openai.audio.speech.create({
         model: "tts-1",
         voice: "nova",
