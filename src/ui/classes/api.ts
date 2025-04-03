@@ -4,6 +4,7 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {ModelDefinition} from "../../models/modelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {McpServerConfig} from "../../api/ai/mcp/models/McpServerConfig";
+import {ConfiguredApis} from "../../api/features/configuredApis";
 
 export class Api extends ApiBase {
     static getConfig() {
@@ -44,7 +45,7 @@ export class Api extends ApiBase {
     }
 
     static getConfiguredApis() {
-        return this.get<Record<string, boolean>>(`/configuredApis`);
+        return this.get<ConfiguredApis>(`/configuredApis`);
     }
 
     static getMcpConfig() {
@@ -61,5 +62,12 @@ export class Api extends ApiBase {
 
     static updateMcpServer(mcpServerConfig: McpServerConfig) {
         return this.put(`/mcpServer/${mcpServerConfig.url}`, mcpServerConfig);
+    }
+
+    static setEnvironmentVariable(key: string, value: string) {
+        return this.post("/setEnvironmentVariable", {
+            key,
+            value
+        });
     }
 }

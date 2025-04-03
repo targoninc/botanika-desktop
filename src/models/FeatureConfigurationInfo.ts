@@ -1,4 +1,7 @@
 export interface FeatureConfigurationInfo {
     enabled: boolean;
-    envVarNames: string[];
+    envVars: {
+        key: string;
+        isSet: boolean;
+    }[];
 }

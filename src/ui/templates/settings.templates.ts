@@ -7,6 +7,9 @@ import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
+import {ConfiguredApi, ConfiguredApis} from "../../api/features/configuredApis";
+import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
+import {createModal} from "../classes/ui";
 
 export class SettingsTemplates {
     static settings(activePage: Signal<string>) {
@@ -84,6 +87,7 @@ export class SettingsTemplates {
             await Api.setConfigKey(key, value);
             loading.value = false;
         }
+
         const value = compute(c => c[sc.key] ?? null, configuration);
 
         return create("div")
@@ -129,38 +133,87 @@ export class SettingsTemplates {
     }
 
     static configuredApis() {
-        const apis = signal<Record<string, boolean>>({});
-        Api.getConfiguredApis().then(res => {
-            if (res.data) {
-                apis.value = res.data as Record<string, boolean>;
-            }
-        });
+        const apis = signal<ConfiguredApis>({} as ConfiguredApis);
+        const load = () => {
+            Api.getConfiguredApis().then(res => {
+                if (res.data) {
+                    apis.value = res.data as ConfiguredApis;
+                }
+            });
+        }
+        load();
 
         return create("div")
             .classes("flex-v")
             .children(
-                compute(a => SettingsTemplates.configuredApisInternal(a), apis)
+                compute(a => SettingsTemplates.configuredApisInternal(a, load), apis)
             ).build();
     }
 
-    static configuredApisInternal(apis: Record<string, boolean>) {
+    static configuredApisInternal(apis: ConfiguredApis, load: () => void) {
         return create("div")
-            .classes("flex-v", "card")
+            .classes("flex-v")
             .children(
                 create("p")
                     .text("Configured APIs:"),
+                GenericTemplates.warning("You might have to restart the application after changing environment variables"),
                 ...Object.keys(apis).map(api => {
                     const name = api;
-                    const enabled = apis[api];
+                    const feature = apis[api] as FeatureConfigurationInfo;
 
                     return create("div")
-                        .classes("flex", enabled ? "positive" : "negative")
+                        .classes("flex-v", "bordered-panel")
                         .children(
-                            GenericTemplates.icon(enabled ? "check" : "key_off", [enabled ? "positive" : "negative"]),
-                            create("b")
-                                .text(name),
-                            create("span")
-                                .text(enabled ? "Enabled" : "Disabled"),
+                            create("div")
+                                .classes("flex", feature.enabled ? "positive" : "negative")
+                                .children(
+                                    GenericTemplates.icon(feature.enabled ? "check" : "key_off", [feature.enabled ? "positive" : "negative"]),
+                                    create("b")
+                                        .text(name),
+                                    create("span")
+                                        .text(feature.enabled ? "Enabled" : "Disabled"),
+                                ).build(),
+                            create("div")
+                                .classes("flex-v")
+                                .children(
+                                    ...feature.envVars.map(envVar => {
+                                        const value = signal("");
+
+                                        return create("div")
+                                            .classes("flex", "align-center", "indent-left")
+                                            .children(
+                                                GenericTemplates.icon(envVar.isSet ? "check" : "key_off", [envVar.isSet ? "positive" : "negative"]),
+                                                FJSC.input({
+                                                    type: InputType.text,
+                                                    value: "",
+                                                    name: envVar.key,
+                                                    placeholder: envVar.key,
+                                                    onchange: (newVal) => {
+                                                        value.value = newVal;
+                                                    }
+                                                }),
+                                                FJSC.button({
+                                                    icon: { icon: "check" },
+                                                    text: "Set",
+                                                    disabled: compute(v => !v || v.length === 0, value),
+                                                    classes: ["flex", "align-center"],
+                                                    onclick: () => {
+                                                        createModal(GenericTemplates.confirmModalWithContent("Overwrite environment variable", create("div")
+                                                            .children(
+                                                                create("p")
+                                                                    .text(`Are you sure you want to overwrite the environment variable ${envVar.key}?`),
+                                                            ).build(), "Yes", "No", () => {
+                                                            Api.setEnvironmentVariable(envVar.key, value.value).then(res => {
+                                                                if (res.success) {
+                                                                    load();
+                                                                }
+                                                            });
+                                                        }));
+                                                    }
+                                                })
+                                            ).build();
+                                    })
+                                ).build(),
                         ).build();
                 })
             ).build();

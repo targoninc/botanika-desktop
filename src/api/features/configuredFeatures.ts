@@ -2,13 +2,16 @@ import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
 import {ConfiguredApi, ConfiguredApis} from "./configuredApis";
 
 function envSet(key: string) {
-    return process.env[key] !== undefined && process.env[key].trim() !== "";
+    return process.env[key] && process.env[key].trim().length > 0;
 }
 
 function envConfigurationInfo(...envVarNames: string[]): FeatureConfigurationInfo {
     return {
         enabled: envVarNames.every(envSet),
-        envVarNames
+        envVars: envVarNames.map(n => ({
+            key: n,
+            isSet: envSet(n)
+        }))
     };
 }
 

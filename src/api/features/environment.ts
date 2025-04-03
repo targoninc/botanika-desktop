@@ -5,7 +5,7 @@ import {readFile, writeFile} from "fs/promises";
 export function getValidEnvironmentVariables() {
     const configuredApis = getConfiguredApis();
     const values = Object.values(configuredApis);
-    return values.reduce((acc, val) => acc.concat(val.envVarNames), [] as string[]);
+    return values.reduce((acc, val) => acc.concat(val.envVars.map(e => e.key)), [] as string[]);
 }
 
 export async function setEnvironmentVariable(key: string, value: string) {

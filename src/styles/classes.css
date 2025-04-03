@@ -655,3 +655,7 @@ pre {
     top: var(--gap-v);
     right: var(--gap-v);
 }
+
+.indent-left {
+    margin-left: var(--gap-v);
+}
