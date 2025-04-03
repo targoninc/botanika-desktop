@@ -13,7 +13,7 @@ import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
 import {Api} from "../classes/api";
-import {createModal, toast} from "../classes/ui";
+import {attachCodeCopyButtons, createModal, toast} from "../classes/ui";
 import {FJSC} from "../lib/fjsc";
 import {marked} from "marked";
 import DOMPurify from 'dompurify';
@@ -53,6 +53,7 @@ export class ChatTemplates {
 
         setTimeout(() => {
             hljs.highlightAll();
+            attachCodeCopyButtons();
         });
 
         return create("div")
@@ -216,8 +217,7 @@ export class ChatTemplates {
     private static modelSelector(models: ModelDefinition[]) {
         const model = compute(c => c.model, configuration);
 
-        return GenericTemplates.select("Model", models
-            .sort((a, b) => a.id.localeCompare(b.id))
+        return GenericTemplates.select("Model", models.sort((a, b) => a.id.localeCompare(b.id))
             .map(m => {
                 return {
                     value: m.id,

@@ -646,3 +646,9 @@ pre {
 .negative {
     color: var(--red);
 }
+
+.parent-top-left {
+    position: absolute;
+    top: var(--gap-v);
+    right: var(--gap-v);
+}

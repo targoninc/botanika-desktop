@@ -465,4 +465,23 @@ export class GenericTemplates {
                 valueChild
             ).build();
     }
+
+    static codeCopyButton(content: string) {
+        return create("div")
+            .classes("parent-top-left", "flex")
+            .children(
+                GenericTemplates.iconButton("content_copy", () => {
+                    navigator.clipboard.writeText(content);
+                    toast("Copied to clipboard");
+                }),
+            ).build();
+    }
+
+    static iconButton(icon: string, onclick = () => {}) {
+        return FJSC.button({
+            icon: { icon },
+            classes: ["flex"],
+            onclick
+        });
+    }
 }

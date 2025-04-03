@@ -1,6 +1,7 @@
 import {LayoutTemplates} from "../templates/layout.templates";
 import {AnyNode, create} from "../lib/fjsc/src/f2";
 import {ToastType} from "../enums/ToastType";
+import {GenericTemplates} from "../templates/generic.templates";
 
 export const container = document.body;
 
@@ -89,4 +90,13 @@ export function closeModal(lastOnly = false) {
             modal.remove();
         }
     });
+}
+
+export function attachCodeCopyButtons() {
+    const preCodes = document.querySelectorAll("pre code");
+    for (const codeBlock of preCodes) {
+        const pre = codeBlock.parentElement;
+        pre.classList.add("relative");
+        pre.appendChild(GenericTemplates.codeCopyButton(codeBlock.textContent));
+    }
 }
