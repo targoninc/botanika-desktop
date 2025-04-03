@@ -11,7 +11,10 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder --publish always"
+    "build": "vite build && electron-builder --publish always",
+    "copy-version-to-file": "node ./.scripts/copy-version.js",
+    "bump-version": "npm version patch --no-git-tag-version && npm run copy-version-to-file && git add package.json package-lock.json src/ui/js/Classes/Helpers/version.txt",
+    "prepare": "husky"
   },
   "author": {
     "name": "alexa",
@@ -50,6 +53,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
+    "husky": "^9.1.7",
     "marked": "^15.0.7",
     "openai": "^4.91.1",
     "uuid": "^11.1.0",
