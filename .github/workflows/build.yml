@@ -10,7 +10,26 @@ on:
       - main
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a 'latest' release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const response = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: 'latest',
+              name: 'Latest Release',
+              body: 'This is the latest development release.',
+              draft: false,
+              prerelease: true
+            });
+            core.setOutput('release_url', response.data.html_url);
+
   build:
+    needs: create-release
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]
@@ -34,43 +53,3 @@ jobs:
         run: npm run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output-${{ matrix.os }}
-          path: release
-          retention-days: 1
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output-windows-latest
-          path: release/windows
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output-ubuntu-latest
-          path: release/linux
-
-      - name: Debug build output
-        run: |
-          ls -R release
-
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-          files: |
-            release/linux/**/Botanika-*.AppImage
-            release/windows/**/Botanika-*.msi
