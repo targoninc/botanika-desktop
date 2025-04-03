@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -11,10 +11,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build && electron-builder --publish always",
-    "copy-version-to-file": "node ./.scripts/copy-version.js",
-    "bump-version": "npm version patch --no-git-tag-version && npm run copy-version-to-file && git add package.json package-lock.json src/ui/js/Classes/Helpers/version.txt",
-    "prepare": "husky"
+    "build": "vite build && electron-builder --publish always"
   },
   "author": {
     "name": "alexa",
@@ -36,6 +33,7 @@
     "electron-builder": "^26.0.12",
     "eslint": "^9.23.0",
     "eslint-plugin-import": "^2.31.0",
+    "husky": "^9.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "vite-plugin-electron": "^0.29.0",
@@ -53,7 +51,6 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
-    "husky": "^9.1.7",
     "marked": "^15.0.7",
     "openai": "^4.91.1",
     "uuid": "^11.1.0",
