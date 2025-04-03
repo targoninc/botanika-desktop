@@ -659,3 +659,7 @@ pre {
 .indent-left {
     margin-left: var(--gap-v);
 }
+
+.overflow {
+    overflow: auto;
+}

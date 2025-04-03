@@ -46,7 +46,7 @@ export class SettingsTemplates {
         const loading = signal(false);
 
         return create("div")
-            .classes("flex-v", "bordered-panel")
+            .classes("flex-v", "bordered-panel", "overflow")
             .children(
                 create("h1")
                     .classes("flex")
