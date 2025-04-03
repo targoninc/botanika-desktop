@@ -86,10 +86,10 @@
 
 html, body {
     height: 100dvh;
+    max-height: 100dvh;
     width: 100dvw;
     margin: 0;
     padding: 0;
-    overflow: hidden;
     font-family: var(--default-font-family);
 }
 
@@ -353,6 +353,8 @@ nav {
     display: flex;
     flex-wrap: wrap;
     gap: var(--gap-h);
+    max-height: 100%;
+    max-width: 100%;
 }
 
 .flex-v {

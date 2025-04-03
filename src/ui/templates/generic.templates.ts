@@ -351,16 +351,12 @@ export class GenericTemplates {
             .classes("flex-v", "flex-grow")
             .children(
                 tabButtons,
-                create("div")
-                    .classes("flex-v", "flex-grow")
-                    .children(
-                        ...tabs.map((tab, i) => {
-                            const tabDef = tabDefs.value[i];
-                            const active = compute(activeTab => activeTab === tabDef.id, activeTab);
+                ...tabs.map((tab, i) => {
+                    const tabDef = tabDefs.value[i];
+                    const active = compute(activeTab => activeTab === tabDef.id, activeTab);
 
-                            return ifjs(active, tab);
-                        })
-                    ).build(),
+                    return ifjs(active, tab);
+                })
             ).build();
     }
 

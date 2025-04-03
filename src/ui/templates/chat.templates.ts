@@ -13,7 +13,7 @@ import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
 import {Api} from "../classes/api";
-import {attachCodeCopyButtons, createModal, toast} from "../classes/ui";
+import {attachCodeCopyButtons, createModal, scrollToLastMessage, toast} from "../classes/ui";
 import {FJSC} from "../lib/fjsc";
 import {marked} from "marked";
 import DOMPurify from 'dompurify';
@@ -35,7 +35,7 @@ export class ChatTemplates {
 
     static chatBox() {
         return create("div")
-            .classes("flex-v", "flex-grow", "bordered-panel", "relative", "chat-box")
+            .classes("flex-v", "flex-grow", "bordered-panel", "relative", "chat-box", "no-gap")
             .children(
                 compute(c => ChatTemplates.chatHistory(c), context),
                 ChatTemplates.chatInput(),
@@ -54,6 +54,7 @@ export class ChatTemplates {
         setTimeout(() => {
             hljs.highlightAll();
             attachCodeCopyButtons();
+            scrollToLastMessage();
         });
 
         return create("div")

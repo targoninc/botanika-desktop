@@ -100,3 +100,10 @@ export function attachCodeCopyButtons() {
         pre.appendChild(GenericTemplates.codeCopyButton(codeBlock.textContent));
     }
 }
+
+export function scrollToLastMessage() {
+    const messages = document.querySelectorAll(".chat-message");
+    if (messages.length > 0) {
+        messages[messages.length - 1].scrollIntoView(false);
+    }
+}

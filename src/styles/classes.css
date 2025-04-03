@@ -494,6 +494,7 @@ kbd {
     font-size: .9em;
     width: min(100%, 800px);
     position: relative;
+    max-height: max-content;
 }
 
 .chat-message:last-child:not(.chat-message.tool) {
