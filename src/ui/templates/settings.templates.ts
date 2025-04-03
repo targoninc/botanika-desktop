@@ -254,7 +254,6 @@ export class SettingsTemplates {
                 create("div")
                     .classes("flex", "align-center")
                     .children(
-                        GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
                         FJSC.input({
                             type: InputType.text,
                             value: name,
