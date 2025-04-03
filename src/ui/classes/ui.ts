@@ -104,6 +104,6 @@ export function attachCodeCopyButtons() {
 export function scrollToLastMessage() {
     const messages = document.querySelectorAll(".chat-message");
     if (messages.length > 0) {
-        messages[messages.length - 1].scrollIntoView(false);
+        messages[messages.length - 1].scrollIntoView(true);
     }
 }
