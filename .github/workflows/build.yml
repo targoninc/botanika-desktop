@@ -37,7 +37,7 @@ jobs:
               tag_name: `v${version}`,
               name: `Release v${version}`,
               body: `Version ${version} has been released.`,
-              draft: false,
+              draft: true,
               prerelease: false
             });
             core.setOutput('release_url', response.data.html_url);
