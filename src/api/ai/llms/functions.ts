@@ -22,7 +22,6 @@ export async function streamResponseAsMessage(model: LanguageModelV1, messages: 
         messages,
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
-        temperature: 0.9,
         maxTokens: 1000,
     });
 

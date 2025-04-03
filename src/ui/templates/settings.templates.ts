@@ -31,6 +31,12 @@ export class SettingsTemplates {
                 type: "boolean",
             },
             {
+                key: "botname",
+                label: "Assistant name",
+                description: "What name LLMs will use to refer to themselves",
+                type: "string",
+            },
+            {
                 key: "displayname",
                 icon: "person",
                 label: "Your name",

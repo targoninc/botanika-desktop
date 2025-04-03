@@ -40,11 +40,13 @@ export function getPromptMessages(messages: ChatMessage[], configuration: Config
     return [
         {
             role: "system",
-            content: "You are a helpful assistant. If the last messages were tool calls, give the user a summary of what you did."
+            content: `You are ${configuration.botname}, a helpful assistant. If the last messages were tool calls, give the user a summary of what you did.`
         },
         {
             role: "system",
-            content: `The user wants to be called ${configuration.displayname}, their birthdate is ${configuration.birthdate}. Here is a self-written description about them: ${configuration.userDescription}`
+            content: `The user wants to be called ${configuration.displayname}, their birthdate is ${configuration.birthdate}.
+            Don't refer to info about the user explicitly, only if it is necessary or requested by the user.
+            Here is a self-written description about them: ${configuration.userDescription}`
         },
         ...messages.map(m => {
             if (m.type === "tool") {
