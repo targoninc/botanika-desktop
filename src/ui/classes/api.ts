@@ -52,12 +52,15 @@ export class Api extends ApiBase {
         return this.get<McpConfiguration>("/mcpConfig");
     }
 
-    static addMcpServer(url: string) {
-        return this.post("/mcpServer", {url});
+    static addMcpServer(url: string, name: string) {
+        return this.post("/mcpServer", {
+            url,
+            name
+        });
     }
 
     static deleteMcpServer(url: string) {
-        return this.delete(`/mcpServer/${url}`);
+        return this.delete(`/mcpServer/${encodeURIComponent(url)}`);
     }
 
     static updateMcpServer(mcpServerConfig: McpServerConfig) {

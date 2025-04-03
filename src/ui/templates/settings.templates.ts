@@ -7,12 +7,12 @@ import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
-import {ConfiguredApi, ConfiguredApis} from "../../api/features/configuredApis";
+import {ConfiguredApis} from "../../api/features/configuredApis";
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
 import {createModal} from "../classes/ui";
 
 export class SettingsTemplates {
-    static settings(activePage: Signal<string>) {
+    static settings() {
         const settings: SettingsConfiguration[] = [
             {
                 key: "display_hotkeys",
@@ -236,46 +236,106 @@ export class SettingsTemplates {
                     const name = c.servers[server].name;
                     const url = c.servers[server].url;
 
-                    return create("div")
-                        .classes("flex", "card", "align-center", name ? "positive" : "negative")
-                        .children(
-                            GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
-                            FJSC.input({
-                                type: InputType.text,
-                                value: name,
-                                name: "name",
-                                label: "Name",
-                                placeholder: "Name",
-                                onchange: (value) => {
-                                    c.servers[server].name = value;
-                                    Api.updateMcpServer(c.servers[server]).then(() => {
-                                        Api.getMcpConfig().then(mcpConf => {
-                                            if (mcpConf.data) {
-                                                mcpConfig.value = mcpConf.data as McpConfiguration;
-                                            }
-                                        });
-                                    });
+                    return SettingsTemplates.existingMcpServer(c, name, server, url);
+                }),
+                SettingsTemplates.addMcpServer(c)
+            ).build();
+    }
+
+    private static addMcpServer(c: McpConfiguration) {
+        const name = signal("");
+        const url = signal("http://localhost:MCP_PORT/path/sse");
+
+        return create("div")
+            .classes("flex", "card", "align-center", name ? "positive" : "negative")
+            .children(
+                GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
+                FJSC.input({
+                    type: InputType.text,
+                    value: name,
+                    name: "name",
+                    label: "Name",
+                    placeholder: "Name",
+                    onchange: (value) => name.value = value
+                }),
+                FJSC.input({
+                    type: InputType.text,
+                    value: url,
+                    name: "url",
+                    label: "URL",
+                    placeholder: "URL",
+                    onchange: (value) => url.value = value
+                }),
+                FJSC.button({
+                    text: "Add",
+                    disabled: compute((n, u) => n.length === 0 || u.length === 0, name, url),
+                    icon: {
+                        icon: "add",
+                    },
+                    classes: ["flex", "align-center"],
+                    onclick: () => {
+                        Api.addMcpServer(url.value, name.value).then(() => {
+                            Api.getMcpConfig().then(mcpConf => {
+                                if (mcpConf.data) {
+                                    mcpConfig.value = mcpConf.data as McpConfiguration;
                                 }
-                            }),
-                            FJSC.input({
-                                type: InputType.text,
-                                value: url,
-                                name: "url",
-                                label: "URL",
-                                placeholder: "URL",
-                                onchange: (value) => {
-                                    c.servers[server].url = value;
-                                    Api.updateMcpServer(c.servers[server]).then(() => {
-                                        Api.getMcpConfig().then(mcpConf => {
-                                            if (mcpConf.data) {
-                                                mcpConfig.value = mcpConf.data as McpConfiguration;
-                                            }
-                                        });
-                                    });
-                                }
-                            }),
-                        ).build();
+                            });
+                        });
+                    }
                 })
+            ).build();
+    }
+
+    private static existingMcpServer(c: McpConfiguration, name: string, server: string, url: string) {
+        return create("div")
+            .classes("flex", "card", "align-center", name ? "positive" : "negative")
+            .children(
+                GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
+                FJSC.input({
+                    type: InputType.text,
+                    value: name,
+                    name: "name",
+                    label: "Name",
+                    placeholder: "Name",
+                    onchange: (value) => {
+                        c.servers[server].name = value;
+                        Api.updateMcpServer(c.servers[server]).then(() => {
+                            Api.getMcpConfig().then(mcpConf => {
+                                if (mcpConf.data) {
+                                    mcpConfig.value = mcpConf.data as McpConfiguration;
+                                }
+                            });
+                        });
+                    }
+                }),
+                FJSC.input({
+                    type: InputType.text,
+                    value: url,
+                    name: "url",
+                    label: "URL",
+                    placeholder: "URL",
+                    onchange: (value) => {
+                        c.servers[server].url = value;
+                        Api.updateMcpServer(c.servers[server]).then(() => {
+                            Api.getMcpConfig().then(mcpConf => {
+                                if (mcpConf.data) {
+                                    mcpConfig.value = mcpConf.data as McpConfiguration;
+                                }
+                            });
+                        });
+                    }
+                }),
+                GenericTemplates.iconButton("delete", () => {
+                    createModal(GenericTemplates.confirmModal("Delete MCP Server connection", `Are you sure you want to delete ${url}?`, "Yes", "No", () => {
+                        Api.deleteMcpServer(url).then(() => {
+                            Api.getMcpConfig().then(mcpConf => {
+                                if (mcpConf.data) {
+                                    mcpConfig.value = mcpConf.data as McpConfiguration;
+                                }
+                            });
+                        });
+                    }));
+                }),
             ).build();
     }
 }
