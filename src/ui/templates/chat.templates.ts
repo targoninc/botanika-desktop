@@ -59,7 +59,7 @@ export class ChatTemplates {
         });
 
         return create("div")
-            .classes("flex-v", "flex-grow")
+            .classes("flex-v", "flex-grow", "chat-history")
             .styles("overflow-y", "auto")
             .children(
                 ...context.history.map(message => ChatTemplates.chatMessage(message))

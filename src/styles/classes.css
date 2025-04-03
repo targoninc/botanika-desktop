@@ -650,3 +650,8 @@ pre {
 .overflow {
     overflow: auto;
 }
+
+.chat-history {
+    max-width: 1000px;
+    align-self: center;
+}
