@@ -78,11 +78,22 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Read version from package.json
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(node -p 'require("./package.json").version')
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+
       - name: Disable draft mode on release
         uses: actions/github-script@v6
         with:
           script: |
             const version = process.env.PACKAGE_VERSION;
+            if (!version) {
+              console.error('PACKAGE_VERSION is undefined. Check that the environment variable was properly set.');
+              process.exit(1);
+            }
+            
             const { data: releases } = await github.rest.repos.listReleases({
               owner: context.repo.owner,
               repo: context.repo.repo,
