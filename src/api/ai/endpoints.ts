@@ -4,7 +4,7 @@ import {getAvailableModels, getModel, initializeLlms} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
-import {createChat, getPromptMessages} from "../storage/helpers";
+import {createChat, getPromptMessages, getToolPromptMessages, newUserMessage} from "../storage/helpers";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
 import {ToolResultUnion, ToolSet} from "ai";
@@ -14,6 +14,9 @@ import {initializeAi} from "./initializer";
 import {CLI} from "../CLI";
 import {LlmProvider} from "../../models/llmProvider";
 import {streamResponseAsMessage, tryCallTool} from "./llms/functions";
+import {getTtsAudio} from "./tts/tts";
+import {AudioStorage} from "../storage/AudioStorage";
+import {getConfigKey} from "../configuration";
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
@@ -79,6 +82,13 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             res.status(404).send('Chat not found');
             return;
         }
+
+        chatContext.history.push(newUserMessage(message));
+        res.write(chunk(JSON.stringify(<ChatUpdate>{
+            chatId,
+            timestamp: Date.now(),
+            messages: chatContext.history
+        })));
     }
 
     const provider = req.body.provider ?? "groq";
@@ -93,15 +103,13 @@ export const chatEndpoint = async (req: Request, res: Response) => {
 
     const model = getModel(provider, modelName);
     if (modelDefinition.supportsTools) {
-        const calls = await tryCallTool(getModel(LlmProvider.groq, "llama-3.1-8b-instant"), getPromptMessages(chatContext.history), tools);
+        const calls = await tryCallTool(getModel(LlmProvider.groq, "llama-3.1-8b-instant"), getToolPromptMessages(chatContext.history), tools);
         if (calls.length > 0) {
             await addToolCallsToContext(calls, chatId, res, chatContext);
         }
     }
 
-    const msgs = getPromptMessages(chatContext.history);
-    console.log(msgs);
-    const responseMsg = await streamResponseAsMessage(model, msgs);
+    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history));
 
     responseMsg.subscribe(async (m: ChatMessage) => {
         const update = <ChatUpdate>{
@@ -113,7 +121,9 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         if (m.finished) {
             updateContext(chatContext, update);
             await ChatStorage.writeChatContext(chatId, chatContext);
-            res.end();
+            if (getConfigKey("enableTts") && m.text.length > 0) {
+                await sendAudioAndStop(chatContext, m, res);
+            }
         }
     });
 
@@ -122,6 +132,30 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         res.end();
     });
 };
+
+export async function getAudio(lastMessage: ChatMessage): Promise<string> {
+    if (lastMessage.type === "assistant") {
+        const blob = await getTtsAudio(lastMessage.text);
+        const id = uuidv4();
+        await AudioStorage.writeAudio(id, blob);
+        return AudioStorage.getLocalFileUrl(id);
+    }
+
+    return null;
+}
+
+export async function sendAudioAndStop(chatContext: ChatContext, lastMessage: ChatMessage, res: Response) {
+    const audioUrl = await getAudio(lastMessage);
+    if (audioUrl) {
+        res.write(chunk(JSON.stringify(<ChatUpdate>{
+            chatId: chatContext.id,
+            timestamp: lastMessage.time,
+            audioUrl
+        })));
+    }
+
+    res.end();
+}
 
 export async function getChatIdsEndpoint(req: Request, res: Response) {
     const chatIds = await ChatStorage.getChatIds();
@@ -162,6 +196,18 @@ export async function getModelsEndpoint(req: Request, res: Response) {
         models = await initializeLlms();
     }
     res.status(200).send(models);
+}
+
+export async function getAudioEndpoint(req: Request, res: Response) {
+    const chatId = req.params.chatId;
+    const chatContext = await ChatStorage.readChatContext(chatId);
+
+    if (!chatContext) {
+        res.status(404).send("Chat not found");
+        return;
+    }
+
+
 }
 
 export function addChatEndpoints(app: Application) {

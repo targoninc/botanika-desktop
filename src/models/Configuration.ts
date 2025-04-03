@@ -4,4 +4,5 @@ export interface Configuration extends Record<string, any> {
     displayname: string;
     provider: string;
     model: string;
+    enableTts: boolean;
 }

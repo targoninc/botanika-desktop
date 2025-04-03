@@ -2,7 +2,7 @@ import {toast} from "./ui";
 import {ToastType} from "../enums/ToastType";
 
 export class ApiBase {
-    static baseUrl = "http://localhost:48678";
+    static baseUrl = `http://localhost:48678`;
 
     static async stream(url: string, data = {}, sendCredentials = false) {
         const res = await fetch(ApiBase.baseUrl + url, {

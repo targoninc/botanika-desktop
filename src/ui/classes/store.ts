@@ -9,6 +9,7 @@ import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 import {ModelDefinition} from "../../models/modelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
+import {playAudio} from "./audio";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -89,6 +90,10 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
                     }
                     return c;
                 });
+            }
+
+            if (update.audioUrl) {
+                playAudio(update.audioUrl).then();
             }
         } catch (e) {
             console.log("Error parsing update: ", lastUpdate, e.toString());

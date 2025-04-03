@@ -19,6 +19,13 @@ export class SettingsTemplates {
                 type: "boolean",
             },
             {
+                key: "enableTts",
+                icon: "text_to_speech",
+                label: "Enable TTS",
+                description: "Whether assistant messages should be spoken aloud.",
+                type: "boolean",
+            },
+            {
                 key: "displayname",
                 icon: "person",
                 label: "Your name",

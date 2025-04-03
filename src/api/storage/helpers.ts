@@ -10,6 +10,17 @@ export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 50);
 }
 
+export function newUserMessage(message: string): ChatMessage {
+    return {
+        id: uuidv4(),
+        type: "user",
+        text: message,
+        time: Date.now(),
+        finished: true,
+        references: [],
+    };
+}
+
 export async function createChat(message: string): Promise<ChatContext> {
     const chatId = uuidv4();
     // create chat
@@ -17,15 +28,7 @@ export async function createChat(message: string): Promise<ChatContext> {
         id: chatId,
         createdAt: Date.now(),
         name: await getChatName(message),
-        history: [
-            {
-                id: uuidv4(),
-                type: "user",
-                text: message,
-                time: Date.now(),
-                finished: true
-            }
-        ]
+        history: [newUserMessage(message)]
     };
     await ChatStorage.writeChatContext(chatId, chatContext);
 
@@ -37,6 +40,28 @@ export function getPromptMessages(messages: ChatMessage[]): CoreMessage[] {
         {
             role: "system",
             content: "You are a helpful assistant. If the last messages were tool calls, give the user a summary of what you did."
+        },
+        ...messages.map(m => {
+            if (m.type === "tool") {
+                return {
+                    role: m.type,
+                    content: [m.toolResult]
+                }
+            }
+
+            return {
+                role: m.type,
+                content: m.text
+            }
+        }) as CoreMessage[]
+    ];
+}
+
+export function getToolPromptMessages(messages: ChatMessage[]): CoreMessage[] {
+    return [
+        {
+            role: "system",
+            content: "You are a helpful assistant. If the user requests something that you could answer without calling a tool, just answer."
         },
         ...messages.map(m => {
             if (m.type === "tool") {

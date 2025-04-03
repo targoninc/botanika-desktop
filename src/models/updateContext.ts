@@ -14,17 +14,19 @@ export function updateContext(c: ChatContext, update: ChatUpdate) {
     if (!c.history) {
         c.history = [];
     }
-    for (const message of update.messages) {
-        const existingMsg = c.history.find(m => m.id === message.id);
-        if (existingMsg) {
-            c.history = c.history.map(m => {
-                if (m.id === message.id) {
-                    return message;
-                }
-                return m;
-            });
-        } else {
-            c.history.push(message);
+    if (update.messages) {
+        for (const message of update.messages) {
+            const existingMsg = c.history.find(m => m.id === message.id);
+            if (existingMsg) {
+                c.history = c.history.map(m => {
+                    if (m.id === message.id) {
+                        return message;
+                    }
+                    return m;
+                });
+            } else {
+                c.history.push(message);
+            }
         }
     }
     c.history = c.history.sort((a, b) => a.time - b.time);
