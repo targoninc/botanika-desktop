@@ -95,4 +95,4 @@ dist*
 release
 
 .idea
-.env.rm
+.env

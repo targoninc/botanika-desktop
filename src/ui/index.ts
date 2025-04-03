@@ -1,7 +1,8 @@
 import {LayoutTemplates} from "./templates/layout.templates";
 import {closeModal} from "./classes/ui";
-import {activePage, initializeStore, target} from "./classes/store";
+import {activePage, initializeStore, shortCutConfig, target} from "./classes/store";
 import {pages} from "./enums/pages";
+import {shortCutActions} from "./classes/shortCutActions";
 
 initializeStore();
 
@@ -18,6 +19,14 @@ document.addEventListener("keydown", (e) => {
     const isNumber = e.key.match(/^[0-9]+$/);
     if (isNumber) {
         activePage.value = pages.find((p, i) => p.hotkey === e.key)?.id ?? "chat";
+    }
+
+    const shortcutConfig = shortCutConfig.value;
+    for (const [action, func] of Object.entries(shortCutActions)) {
+        if (e.ctrlKey && e.key === shortcutConfig[action]) {
+            e.preventDefault();
+            func();
+        }
     }
 
     if (e.key === "Escape") {

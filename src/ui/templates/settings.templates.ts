@@ -2,7 +2,7 @@ import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
-import {configuration, mcpConfig} from "../classes/store";
+import {configuration, mcpConfig, shortCutConfig} from "../classes/store";
 import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
@@ -10,6 +10,8 @@ import {FJSC} from "../lib/fjsc";
 import {ConfiguredApis} from "../../api/features/configuredApis";
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
 import {createModal} from "../classes/ui";
+import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
+import {shortcutNames} from "../../models/shortcuts/Shortcut";
 
 export class SettingsTemplates {
     static settings() {
@@ -25,23 +27,29 @@ export class SettingsTemplates {
                 key: "enableTts",
                 icon: "text_to_speech",
                 label: "Enable TTS",
-                description: "Whether assistant messages should be spoken aloud.",
+                description: "Whether assistant messages should be spoken aloud",
                 type: "boolean",
             },
             {
                 key: "displayname",
                 icon: "person",
                 label: "Your name",
-                description: "Will be displayed in the UI.",
+                description: "Displayed in the UI",
                 type: "string",
             },
             {
-                key: "language",
-                icon: "language",
-                label: "Language",
-                description: "The language to use throughout Botanika.",
-                type: "language",
+                key: "userDescription",
+                label: "A short description of yourself",
+                description: "Will be given to the model(s) as context",
+                type: "long-string",
             },
+            {
+                key: "birthdate",
+                icon: "calendar_month",
+                label: "Your birthdate",
+                description: "Will be given to the model(s) as context",
+                type: "date",
+            }
         ];
         const loading = signal(false);
 
@@ -58,6 +66,7 @@ export class SettingsTemplates {
                     ).build(),
                 GenericTemplates.heading(2, "General"),
                 ...settings.map(s => SettingsTemplates.setting(s, loading)),
+                SettingsTemplates.shortcuts(),
                 SettingsTemplates.configuredApis(),
                 SettingsTemplates.mcpConfig(),
                 create("p")
@@ -97,10 +106,10 @@ export class SettingsTemplates {
                 create("div")
                     .classes("flex", "align-center")
                     .children(
-                        create("h3")
+                        sc.icon ? create("h3")
                             .children(
                                 GenericTemplates.icon(sc.icon),
-                            ).build(),
+                            ).build() : null,
                         SettingsTemplates.settingImplementation(sc, value, updateKey),
                     ).build(),
                 create("p")
@@ -113,6 +122,10 @@ export class SettingsTemplates {
         switch (sc.type) {
             case "string":
                 return GenericTemplates.input(InputType.text, sc.key, value, sc.label, sc.label, sc.key, [], (newValue) => updateKey(sc.key, newValue));
+            case "date":
+                return GenericTemplates.input(InputType.date, sc.key, value, sc.label, sc.label, sc.key, [], (newValue) => updateKey(sc.key, newValue));
+            case "long-string":
+                return GenericTemplates.textArea(value, sc.label, sc.key, (newValue) => updateKey(sc.key, newValue));
             case "number":
                 return GenericTemplates.input(InputType.number, sc.key, value, sc.label, sc.label, sc.key, [], (newValue: string) => updateKey(sc.key, parseInt(newValue)));
             case "boolean":
@@ -195,7 +208,7 @@ export class SettingsTemplates {
                                                     }
                                                 }),
                                                 FJSC.button({
-                                                    icon: { icon: "check" },
+                                                    icon: { icon: "save" },
                                                     text: "Set",
                                                     disabled: compute(v => !v || v.length === 0, value),
                                                     classes: ["flex", "align-center"],
@@ -294,9 +307,8 @@ export class SettingsTemplates {
 
     private static existingMcpServer(c: McpConfiguration, name: string, server: string, url: string) {
         return create("div")
-            .classes("flex", "bordered-panel", "align-center", name ? "positive" : "negative")
+            .classes("flex", "bordered-panel", "align-center")
             .children(
-                GenericTemplates.icon(name ? "check" : "key_off", [name ? "positive" : "negative"]),
                 FJSC.input({
                     type: InputType.text,
                     value: name,
@@ -342,6 +354,62 @@ export class SettingsTemplates {
                         });
                     }));
                 }),
+            ).build();
+    }
+
+    static shortcuts() {
+        return create("div")
+            .classes("flex-v")
+            .children(
+                GenericTemplates.heading(2, "Shortcuts"),
+                compute(sc => SettingsTemplates.shortcutsInternal(sc), shortCutConfig),
+            ).build();
+    }
+
+    private static shortcutsInternal(sc: ShortcutConfiguration) {
+        return create("div")
+            .classes("flex-v")
+            .children(
+                ...Object.keys(sc).map(action => {
+                    const key = signal<string[]>(sc[action]);
+                    const unchanged = compute((k, current) => k === current[action], key, shortCutConfig);
+
+                    return create("div")
+                        .classes("flex", "card", "align-center")
+                        .children(
+                            create("b")
+                                .text(shortcutNames[action])
+                                .build(),
+                            GenericTemplates.hotkey("CTRL", true),
+                            create("span")
+                                .text("+")
+                                .build(),
+                            FJSC.input({
+                                type: InputType.text,
+                                value: key,
+                                name: action,
+                                placeholder: action,
+                                onchange: (value) => {
+                                    key.value = value;
+                                }
+                            }),
+                            FJSC.button({
+                                icon: {
+                                    icon: "save",
+                                },
+                                text: "Set",
+                                disabled: unchanged,
+                                classes: ["flex", "align-center"],
+                                onclick: async () => {
+                                    await Api.setShortcutConfig(sc);
+                                    shortCutConfig.value = {
+                                        ...shortCutConfig.value,
+                                        [action]: key.value
+                                    };
+                                }
+                            })
+                        ).build();
+                })
             ).build();
     }
 }

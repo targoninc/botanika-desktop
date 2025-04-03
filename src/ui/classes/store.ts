@@ -11,19 +11,30 @@ import {ModelDefinition} from "../../models/modelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {playAudio} from "./audio";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
+import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
+import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
-configuration.subscribe(c => {
-    language.value = c.language as Language;
-});
 export const chatContext = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
 export const availableModels = signal<Record<string, ModelDefinition[]>>({});
 export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
 export const currentlyPlayingAudio = signal<string>(null);
+export const shortCutConfig = signal<ShortcutConfiguration>(defaultShortcuts);
 
 export function initializeStore() {
+    configuration.subscribe(c => {
+        language.value = c.language as Language;
+    });
+
+    shortCutConfig.subscribe(async (sc, changed) => {
+        if (!changed) {
+            return;
+        }
+        await Api.setShortcutConfig(sc);
+    });
+
     Api.getConfig().then(conf => {
         if (conf.data) {
             configuration.value = conf.data as Configuration;
@@ -39,6 +50,12 @@ export function initializeStore() {
     Api.getMcpConfig().then(mcpConf => {
         if (mcpConf.data) {
             mcpConfig.value = mcpConf.data as McpConfiguration;
+        }
+    });
+
+    Api.getShortcutConfig().then(sc => {
+        if (sc.data) {
+            shortCutConfig.value = sc.data as ShortcutConfiguration;
         }
     });
 

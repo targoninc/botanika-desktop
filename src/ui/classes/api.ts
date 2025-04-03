@@ -5,6 +5,7 @@ import {ModelDefinition} from "../../models/modelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {McpServerConfig} from "../../api/ai/mcp/models/McpServerConfig";
 import {ConfiguredApis} from "../../api/features/configuredApis";
+import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 
 export class Api extends ApiBase {
     static getConfig() {
@@ -72,5 +73,13 @@ export class Api extends ApiBase {
             key,
             value
         });
+    }
+
+    static getShortcutConfig() {
+        return this.get<ShortcutConfiguration>("/shortCutConfig");
+    }
+
+    static setShortcutConfig(sc: ShortcutConfiguration) {
+        return this.post("/shortCutConfig", sc);
     }
 }

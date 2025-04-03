@@ -16,7 +16,7 @@ import {LlmProvider} from "../../models/llmProvider";
 import {streamResponseAsMessage, tryCallTool} from "./llms/functions";
 import {getTtsAudio} from "./tts/tts";
 import {AudioStorage} from "../storage/AudioStorage";
-import {getConfigKey} from "../configuration";
+import {getConfig, getConfigKey} from "../configuration";
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
@@ -109,7 +109,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         }
     }
 
-    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history));
+    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history, getConfig()));
 
     responseMsg.subscribe(async (m: ChatMessage) => {
         const update = <ChatUpdate>{

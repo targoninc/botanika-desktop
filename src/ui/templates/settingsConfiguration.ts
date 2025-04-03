@@ -1,7 +1,7 @@
 export interface SettingsConfiguration {
     key: string,
-    icon: string;
+    icon?: string;
     label: string,
     description: string,
-    type: "string" | "number" | "boolean" | "language",
+    type: "string" | "number" | "boolean" | "language" | "date" | "long-string";
 }

@@ -4,6 +4,7 @@ import {addChatEndpoints} from "./ai/endpoints";
 import {addMcpEndpoints} from "./ai/mcp/endpoints";
 import {addFeatureEndpoints} from "./features/endpoints";
 import {addAudioEndpoints} from "./ai/tts/endpoints";
+import {addShortcutEndpoints} from "./shortcuts/shortcuts";
 
 export function createEndpoints(app: Application) {
     addConfigEndpoints(app);
@@ -11,4 +12,5 @@ export function createEndpoints(app: Application) {
     addMcpEndpoints(app);
     addFeatureEndpoints(app);
     addAudioEndpoints(app);
+    addShortcutEndpoints(app);
 }

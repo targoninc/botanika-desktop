@@ -5,6 +5,7 @@ import {CoreMessage} from "ai";
 import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../models/chat/ChatMessage";
 import {getSimpleResponse} from "../ai/llms/functions";
+import {Configuration} from "../../models/Configuration";
 
 export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 10);
@@ -35,11 +36,15 @@ export async function createChat(message: string): Promise<ChatContext> {
     return chatContext;
 }
 
-export function getPromptMessages(messages: ChatMessage[]): CoreMessage[] {
+export function getPromptMessages(messages: ChatMessage[], configuration: Configuration): CoreMessage[] {
     return [
         {
             role: "system",
             content: "You are a helpful assistant. If the last messages were tool calls, give the user a summary of what you did."
+        },
+        {
+            role: "system",
+            content: `The user wants to be called ${configuration.displayname}, their birthdate is ${configuration.birthdate}. Here is a self-written description about them: ${configuration.userDescription}`
         },
         ...messages.map(m => {
             if (m.type === "tool") {

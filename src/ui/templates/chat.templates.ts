@@ -357,7 +357,7 @@ export class ChatTemplates {
                                 .build(),
                     ).build(),
                 r.snippet ? create("div")
-                        .classes("flex", "small-gap", "reference-preview", "card")
+                        .classes("flex", "small-gap", "reference-preview", "padded-big")
                         .children(
                             r.imageUrl ? create("img")
                                     .classes("thumbnail")
