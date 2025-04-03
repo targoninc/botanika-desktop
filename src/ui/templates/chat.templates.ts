@@ -188,7 +188,7 @@ export class ChatTemplates {
                                 }
                             })
                             .build(),
-                        GenericTemplates.buttonWithIcon("send", "Send", send, ["positive"]),
+                        GenericTemplates.verticalButtonWithIcon("arrow_upward", "Send", send, ["positive"]),
                     ).build(),
             ).build();
     }

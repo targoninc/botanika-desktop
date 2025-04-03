@@ -74,6 +74,19 @@ export class GenericTemplates {
             ).build();
     }
 
+    static verticalButtonWithIcon(icon: StringOrSignal, text: StringOrSignal, onclick: Callback<[]>, classes: StringOrSignal[] = [], iconClasses: StringOrSignal[] = [], hotkey: StringOrSignal = null) {
+        return create("button")
+            .classes("flex-v", "align-center", "small-gap", ...classes)
+            .onclick(onclick)
+            .children(
+                GenericTemplates.icon(icon, iconClasses),
+                ifjs(text, create("span")
+                    .text(text)
+                    .build()),
+                GenericTemplates.hotkey(hotkey),
+            ).build();
+    }
+
     static hotkey(hotkey: StringOrSignal, alwaysDisplay = false) {
         const show = compute(c => alwaysDisplay || (c.display_hotkeys === true && hotkey != null), configuration);
 
