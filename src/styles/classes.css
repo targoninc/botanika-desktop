@@ -502,7 +502,7 @@ kbd {
 }
 
 .message-content {
-    width: 100%;
+    width: max-content;
     overflow-x: auto;
 }
 
@@ -513,6 +513,7 @@ kbd {
 
 .chat-message.user {
     align-self: flex-end;
+    align-items: flex-end;
 }
 
 .chat-message.tool {

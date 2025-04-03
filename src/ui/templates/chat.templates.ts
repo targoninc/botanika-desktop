@@ -237,14 +237,9 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "bordered-panel", "chat-list")
             .children(
-                FJSC.button({
-                    icon: {icon: "create"},
-                    text: "New chat",
-                    classes: ["positive", "flex", "align-center"],
-                    onclick: () => {
-                        context.value = INITIAL_CONTEXT;
-                    }
-                }),
+                GenericTemplates.buttonWithIcon("create", "New chat", () => {
+                    context.value = INITIAL_CONTEXT;
+                }, ["positive"]),
                 compute(c => ChatTemplates.chatListItems(c), chats),
             ).build();
     }

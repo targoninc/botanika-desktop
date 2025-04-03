@@ -478,3 +478,15 @@ input[type="datetime-local"]::before {
 label.required {
     font-weight: bold;
 }
+
+::-webkit-scrollbar {
+    width: var(--gap-h);
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--bg-4);
+    border-radius: 20px;
+    border: transparent;
+}
