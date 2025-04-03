@@ -155,8 +155,12 @@ export class SettingsTemplates {
         return create("div")
             .classes("flex-v")
             .children(
-                GenericTemplates.heading(2, "Configured APIs:"),
-                GenericTemplates.warning("You might have to restart the application after changing environment variables"),
+                GenericTemplates.heading(2, "Configured APIs"),
+                create("div")
+                    .classes("card")
+                    .children(
+                        GenericTemplates.warning("You might have to restart the application after changing environment variables")
+                    ).build(),
                 ...Object.keys(apis).map(api => {
                     const name = api;
                     const feature = apis[api] as FeatureConfigurationInfo;
@@ -228,7 +232,7 @@ export class SettingsTemplates {
         return create("div")
             .classes("flex-v")
             .children(
-                GenericTemplates.heading(2, "Configured MCP servers:"),
+                GenericTemplates.heading(2, "Configured MCP servers"),
                 ...Object.keys(c?.servers ?? {}).map(server => {
                     const name = c.servers[server].name;
                     const url = c.servers[server].url;
