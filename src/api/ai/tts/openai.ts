@@ -9,7 +9,7 @@ const openai = new OpenAI({
 
 export async function getTtsAudioOpenAi(text: string): Promise<Blob> {
     const response = await openai.audio.speech.create({
-        model: "tts-1-hd",
+        model: "tts-1",
         voice: "nova",
         input: text,
         response_format: "mp3",
