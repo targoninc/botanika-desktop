@@ -2,6 +2,10 @@
 
 A local LLM + tooling (with MCP support) client.
 
+## Screenshots
+
+![grafik](https://github.com/user-attachments/assets/0ae6e4ee-85d6-4cc7-acea-219271c36fb6)
+
 # Run
 
 ⚠️ **Don't forget to set your environment variables in the `.env` file.**
