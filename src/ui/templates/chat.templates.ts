@@ -89,7 +89,6 @@ export class ChatTemplates {
             async: false
         });
         const sanitized = DOMPurify.sanitize(rawMdParsed);
-        const audioDisabled = compute(a => !!a && a !== message.id, currentlyPlayingAudio);
 
         return create("div")
             .classes("flex-v", "small-gap", "chat-message", message.type)
@@ -98,18 +97,6 @@ export class ChatTemplates {
                     .classes("flex", "align-center")
                     .children(
                         ChatTemplates.date(message.time),
-                        message.hasAudio ? FJSC.button({
-                            disabled: audioDisabled,
-                            icon: { icon: compute(a => a === message.id ? "stop_circle" : "volume_up", currentlyPlayingAudio) },
-                            onclick: () => {
-                                if (currentlyPlayingAudio.value === message.id) {
-                                    stopAudio();
-                                } else {
-                                    playAudio(message.id).then();
-                                }
-                            },
-                            classes: ["flex", "align-center"]
-                        }) : null,
                     ).build(),
                 create("div")
                     .children(
@@ -120,20 +107,31 @@ export class ChatTemplates {
                                     .html(sanitized)
                                     .build(),
                             ).build(),
-                        ChatTemplates.messageActions(message),
                     ).build(),
+                ChatTemplates.messageActions(message),
             ).build();
     }
 
-    private static messageActions(message: ChatMessage) {
+    static messageActions(message: ChatMessage) {
+        const audioDisabled = compute(a => !!a && a !== message.id, currentlyPlayingAudio);
+
         return create("div")
-            .classes("message-actions")
+            .classes("flex", "align-center")
             .children(
-                FJSC.button({
-                    icon: {
-                        icon: "content_copy",
+                message.hasAudio ? FJSC.button({
+                    disabled: audioDisabled,
+                    icon: { icon: compute(a => a === message.id ? "stop_circle" : "volume_up", currentlyPlayingAudio) },
+                    onclick: () => {
+                        if (currentlyPlayingAudio.value === message.id) {
+                            stopAudio();
+                        } else {
+                            playAudio(message.id).then();
+                        }
                     },
-                    text: "Copy",
+                    classes: ["flex", "align-center"]
+                }) : null,
+                FJSC.button({
+                    icon: { icon: "content_copy" },
                     classes: ["flex", "align-center"],
                     onclick: async (e) => {
                         e.stopPropagation();

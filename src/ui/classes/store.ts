@@ -95,7 +95,8 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
             }
 
             const playableMessage = update.messages?.find(m => m.hasAudio);
-            if (playableMessage) {
+            const isLast = playableMessage && update.messages.pop().id === playableMessage.id;
+            if (playableMessage && isLast) {
                 playAudio(playableMessage.id).then();
             }
         } catch (e) {

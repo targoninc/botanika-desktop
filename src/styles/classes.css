@@ -526,19 +526,6 @@ kbd {
     box-shadow: 0 0 30px -10px rgba(125, 125, 125, 0.2);
 }
 
-.message-actions {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    padding-top: var(--gap-h);
-    transform: translateY(calc(100%));
-}
-
-.chat-message:hover .message-actions {
-    display: flex;
-}
-
 .chat-box {
     width: 70%;
     max-width: max(70%, 600px);
