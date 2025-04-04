@@ -99,14 +99,11 @@ export class ChatTemplates {
                         ChatTemplates.date(message.time),
                     ).build(),
                 create("div")
+                    .classes("flex", "align-center", "card", "message-content")
                     .children(
                         create("div")
-                            .classes("flex", "align-center", "card", "message-content")
-                            .children(
-                                create("div")
-                                    .html(sanitized)
-                                    .build(),
-                            ).build(),
+                            .html(sanitized)
+                            .build(),
                     ).build(),
                 ChatTemplates.messageActions(message),
             ).build();

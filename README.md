@@ -2,6 +2,16 @@
 
 A local LLM + tooling (with MCP support) client.
 
+## Client Features
+
+| Support  | TTS | STT | Open source | MCP Support | Desktop App | Web App |
+|----------|-----|-----|-------------|-------------|-------------|---------|
+| Botanika | ✅   | ❌   | ✅           | ✅           | ✅           | ❌       |
+| Claude   | ❌   | ❌   | ❌           | ✅           | ✅           | ✅       |
+| ChatGPT  | ✅   | ✅   | ❌           | ❌           | ❌           | ✅       |
+| T3.Chat  | ❌   | ❌   | ❌           | ❌           | ❌           | ✅       |
+| Copilot  | ✅   | ✅   | ❌           | ❌           | ❌           | ✅       |
+
 ## Screenshots
 
 ![grafik](https://github.com/user-attachments/assets/0ae6e4ee-85d6-4cc7-acea-219271c36fb6)
