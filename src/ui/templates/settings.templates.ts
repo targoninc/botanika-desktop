@@ -278,6 +278,11 @@ export class SettingsTemplates {
                 create("p")
                     .text("Add a new MCP server:"),
                 create("div")
+                    .classes("card")
+                    .children(
+                        GenericTemplates.warning("You might have to restart the application after changing environment variables")
+                    ).build(),
+                create("div")
                     .classes("flex", "align-center")
                     .children(
                         FJSC.input({

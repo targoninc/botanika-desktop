@@ -94,7 +94,8 @@ export class ChatTemplates {
                                     .text(message.text)
                                     .build(),
                         ).build(),
-                    ...message.references.map(r => ChatTemplates.reference(r))
+                    ...message.references.map(r => ChatTemplates.reference(r)),
+                    !message.finished ? GenericTemplates.spinner() : null,
                 ).build();
         }
         const rawMdParsed = marked.parse(message.text, {
@@ -116,6 +117,7 @@ export class ChatTemplates {
                         create("div")
                             .html(sanitized)
                             .build(),
+                        !message.finished ? GenericTemplates.spinner() : null,
                     ).build(),
                 ChatTemplates.messageActions(message),
             ).build();

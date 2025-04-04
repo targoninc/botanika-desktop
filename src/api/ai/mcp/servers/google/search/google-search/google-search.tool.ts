@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
 import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
 import {ConfiguredApi} from "../../../../../../features/configuredApis";
+import {CLI} from "../../../../../../CLI";
+import {wrapTool} from "../../../../tooling";
 
 dotenv.config();
 
@@ -34,6 +36,26 @@ async function search(query: string): Promise<GoogleSearchResult> {
     }
 }
 
+async function toolCall(input: any) {
+    if (!getConfiguredApis()[ConfiguredApi.GoogleSearch].enabled) {
+        throw new Error("Google Search API is not enabled.");
+    }
+
+    const result = await search(input.query);
+    return <ChatToolResult>{
+        text: "Google search results",
+        references: result.items.map(i => {
+            return <ResourceReference>{
+                type: "resource-reference",
+                name: i.title,
+                link: i.link,
+                snippet: i.snippet,
+                imageUrl: i.pagemap.cse_thumbnail?.length > 0 ? i.pagemap.cse_thumbnail[0].src : null
+            }
+        }),
+    };
+}
+
 export function googleSearchTool() {
     return {
         id: "google.search-engine",
@@ -41,24 +63,6 @@ export function googleSearchTool() {
         parameters: {
             query: z.string().describe('The query to search for'),
         },
-        execute: async ({ query }: { query: string }): Promise<any> => {
-            if (!getConfiguredApis()[ConfiguredApi.GoogleSearch].enabled) {
-                throw new Error("Google Search API is not enabled.");
-            }
-
-            const result = await search(query);
-            return <ChatToolResult>{
-                text: "Google search results",
-                references: result.items.map(i => {
-                    return <ResourceReference>{
-                        type: "resource-reference",
-                        name: i.title,
-                        link: i.link,
-                        snippet: i.snippet,
-                        imageUrl: i.pagemap.cse_thumbnail?.length > 0 ? i.pagemap.cse_thumbnail[0].src : null
-                    }
-                }),
-            };
-        }
+        execute: wrapTool("google.search-engine", toolCall),
     };
 }

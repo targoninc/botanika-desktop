@@ -6,6 +6,7 @@ import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {getSimpleResponse} from "./functions";
 import {Configuration} from "../../../models/Configuration";
+import {CLI} from "../../CLI";
 
 export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 10);

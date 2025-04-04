@@ -10,25 +10,42 @@ import {ChatStorage} from "../storage/ChatStorage";
 import {ToolResultUnion, ToolSet} from "ai";
 import {v4 as uuidv4} from "uuid";
 import {ChatToolResult} from "../../models/chat/ChatToolResult";
-import {initializeAi} from "./initializer";
+import {getMcpTools} from "./initializer";
 import {CLI} from "../CLI";
 import {LlmProvider} from "../../models/llmProvider";
 import {streamResponseAsMessage, tryCallTool} from "./llms/functions";
 import {getTtsAudio} from "./tts/tts";
 import {AudioStorage} from "../storage/AudioStorage";
 import {getConfig, getConfigKey} from "../configuration";
+import {signal} from "../../ui/lib/fjsc/src/signals";
+
+export const currentChatContext = signal<ChatContext>(null);
 
 export function chunk(content: string) {
     return `${content}${terminator}`;
 }
 
 async function addToolCallsToContext(calls: Array<ToolResultUnion<ToolSet>>, chatId: string, res: Response, chatContext: ChatContext) {
-    const messages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
+    const updatedMessages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
         const result = toolCall.result as ChatToolResult;
         const text = result.text ?? toolCall.toolName;
         let references = [];
         if (result.references) {
             references = result.references;
+        }
+
+        const existingMessage = chatContext.history
+            .filter(m => !m.finished)
+            .find(m => m.toolResult.toolName === toolCall.toolName);
+
+        if (existingMessage) {
+            return {
+                ...existingMessage,
+                toolResult: toolCall,
+                text,
+                references,
+                finished: true,
+            };
         }
 
         return <ChatMessage>{
@@ -44,7 +61,7 @@ async function addToolCallsToContext(calls: Array<ToolResultUnion<ToolSet>>, cha
     const update = <ChatUpdate>{
         chatId,
         timestamp: Date.now(),
-        messages
+        messages: updatedMessages
     };
     res.write(chunk(JSON.stringify(update)));
     updateContext(chatContext, update);
@@ -62,13 +79,10 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    CLI.debug(`Chat request received.`);
-    const { tools } = await initializeAi();
-    CLI.debug(`Tools initialized.`);
-
     let chatId = req.body.chatId;
     let chatContext: ChatContext;
     if (!chatId) {
+        CLI.debug(`Creating chat`);
         const chatMsg = newUserMessage(message);
         chatContext = await createChat(chatMsg);
         res.write(chunk(JSON.stringify(<ChatUpdate>{
@@ -77,7 +91,9 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             messages: [chatMsg]
         })));
         chatId = chatContext.id;
+        CLI.debug(`Chat created`);
     } else {
+        CLI.debug(`Getting existing chat`);
         chatContext = await ChatStorage.readChatContext(chatId);
         if (!chatContext) {
             res.status(404).send('Chat not found');
@@ -102,15 +118,31 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         return;
     }
 
+    currentChatContext.value = chatContext;
     const model = getModel(provider, modelName);
     if (modelDefinition.supportsTools) {
+        const {tools, onClose: onMcpClose} = await getMcpTools();
+        function onContextChange(c: ChatContext, changed: boolean) {
+            if (changed) {
+                const update = <ChatUpdate>{
+                    chatId,
+                    timestamp: Date.now(),
+                    messages: [...c.history]
+                };
+                res.write(chunk(JSON.stringify(update)));
+                updateContext(chatContext, update);
+            }
+        }
+        currentChatContext.subscribe(onContextChange);
         const calls = await tryCallTool(getModel(LlmProvider.groq, "llama-3.1-8b-instant"), getToolPromptMessages(chatContext.history), tools);
+        currentChatContext.unsubscribe(onContextChange);
         if (calls.length > 0) {
             await addToolCallsToContext(calls, chatId, res, chatContext);
         }
+        onMcpClose();
     }
 
-    const worldContext = await getWorldContext();
+    const worldContext = getWorldContext();
     const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
     responseMsg.subscribe(async (m: ChatMessage) => {
