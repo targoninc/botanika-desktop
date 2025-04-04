@@ -1,6 +1,6 @@
 # Botanika
 
-A local LLM + tooling (with MCP support) client.
+A local LLM + tooling (with MCP support) client. All data is stored locally. Bring your own API keys.
 
 ## Client Features
 
@@ -14,7 +14,10 @@ A local LLM + tooling (with MCP support) client.
 
 ## Screenshots
 
-![grafik](https://github.com/user-attachments/assets/0ae6e4ee-85d6-4cc7-acea-219271c36fb6)
+![A screenshot of the chat interface](https://github.com/user-attachments/assets/8ea3df6a-00f6-4c6e-aea7-4562551af144)
+
+![A screenshot of the settings interface](https://github.com/user-attachments/assets/07c61f0c-1d23-4e98-9b15-305f131c8908)
+
 
 # Run
 
