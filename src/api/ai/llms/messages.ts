@@ -22,16 +22,16 @@ export function newUserMessage(message: string): ChatMessage {
     };
 }
 
-export async function createChat(message: string): Promise<ChatContext> {
+export async function createChat(newMessage: ChatMessage): Promise<ChatContext> {
     const chatId = uuidv4();
     // create chat
     const chatContext = <ChatContext>{
         id: chatId,
         createdAt: Date.now(),
-        name: await getChatName(message),
-        history: [newUserMessage(message)]
+        name: await getChatName(newMessage.text),
+        history: [newMessage]
     };
-    await ChatStorage.writeChatContext(chatId, chatContext);
+    ChatStorage.writeChatContext(chatId, chatContext).then();
 
     return chatContext;
 }

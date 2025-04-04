@@ -676,4 +676,22 @@ pre {
 .chat-history {
     max-width: 1000px;
     align-self: center;
+    padding-top: var(--gap-h);
+    padding-right: var(--gap-h);
+}
+
+.bot-name {
+    justify-content: center;
+    width: max-content;
+    align-self: center;
+    background: var(--gradient-1);
+}
+
+.select-container * {
+    color: var(--grey-light) !important;
+    font-size: calc(var(--font-size-base) - 2px) !important;
+}
+
+.message-time {
+    padding: 0 var(--gap-v);
 }

@@ -6,7 +6,7 @@ import {
     chatContext, currentlyPlayingAudio,
     deleteChat,
     target,
-    updateContextFromStream
+    updateContextFromStream, shortCutConfig
 } from "../classes/store";
 import {create, ifjs} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
@@ -38,8 +38,20 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "flex-grow", "bordered-panel", "relative", "chat-box", "no-gap")
             .children(
+                ChatTemplates.botName(),
                 compute(c => ChatTemplates.chatHistory(c), chatContext),
                 ChatTemplates.chatInput(),
+            ).build();
+    }
+
+    static botName() {
+        return create("div")
+            .classes("flex", "align-center", "bot-name", "card")
+            .children(
+                GenericTemplates.icon("person"),
+                create("span")
+                    .text(compute(c => c.botname, configuration))
+                    .build()
             ).build();
     }
 
@@ -94,7 +106,7 @@ export class ChatTemplates {
             .classes("flex-v", "small-gap", "chat-message", message.type)
             .children(
                 create("div")
-                    .classes("flex", "align-center")
+                    .classes("flex", "align-center", "message-time")
                     .children(
                         ChatTemplates.date(message.time),
                     ).build(),
@@ -184,14 +196,8 @@ export class ChatTemplates {
         }
 
         return create("div")
-            .classes("chat-input", "flex-v")
+            .classes("chat-input", "flex-v", "small-gap")
             .children(
-                create("div")
-                    .classes("flex", "space-between")
-                    .children(
-                        ChatTemplates.llmSelector(),
-                        GenericTemplates.verticalButtonWithIcon("arrow_upward", "", send, ["send-button"]),
-                    ).build(),
                 create("div")
                     .classes("flex", "space-between")
                     .onclick(focusInput)
@@ -201,7 +207,7 @@ export class ChatTemplates {
                             .id("chat-input-field")
                             .classes("flex-grow", "chat-input-field")
                             .styles("resize", "none")
-                            .placeholder("How can I help you?")
+                            .placeholder(compute(c => `[Ctrl] + [${c.focusInput}] to focus`, shortCutConfig))
                             .value(input)
                             .oninput((e: any) => {
                                 input.value = target(e).value;
@@ -214,6 +220,12 @@ export class ChatTemplates {
                                 }
                             })
                             .build(),
+                        GenericTemplates.verticalButtonWithIcon("arrow_upward", "", send, ["send-button"]),
+                    ).build(),
+                create("div")
+                    .classes("flex", "space-between")
+                    .children(
+                        ChatTemplates.llmSelector(),
                     ).build(),
             ).build();
     }
@@ -222,7 +234,7 @@ export class ChatTemplates {
         const provider = compute(c => c.provider ?? "groq", configuration);
 
         return create("div")
-            .classes("flex")
+            .classes("flex", "select-container", "big-gap")
             .children(
                 GenericTemplates.select("Provider", Object.values(LlmProvider).map(m => {
                     return {

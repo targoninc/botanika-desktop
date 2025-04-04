@@ -69,13 +69,14 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     let chatId = req.body.chatId;
     let chatContext: ChatContext;
     if (!chatId) {
-        chatContext = await createChat(message);
-        chatId = chatContext.id;
+        const chatMsg = newUserMessage(message);
+        chatContext = await createChat(chatMsg);
         res.write(chunk(JSON.stringify(<ChatUpdate>{
             chatId,
             timestamp: Date.now(),
-            messages: chatContext.history
+            messages: [chatMsg]
         })));
+        chatId = chatContext.id;
     } else {
         chatContext = await ChatStorage.readChatContext(chatId);
         if (!chatContext) {
