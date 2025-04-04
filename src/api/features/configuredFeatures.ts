@@ -20,6 +20,7 @@ export function getConfiguredApis(): ConfiguredApis {
         [ConfiguredApi.GoogleSearch]: envConfigurationInfo("GOOGLE_API_KEY", "GOOGLE_SEARCH_ENGINE_ID"),
         [ConfiguredApi.OpenAI]: envConfigurationInfo("OPENAI_API_KEY"),
         [ConfiguredApi.Groq]: envConfigurationInfo("GROQ_API_KEY"),
-        [ConfiguredApi.Ollama]: envConfigurationInfo("OLLAMA_BASE_URL")
+        [ConfiguredApi.Ollama]: envConfigurationInfo("OLLAMA_BASE_URL"),
+        [ConfiguredApi.Azure]: envConfigurationInfo("AZURE_RESOURCE_NAME", "AZURE_API_KEY")
     }
 }
