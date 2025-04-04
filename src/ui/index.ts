@@ -12,6 +12,14 @@ content.appendChild(app);
 
 const blockShortcuts = ["INPUT", "TEXTAREA", "SELECT"];
 document.addEventListener("keydown", (e) => {
+    const shortcutConfig = shortCutConfig.value;
+    for (const [action, func] of Object.entries(shortCutActions)) {
+        if (e.ctrlKey && e.key === shortcutConfig[action]) {
+            e.preventDefault();
+            func();
+        }
+    }
+
     if (blockShortcuts.includes(target(e).tagName)) {
         return;
     }
@@ -19,14 +27,6 @@ document.addEventListener("keydown", (e) => {
     const isNumber = e.key.match(/^[0-9]+$/);
     if (isNumber) {
         activePage.value = pages.find((p, i) => p.hotkey === e.key)?.id ?? "chat";
-    }
-
-    const shortcutConfig = shortCutConfig.value;
-    for (const [action, func] of Object.entries(shortCutActions)) {
-        if (e.ctrlKey && e.key === shortcutConfig[action]) {
-            e.preventDefault();
-            func();
-        }
     }
 
     if (e.key === "Escape") {

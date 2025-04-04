@@ -1,45 +1,11 @@
-import {CoreMessage, generateText, LanguageModelV1, streamText, ToolResultUnion, ToolSet} from "ai";
-import {signal, Signal} from "../../../ui/lib/fjsc/src/signals";
+import {ToolResultUnion, ToolSet} from "ai";
+import {Signal} from "../../../ui/lib/fjsc/src/signals";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
-import {CLI} from "../../CLI";
 import {v4 as uuidv4} from "uuid";
-
-export async function tryCallTool(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Array<ToolResultUnion<ToolSet>>> {
-    const res = await generateText({
-        model,
-        messages,
-        tools,
-        maxSteps: Math.min(Object.keys(tools).length, 5),
-        toolChoice: "auto"
-    });
-
-    return res.toolResults;
-}
-
-export async function streamResponseAsMessage(model: LanguageModelV1, messages: CoreMessage[]): Promise<Signal<ChatMessage>> {
-    CLI.debug("Streaming response...");
-    const { textStream } = streamText({
-        model,
-        messages,
-        presencePenalty: 0.6,
-        frequencyPenalty: 0.6,
-        maxTokens: 1000,
-    });
-
-    const messageId = uuidv4();
-    const message = signal<ChatMessage>({
-        id: messageId,
-        type: "assistant",
-        text: "",
-        time: Date.now(),
-        references: [],
-        finished: false
-    });
-
-    updateMessageFromStream(message, textStream).then();
-
-    return message;
-}
+import {Response} from "express";
+import {ChatContext} from "../../../models/chat/ChatContext";
+import {ChatToolResult} from "../../../models/chat/ChatToolResult";
+import {sendMessages} from "../endpoints";
 
 export async function updateMessageFromStream(message: Signal<ChatMessage>, stream: AsyncIterable<string> & ReadableStream<string>) {
     const reader = stream.getReader();
@@ -50,6 +16,7 @@ export async function updateMessageFromStream(message: Signal<ChatMessage>, stre
         if (done) {
             message.value = {
                 ...m,
+                text: value ? m.text + value : m.text,
                 finished: true
             }
             break;
@@ -61,12 +28,43 @@ export async function updateMessageFromStream(message: Signal<ChatMessage>, stre
     }
 }
 
-export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMessage[], maxTokens: number = 1000): Promise<string> {
-    const res = await generateText({
-        model,
-        messages,
-        maxTokens
+export async function addToolCallsToContext(provider: string, model: string, calls: Array<ToolResultUnion<ToolSet>>, res: Response, chatContext: ChatContext) {
+    const updatedMessages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
+        const result = toolCall.result as ChatToolResult;
+        const text = result.text ?? toolCall.toolName;
+        let references = [];
+        if (result.references) {
+            references = result.references;
+        }
+
+        const existingMessage = chatContext.history
+            .filter(m => !m.finished)
+            .find(m => m.toolResult.toolName === toolCall.toolName);
+
+        if (existingMessage) {
+            return {
+                ...existingMessage,
+                toolResult: toolCall,
+                text,
+                references,
+                finished: true,
+                provider,
+                model
+            };
+        }
+
+        return <ChatMessage>{
+            type: "tool",
+            text,
+            toolResult: toolCall,
+            finished: true,
+            time: Date.now(),
+            references,
+            id: uuidv4(),
+            provider,
+            model
+        }
     });
 
-    return res.text;
+    await sendMessages(updatedMessages, chatContext, res, true);
 }

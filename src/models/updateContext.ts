@@ -1,12 +1,14 @@
 import {ChatUpdate} from "./chat/ChatUpdate";
 import {chatContext} from "../ui/classes/store";
 import {ChatContext} from "./chat/ChatContext";
+import {Signal} from "../ui/lib/fjsc/src/signals";
 
-export function updateContext(c: ChatContext, update: ChatUpdate) {
+export function updateContext(c: ChatContext, update: ChatUpdate, signal?: Signal<ChatContext>) {
     if (c.id && c.id !== update.chatId) {
         return;
     }
 
+    c = structuredClone(c);
     if (!c.id) {
         c.id = update.chatId;
     }
@@ -30,7 +32,8 @@ export function updateContext(c: ChatContext, update: ChatUpdate) {
         }
     }
     c.history = c.history.sort((a, b) => a.time - b.time);
-    chatContext.value = {
-        ...c
-    };
+    if (signal) {
+        chatContext.value = c;
+    }
+    return c;
 }

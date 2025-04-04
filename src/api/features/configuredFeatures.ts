@@ -21,6 +21,7 @@ export function getConfiguredApis(): ConfiguredApis {
         [ConfiguredApi.OpenAI]: envConfigurationInfo("OPENAI_API_KEY"),
         [ConfiguredApi.Groq]: envConfigurationInfo("GROQ_API_KEY"),
         [ConfiguredApi.Ollama]: envConfigurationInfo("OLLAMA_BASE_URL"),
-        [ConfiguredApi.Azure]: envConfigurationInfo("AZURE_RESOURCE_NAME", "AZURE_API_KEY")
+        [ConfiguredApi.Azure]: envConfigurationInfo("AZURE_RESOURCE_NAME", "AZURE_API_KEY"),
+        [ConfiguredApi.OpenRouter]: envConfigurationInfo("OPENROUTER_API_KEY"),
     }
 }

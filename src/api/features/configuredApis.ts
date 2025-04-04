@@ -6,6 +6,7 @@ export enum ConfiguredApi {
     Groq = "Groq",
     Ollama = "Ollama",
     Azure = "Azure",
+    OpenRouter = "OpenRouter",
 }
 
 export type ConfiguredApis = Record<ConfiguredApi, FeatureConfigurationInfo>;

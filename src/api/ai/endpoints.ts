@@ -7,17 +7,16 @@ import {updateContext} from "../../models/updateContext";
 import {createChat, getPromptMessages, getToolPromptMessages, getWorldContext, newUserMessage} from "./llms/messages";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
-import {ToolResultUnion, ToolSet} from "ai";
-import {v4 as uuidv4} from "uuid";
-import {ChatToolResult} from "../../models/chat/ChatToolResult";
 import {getMcpTools} from "./initializer";
 import {CLI} from "../CLI";
 import {LlmProvider} from "../../models/llmProvider";
-import {streamResponseAsMessage, tryCallTool} from "./llms/functions";
+import {addToolCallsToContext} from "./llms/functions";
 import {getTtsAudio} from "./tts/tts";
 import {AudioStorage} from "../storage/AudioStorage";
 import {getConfig, getConfigKey} from "../configuration";
 import {signal} from "../../ui/lib/fjsc/src/signals";
+import {getSimpleResponse, streamResponseAsMessage, tryCallTool} from "./llms/calls";
+import {v4 as uuidv4} from "uuid";
 
 export const currentChatContext = signal<ChatContext>(null);
 
@@ -25,53 +24,34 @@ export function chunk(content: string) {
     return `${content}${terminator}`;
 }
 
-async function addToolCallsToContext(calls: Array<ToolResultUnion<ToolSet>>, chatId: string, res: Response, chatContext: ChatContext) {
-    const updatedMessages = calls.map((toolCall: ToolResultUnion<ToolSet>) => {
-        const result = toolCall.result as ChatToolResult;
-        const text = result.text ?? toolCall.toolName;
-        let references = [];
-        if (result.references) {
-            references = result.references;
-        }
-
-        const existingMessage = chatContext.history
-            .filter(m => !m.finished)
-            .find(m => m.toolResult.toolName === toolCall.toolName);
-
-        if (existingMessage) {
-            return {
-                ...existingMessage,
-                toolResult: toolCall,
-                text,
-                references,
-                finished: true,
-            };
-        }
-
-        return <ChatMessage>{
-            type: "tool",
-            text,
-            toolResult: toolCall,
-            finished: true,
-            time: Date.now(),
-            references,
-            id: uuidv4()
-        }
-    });
+export async function sendMessages(messages: ChatMessage[], chatContext: ChatContext, res: Response, persist: boolean) {
     const update = <ChatUpdate>{
-        chatId,
+        chatId: chatContext.id,
         timestamp: Date.now(),
-        messages: updatedMessages
+        messages: messages
     };
     res.write(chunk(JSON.stringify(update)));
-    updateContext(chatContext, update);
-    await ChatStorage.writeChatContext(chatId, chatContext);
+    chatContext = updateContext(chatContext, update);
+    if (persist) {
+        await ChatStorage.writeChatContext(chatContext.id, chatContext);
+    }
+    return chatContext;
 }
 
 export const chatEndpoint = async (req: Request, res: Response) => {
     const message = req.body.message as string;
     if (!message) {
         res.status(400).send('Missing message parameter');
+        return;
+    }
+
+    const provider = req.body.provider ?? "groq";
+    const modelName = req.body.model ?? "llama-3.1-8b-instant";
+
+    const availableModels = await getAvailableModels(provider);
+    const modelDefinition = availableModels.find(m => m.id === modelName);
+    if (!modelDefinition) {
+        res.status(404).send('Model not found');
         return;
     }
 
@@ -83,7 +63,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     let chatContext: ChatContext;
     if (!chatId) {
         CLI.debug(`Creating chat`);
-        const chatMsg = newUserMessage(message);
+        const chatMsg = newUserMessage(provider, modelName, message);
         chatContext = await createChat(chatMsg);
         res.write(chunk(JSON.stringify(<ChatUpdate>{
             chatId,
@@ -100,22 +80,12 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             return;
         }
 
-        chatContext.history.push(newUserMessage(message));
+        chatContext.history.push(newUserMessage(provider, modelName, message));
         res.write(chunk(JSON.stringify(<ChatUpdate>{
             chatId,
             timestamp: Date.now(),
             messages: chatContext.history
         })));
-    }
-
-    const provider = req.body.provider ?? "groq";
-    const modelName = req.body.model ?? "llama-3.1-8b-instant";
-
-    const availableModels = await getAvailableModels(provider);
-    const modelDefinition = availableModels.find(m => m.id === modelName);
-    if (!modelDefinition) {
-        res.status(404).send('Model not found');
-        return;
     }
 
     currentChatContext.value = chatContext;
@@ -130,36 +100,53 @@ export const chatEndpoint = async (req: Request, res: Response) => {
                     messages: [...c.history]
                 };
                 res.write(chunk(JSON.stringify(update)));
-                updateContext(chatContext, update);
+                chatContext = updateContext(chatContext, update);
             }
         }
         currentChatContext.subscribe(onContextChange);
         const calls = await tryCallTool(getModel(LlmProvider.groq, "llama-3.1-8b-instant"), getToolPromptMessages(chatContext.history), tools);
         currentChatContext.unsubscribe(onContextChange);
         if (calls.length > 0) {
-            await addToolCallsToContext(calls, chatId, res, chatContext);
+            await addToolCallsToContext(provider, modelName, calls, res, chatContext);
         }
         onMcpClose();
     }
 
     const worldContext = getWorldContext();
-    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history, worldContext, getConfig()));
-
-    responseMsg.subscribe(async (m: ChatMessage) => {
-        const update = <ChatUpdate>{
-            chatId,
-            timestamp: m.time,
-            messages: [m]
+    if (provider === LlmProvider.openrouter) {
+        const responseText = await getSimpleResponse(model, getPromptMessages(chatContext.history, worldContext, getConfig()));
+        const m = <ChatMessage>{
+            id: uuidv4(),
+            type: "assistant",
+            text: responseText,
+            time: Date.now(),
+            references: [],
+            files: [],
+            finished: true,
+            provider,
+            model: modelName
         };
-        res.write(chunk(JSON.stringify(update)));
-        if (m.finished) {
-            updateContext(chatContext, update);
-            await ChatStorage.writeChatContext(chatId, chatContext);
-            if (getConfigKey("enableTts") && m.text.length > 0) {
-                await sendAudioAndStop(chatContext, m, res);
-            }
+        await sendMessages([m], chatContext, res, true);
+        if (getConfigKey("enableTts") && m.text.length > 0) {
+            await sendAudioAndStop(chatContext, m, res);
+        } else {
+            res.end();
         }
-    });
+    } else {
+        const responseMsg = await streamResponseAsMessage(provider, modelName, model, getPromptMessages(chatContext.history, worldContext, getConfig()));
+
+        responseMsg.subscribe(async (m: ChatMessage) => {
+            await sendMessages([m], chatContext, res, false);
+            if (m.finished) {
+                await sendMessages([m], chatContext, res, true);
+                if (getConfigKey("enableTts") && m.text.length > 0) {
+                    await sendAudioAndStop(chatContext, m, res);
+                } else {
+                    res.end();
+                }
+            }
+        });
+    }
 
     req.on('close', () => {
         console.log(`Client disconnected from updates for chatId: ${chatId}`);
@@ -180,20 +167,12 @@ export async function getAudio(lastMessage: ChatMessage): Promise<string> {
 export async function sendAudioAndStop(chatContext: ChatContext, lastMessage: ChatMessage, res: Response) {
     const audioUrl = await getAudio(lastMessage);
     if (audioUrl) {
-        const update = <ChatUpdate>{
-            chatId: chatContext.id,
-            timestamp: lastMessage.time,
-            playLastAudio: true,
-            messages: [
-                {
-                    ...lastMessage,
-                    hasAudio: true
-                }
-            ]
-        };
-        updateContext(chatContext, update);
-        res.write(chunk(JSON.stringify(update)));
-        await ChatStorage.writeChatContext(chatContext.id, chatContext);
+        await sendMessages([
+            {
+                ...lastMessage,
+                hasAudio: true
+            }
+        ], chatContext, res, true);
     }
 
     res.end();

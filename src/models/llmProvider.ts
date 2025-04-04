@@ -3,4 +3,5 @@ export enum LlmProvider {
     openai = "openai",
     ollama = "ollama",
     azure = "azure",
+    openrouter = "openrouter"
 }

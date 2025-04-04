@@ -98,14 +98,14 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
         }
         try {
             const update = JSON.parse(lastUpdate.trim()) as ChatUpdate;
-            updateContext(chatContext.value, update);
+            updateContext(chatContext.value, update, chatContext);
             const cs = chats.value;
             if (!cs.find(c => c.id === update.chatId)) {
                 loadChats();
             } else {
                 chats.value = chats.value.map(c => {
                     if (c.id === update.chatId) {
-                        updateContext(c, update);
+                        updateContext(c, update, chatContext);
                     }
                     return c;
                 });
@@ -128,9 +128,9 @@ export function activateChat(chat: ChatContext) {
 
 export function deleteChat(chatId: string) {
     Api.deleteChat(chatId).then(() => {
-        if (chatContext.value.id === chatId) {
+        loadChats();
+        if (chatContext.value.id === chatId || !chatContext.value.id) {
             chatContext.value = INITIAL_CONTEXT;
         }
-        chats.value = [...chats.value].filter(c => c.id !== chatId);
     });
 }

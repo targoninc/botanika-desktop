@@ -4,15 +4,14 @@ import {ChatStorage} from "../../storage/ChatStorage";
 import {CoreMessage} from "ai";
 import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
-import {getSimpleResponse} from "./functions";
 import {Configuration} from "../../../models/Configuration";
-import {CLI} from "../../CLI";
+import {getSimpleResponse} from "./calls";
 
 export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 10);
 }
 
-export function newUserMessage(message: string): ChatMessage {
+export function newUserMessage(provider: string, model: string, message: string): ChatMessage {
     return {
         id: uuidv4(),
         type: "user",
@@ -20,6 +19,9 @@ export function newUserMessage(message: string): ChatMessage {
         time: Date.now(),
         finished: true,
         references: [],
+        files: [],
+        provider,
+        model
     };
 }
 

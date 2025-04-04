@@ -123,12 +123,48 @@ export class ChatTemplates {
                             .build(),
                         !message.finished ? GenericTemplates.spinner() : null,
                     ).build(),
+                message.files && message.files.length > 0 ? ChatTemplates.messageFiles(message) : null,
                 ChatTemplates.messageActions(message),
+            ).build();
+    }
+
+    private static messageFiles(message: ChatMessage) {
+        return create("div")
+            .classes("flex", "align-center", "card", "message-content")
+            .children(
+                ...message.files.map(f => {
+                    if (f.mimeType.startsWith("image/")) {
+                        return create("img")
+                            .classes("message-content-image")
+                            .src(f.base64)
+                            .build();
+                    }
+
+                    if (f.mimeType === "application/pdf") {
+                        return create("iframe")
+                            .classes("message-content-pdf")
+                            .src(f.base64)
+                            .build();
+                    }
+
+                    return FJSC.button({
+                        icon: {icon: "download"},
+                        text: "File",
+                        onclick: () => {
+                            const a = document.createElement("a");
+                            a.href = f.base64;
+                            a.download = `file.${f.mimeType.split("/")[1]}`;
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+                    })
+                }),
             ).build();
     }
 
     static messageActions(message: ChatMessage) {
         const audioDisabled = compute(a => !!a && a !== message.id, currentlyPlayingAudio);
+        const modelInfo = "Through API from " + message.provider + ", model: " + message.model;
 
         return create("div")
             .classes("flex", "align-center")
@@ -150,6 +186,7 @@ export class ChatTemplates {
                     await navigator.clipboard.writeText(message.text);
                     toast("Copied to clipboard");
                 }),
+                GenericTemplates.icon("info", [], modelInfo)
             ).build();
     }
 
