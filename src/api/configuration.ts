@@ -50,7 +50,7 @@ export function addConfigEndpoints(app: Application) {
     });
 
     app.get('/configuredApis', async (req, res) => {
-        const apis = getConfiguredApis();
+        const apis = await getConfiguredApis();
         res.status(200).json(apis);
     });
 }

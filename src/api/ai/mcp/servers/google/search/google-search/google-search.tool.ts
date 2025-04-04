@@ -36,7 +36,8 @@ async function search(query: string): Promise<GoogleSearchResult> {
 }
 
 async function toolCall(input: any) {
-    if (!getConfiguredApis()[ConfiguredApi.GoogleSearch].enabled) {
+    const configuredApis = await getConfiguredApis();
+    if (!configuredApis[ConfiguredApi.GoogleSearch].enabled) {
         throw new Error("Google Search API is not enabled.");
     }
 

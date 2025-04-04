@@ -2,8 +2,8 @@ import {getConfiguredApis} from "./configuredFeatures";
 import fs from "fs";
 import {readFile, writeFile} from "fs/promises";
 
-export function getValidEnvironmentVariables() {
-    const configuredApis = getConfiguredApis();
+export async function getValidEnvironmentVariables() {
+    const configuredApis = await getConfiguredApis();
     const values = Object.values(configuredApis);
     return values.reduce((acc, val) => acc.concat(val.envVars.map(e => e.key)), [] as string[]);
 }

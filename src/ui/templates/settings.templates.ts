@@ -185,47 +185,51 @@ export class SettingsTemplates {
                                     create("b")
                                         .text(name),
                                 ).build(),
-                            create("div")
-                                .classes("flex-v")
-                                .children(
-                                    ...feature.envVars.map(envVar => {
-                                        const value = signal("");
+                            feature.envVars && feature.envVars.length > 0 ? SettingsTemplates.configuredApiEnvVars(feature, load) : null,
+                        ).build();
+                })
+            ).build();
+    }
 
-                                        return create("div")
-                                            .classes("flex", "align-center", "indent-left")
-                                            .children(
-                                                GenericTemplates.icon(envVar.isSet ? "check" : "key_off", [envVar.isSet ? "positive" : "negative"]),
-                                                FJSC.input({
-                                                    type: InputType.text,
-                                                    value: "",
-                                                    name: envVar.key,
-                                                    placeholder: envVar.key,
-                                                    onchange: (newVal) => {
-                                                        value.value = newVal;
-                                                    }
-                                                }),
-                                                FJSC.button({
-                                                    icon: { icon: "save" },
-                                                    text: "Set",
-                                                    disabled: compute(v => !v || v.length === 0, value),
-                                                    classes: ["flex", "align-center"],
-                                                    onclick: () => {
-                                                        createModal(GenericTemplates.confirmModalWithContent("Overwrite environment variable", create("div")
-                                                            .children(
-                                                                create("p")
-                                                                    .text(`Are you sure you want to overwrite the environment variable ${envVar.key}?`),
-                                                            ).build(), "Yes", "No", () => {
-                                                            Api.setEnvironmentVariable(envVar.key, value.value).then(res => {
-                                                                if (res.success) {
-                                                                    load();
-                                                                }
-                                                            });
-                                                        }));
-                                                    }
-                                                })
-                                            ).build();
-                                    })
-                                ).build(),
+    private static configuredApiEnvVars(feature: FeatureConfigurationInfo, load: () => void) {
+        return create("div")
+            .classes("flex-v")
+            .children(
+                ...feature.envVars.map(envVar => {
+                    const value = signal("");
+
+                    return create("div")
+                        .classes("flex", "align-center", "indent-left")
+                        .children(
+                            GenericTemplates.icon(envVar.isSet ? "check" : "key_off", [envVar.isSet ? "positive" : "negative"]),
+                            FJSC.input({
+                                type: InputType.text,
+                                value: "",
+                                name: envVar.key,
+                                placeholder: envVar.key,
+                                onchange: (newVal) => {
+                                    value.value = newVal;
+                                }
+                            }),
+                            FJSC.button({
+                                icon: {icon: "save"},
+                                text: "Set",
+                                disabled: compute(v => !v || v.length === 0, value),
+                                classes: ["flex", "align-center"],
+                                onclick: () => {
+                                    createModal(GenericTemplates.confirmModalWithContent("Overwrite environment variable", create("div")
+                                        .children(
+                                            create("p")
+                                                .text(`Are you sure you want to overwrite the environment variable ${envVar.key}?`),
+                                        ).build(), "Yes", "No", () => {
+                                        Api.setEnvironmentVariable(envVar.key, value.value).then(res => {
+                                            if (res.success) {
+                                                load();
+                                            }
+                                        });
+                                    }));
+                                }
+                            })
                         ).build();
                 })
             ).build();

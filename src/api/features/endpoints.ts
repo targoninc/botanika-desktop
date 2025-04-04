@@ -9,7 +9,7 @@ export async function setEnvironmentVariableEndpoint(req: Request, res: Response
         return;
     }
 
-    const validEnvVars = getValidEnvironmentVariables();
+    const validEnvVars = await getValidEnvironmentVariables();
     if (!validEnvVars.includes(key)) {
         res.status(400).send('Invalid key');
         return;
