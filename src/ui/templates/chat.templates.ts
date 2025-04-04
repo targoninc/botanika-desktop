@@ -1,4 +1,4 @@
-import {compute, signal, Signal} from "../lib/fjsc/src/signals";
+import {compute, signal} from "../lib/fjsc/src/signals";
 import {
     activateChat, availableModels,
     chats,
@@ -25,7 +25,7 @@ import {LlmProvider} from "../../models/llmProvider";
 import {playAudio, stopAudio} from "../classes/audio";
 
 export class ChatTemplates {
-    static chat(activePage: Signal<string>) {
+    static chat() {
         return create("div")
             .classes("flex", "flex-grow", "no-wrap", "relative")
             .children(
@@ -127,16 +127,20 @@ export class ChatTemplates {
                     },
                     classes: ["flex", "align-center"]
                 }) : null,
-                FJSC.button({
-                    icon: { icon: "content_copy" },
-                    classes: ["flex", "align-center"],
-                    onclick: async (e) => {
-                        e.stopPropagation();
-                        await navigator.clipboard.writeText(message.text);
-                        toast("Copied to clipboard");
-                    }
+                ChatTemplates.messageAction("content_copy", "Copy", async (e) => {
+                    e.stopPropagation();
+                    await navigator.clipboard.writeText(message.text);
+                    toast("Copied to clipboard");
                 }),
             ).build();
+    }
+
+    static messageAction(icon: string, text: string, onclick: () => void) {
+        return FJSC.button({
+            icon: { icon },
+            classes: ["flex", "align-center", "message-action"],
+            onclick
+        });
     }
 
     private static date(time: number) {

@@ -37,6 +37,12 @@ export class SettingsTemplates {
                 type: "string",
             },
             {
+                key: "botDescription",
+                label: "What should the assistant be like?",
+                description: "The assistant will try to align with this description",
+                type: "long-string",
+            },
+            {
                 key: "displayname",
                 icon: "person",
                 label: "Your name",

@@ -4,7 +4,7 @@ import {getAvailableModels, getModel, initializeLlms} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
-import {createChat, getPromptMessages, getToolPromptMessages, newUserMessage} from "../storage/helpers";
+import {createChat, getPromptMessages, getToolPromptMessages, getWorldContext, newUserMessage} from "./llms/messages";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
 import {ToolResultUnion, ToolSet} from "ai";
@@ -109,7 +109,8 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         }
     }
 
-    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history, getConfig()));
+    const worldContext = await getWorldContext();
+    const responseMsg = await streamResponseAsMessage(model, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
     responseMsg.subscribe(async (m: ChatMessage) => {
         const update = <ChatUpdate>{

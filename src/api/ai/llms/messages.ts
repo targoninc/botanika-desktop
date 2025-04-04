@@ -1,11 +1,11 @@
 import {v4 as uuidv4} from "uuid";
-import {ChatContext} from "../../models/chat/ChatContext";
-import {ChatStorage} from "./ChatStorage";
+import {ChatContext} from "../../../models/chat/ChatContext";
+import {ChatStorage} from "../../storage/ChatStorage";
 import {CoreMessage} from "ai";
 import {groq} from "@ai-sdk/groq";
-import {ChatMessage} from "../../models/chat/ChatMessage";
-import {getSimpleResponse} from "../ai/llms/functions";
-import {Configuration} from "../../models/Configuration";
+import {ChatMessage} from "../../../models/chat/ChatMessage";
+import {getSimpleResponse} from "./functions";
+import {Configuration} from "../../../models/Configuration";
 
 export async function getChatName(message: string): Promise<string> {
     return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 10);
@@ -36,11 +36,15 @@ export async function createChat(message: string): Promise<ChatContext> {
     return chatContext;
 }
 
-export function getPromptMessages(messages: ChatMessage[], configuration: Configuration): CoreMessage[] {
+export function getPromptMessages(messages: ChatMessage[], worldContext: Record<string, any>, configuration: Configuration): CoreMessage[] {
     return [
         {
             role: "system",
-            content: `You are ${configuration.botname}, a helpful assistant. If the last messages were tool calls, give the user a summary of what you did.`
+            content: `You are ${configuration.botname}, an assistant. If the last messages were tool calls, give the user a summary of what you did. Otherwise, here is a description of you: ${configuration.botDescription}`
+        },
+        {
+            role: "system",
+            content: `Here is some general current info: ${JSON.stringify(worldContext)}`
         },
         {
             role: "system",
@@ -97,4 +101,13 @@ export function getChatNameMessages(message: string): CoreMessage[] {
             content: message
         }
     ];
+}
+
+export function getWorldContext(): Record<string, any> {
+    return {
+        date: new Date().toISOString(),
+        time: new Date().getTime(),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        locale: Intl.DateTimeFormat().resolvedOptions().locale,
+    }
 }
