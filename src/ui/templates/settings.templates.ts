@@ -81,21 +81,6 @@ export class SettingsTemplates {
                 SettingsTemplates.shortcuts(),
                 SettingsTemplates.configuredApis(),
                 SettingsTemplates.mcpConfig(),
-                create("p")
-                    .classes("align-center", "flex")
-                    .children(
-                        create("b")
-                            .text("Hint: "),
-                        create("span")
-                            .text("You can hit "),
-                        GenericTemplates.hotkey("Ctrl", true),
-                        create("span")
-                            .text(" + "),
-                        GenericTemplates.hotkey("F", true),
-                        create("span")
-                            .text(" to search on most pages.")
-                            .build(),
-                    ).build()
             ).build();
     }
 

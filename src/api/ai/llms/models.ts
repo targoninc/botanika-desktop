@@ -1,15 +1,23 @@
 import {LanguageModelV1} from "ai"
 import {groq} from "@ai-sdk/groq";
 import {openai} from "@ai-sdk/openai";
+import {createOllama} from 'ollama-ai-provider';
 import {LlmProvider} from "../../../models/llmProvider";
 import {ProviderV1} from "@ai-sdk/provider";
-import {getGroqModels} from "./providers/groq";
 import {ModelDefinition} from "../../../models/modelDefinition";
+import {getGroqModels} from "./providers/groq";
 import {getOpenaiModels} from "./providers/openai";
+import {getOllamaModels} from "./providers/ollama";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const providerMap: Record<LlmProvider, ProviderV1> = {
     [LlmProvider.groq]: groq,
-    [LlmProvider.openai]: openai
+    [LlmProvider.openai]: openai,
+    [LlmProvider.ollama]: createOllama({
+        baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+    })
 }
 
 export function getModel(providerName: LlmProvider, model: string): LanguageModelV1 {
@@ -27,6 +35,8 @@ export async function getAvailableModels(provider: string): Promise<ModelDefinit
             return getGroqModels();
         case LlmProvider.openai:
             return getOpenaiModels();
+        case LlmProvider.ollama:
+            return getOllamaModels();
         default:
             throw new Error("Unsupported LLM provider");
     }

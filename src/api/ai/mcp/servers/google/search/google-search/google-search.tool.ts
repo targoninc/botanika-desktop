@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
 import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
 import {ConfiguredApi} from "../../../../../../features/configuredApis";
-import {CLI} from "../../../../../../CLI";
 import {wrapTool} from "../../../../tooling";
 
 dotenv.config();
