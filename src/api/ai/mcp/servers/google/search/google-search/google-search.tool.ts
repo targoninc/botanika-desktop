@@ -43,7 +43,7 @@ async function toolCall(input: any) {
 
     const result = await search(input.query);
     return <ChatToolResult>{
-        text: "Google search results",
+        text: `${result.items.length} Google search results`,
         references: result.items.map(i => {
             return <ResourceReference>{
                 type: "resource-reference",

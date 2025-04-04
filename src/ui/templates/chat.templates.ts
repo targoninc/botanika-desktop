@@ -94,7 +94,11 @@ export class ChatTemplates {
                                     .text(message.text)
                                     .build(),
                         ).build(),
-                    ...message.references.map(r => ChatTemplates.reference(r)),
+                    create("div")
+                        .classes("flex-v", "small-gap", "chat-message-references")
+                        .children(
+                            ...message.references.map(r => ChatTemplates.reference(r)),
+                        ).build(),
                     !message.finished ? GenericTemplates.spinner() : null,
                 ).build();
         }
