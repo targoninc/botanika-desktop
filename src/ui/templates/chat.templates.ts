@@ -6,9 +6,9 @@ import {
     chatContext, currentlyPlayingAudio,
     deleteChat,
     target,
-    updateContextFromStream, shortCutConfig
+    updateContextFromStream, shortCutConfig, configuredApis
 } from "../classes/store";
-import {create, ifjs} from "../lib/fjsc/src/f2";
+import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
@@ -20,9 +20,10 @@ import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
 import {ResourceReference} from "../../models/chat/ResourceReference";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {ModelDefinition} from "../../models/modelDefinition";
+import {ModelDefinition} from "../../models/ModelDefinition";
 import {LlmProvider} from "../../models/llmProvider";
 import {playAudio, stopAudio} from "../classes/audio";
+import {ProviderDefinition} from "../../models/ProviderDefinition";
 
 export class ChatTemplates {
     static chat() {
@@ -274,24 +275,55 @@ export class ChatTemplates {
     }
 
     static llmSelector() {
-        const provider = compute(c => c.provider ?? "groq", configuration);
+        const availableProviders = compute((a, c) => {
+            const out = [];
+            for (const provider in a) {
+                if (a[provider].requiredFeatures.every(f => c[f]?.enabled)) {
+                    out.push(provider);
+                }
+            }
+            return out;
+        }, availableModels, configuredApis);
+        const filteredModels = compute((a, p) => {
+            const out = {};
+            for (const provider in a) {
+                if (p.includes(provider)) {
+                    out[provider] = a[provider];
+                }
+            }
+            return out as Record<string, ProviderDefinition>;
+        }, availableModels, availableProviders);
+        const setProvider = async (p: LlmProvider) => {
+            configuration.value = {
+                ...configuration.value,
+                provider: p
+            };
+            await Api.setConfigKey("provider", p);
+        };
+        const provider = compute((c, p) => {
+            const val = c.provider ?? "groq";
+            const toUse = p.includes(val) ? val : p[0];
+            if (toUse !== c.provider) {
+                setProvider(toUse).then();
+            }
+            return toUse;
+        }, configuration, availableProviders);
 
         return create("div")
             .classes("flex", "select-container", "big-gap")
             .children(
-                GenericTemplates.select("Provider", Object.values(LlmProvider).map(m => {
+                compute(p => GenericTemplates.select("Provider", p.map(m => {
                     return {
                         value: m,
                         text: m
                     };
-                }), provider, async (newProvider) => {
-                    configuration.value = {
-                        ...configuration.value,
-                        provider: newProvider
-                    };
-                    await Api.setConfigKey("provider", newProvider);
-                }),
-                compute((p, a) => ChatTemplates.modelSelector(a[p] ?? []), provider, availableModels)
+                }), provider, setProvider), availableProviders),
+                compute((p, a) => {
+                    if (!a[p] || Object.keys(a).length === 0) {
+                        return nullElement();
+                    }
+                    return ChatTemplates.modelSelector(a[p].models ?? []);
+                }, provider, filteredModels)
             ).build();
     }
 

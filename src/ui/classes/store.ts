@@ -7,19 +7,22 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {ModelDefinition} from "../../models/modelDefinition";
+import {ModelDefinition} from "../../models/ModelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {playAudio} from "./audio";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
+import {ProviderDefinition} from "../../models/ProviderDefinition";
+import {ConfiguredApis} from "../../api/features/configuredApis";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
 export const chatContext = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
-export const availableModels = signal<Record<string, ModelDefinition[]>>({});
+export const availableModels = signal<Record<string, ProviderDefinition>>({});
 export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
+export const configuredApis = signal<ConfiguredApis>({} as ConfiguredApis);
 export const currentlyPlayingAudio = signal<string>(null);
 export const shortCutConfig = signal<ShortcutConfiguration>(defaultShortcuts);
 export const appDataPath = signal<string>(null);
@@ -44,7 +47,7 @@ export function initializeStore() {
 
     Api.getModels().then(m => {
         if (m.data) {
-            availableModels.value = m.data as Record<string, ModelDefinition[]>;
+            availableModels.value = m.data as Record<string, ProviderDefinition>;
         }
     });
 
@@ -54,6 +57,8 @@ export function initializeStore() {
         }
     });
 
+    loadConfiguredApis();
+
     Api.getShortcutConfig().then(sc => {
         if (sc.data) {
             shortCutConfig.value = sc.data as ShortcutConfiguration;
@@ -61,6 +66,14 @@ export function initializeStore() {
     });
 
     loadChats();
+}
+
+export function loadConfiguredApis() {
+    Api.getConfiguredApis().then(res => {
+        if (res.data) {
+            configuredApis.value = res.data as ConfiguredApis;
+        }
+    });
 }
 
 export function loadChats() {

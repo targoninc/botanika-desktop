@@ -2,7 +2,14 @@ import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
-import {appDataPath, configuration, mcpConfig, shortCutConfig} from "../classes/store";
+import {
+    appDataPath,
+    configuration,
+    configuredApis,
+    loadConfiguredApis,
+    mcpConfig,
+    shortCutConfig
+} from "../classes/store";
 import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
@@ -147,20 +154,10 @@ export class SettingsTemplates {
     }
 
     static configuredApis() {
-        const apis = signal<ConfiguredApis>({} as ConfiguredApis);
-        const load = () => {
-            Api.getConfiguredApis().then(res => {
-                if (res.data) {
-                    apis.value = res.data as ConfiguredApis;
-                }
-            });
-        }
-        load();
-
         return create("div")
             .classes("flex-v")
             .children(
-                compute(a => SettingsTemplates.configuredApisInternal(a, load), apis)
+                compute(a => SettingsTemplates.configuredApisInternal(a, loadConfiguredApis), configuredApis)
             ).build();
     }
 

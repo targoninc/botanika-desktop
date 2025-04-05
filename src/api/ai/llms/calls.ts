@@ -14,6 +14,14 @@ export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMe
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
     });
+    if (res.finishReason !== "stop") {
+        CLI.warning(`Got finish reason ${res.finishReason}`);
+    }
+
+    if (res.text.length === 0) {
+        CLI.warning("Got empty response");
+        return "";
+    }
 
     return res.text;
 }
@@ -41,7 +49,6 @@ export async function streamResponseAsMessage(provider: string, modelName: strin
         messages,
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
-        maxTokens: 1000,
     });
 
     const messageId = uuidv4();

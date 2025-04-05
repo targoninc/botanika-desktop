@@ -6,13 +6,15 @@ import {openrouter} from "@openrouter/ai-sdk-provider";
 import {createOllama} from 'ollama-ai-provider';
 import {LlmProvider} from "../../../models/llmProvider";
 import {ProviderV1} from "@ai-sdk/provider";
-import {ModelDefinition} from "../../../models/modelDefinition";
+import {ModelDefinition} from "../../../models/ModelDefinition";
 import {getGroqModels} from "./providers/groq";
 import {getOpenaiModels} from "./providers/openai";
 import {getOllamaModels} from "./providers/ollama";
 import {getAzureModels} from "./providers/azure";
 import {getOpenrouterModels} from "./providers/openrouter";
 import dotenv from "dotenv";
+import {ConfiguredApi} from "../../features/configuredApis";
+import {ProviderDefinition} from "../../../models/ProviderDefinition";
 
 dotenv.config();
 
@@ -52,11 +54,29 @@ export async function getAvailableModels(provider: string): Promise<ModelDefinit
     }
 }
 
+function getRequiredFeature(provider: LlmProvider): ConfiguredApi[] {
+    switch (provider) {
+        case LlmProvider.groq:
+            return [ConfiguredApi.Groq];
+        case LlmProvider.openai:
+            return [ConfiguredApi.OpenAI];
+        case LlmProvider.ollama:
+            return [ConfiguredApi.Ollama];
+        case LlmProvider.azure:
+            return [ConfiguredApi.Azure];
+        case LlmProvider.openrouter:
+            return [ConfiguredApi.OpenRouter];
+    }
+}
+
 export async function initializeLlms() {
     const availableProviders = Object.values(LlmProvider);
-    const models: Record<string, ModelDefinition[]> = {};
+    const models: Record<string, ProviderDefinition> = {};
     for (const provider of availableProviders) {
-        models[provider] = await getAvailableModels(provider);
+        models[provider] = <ProviderDefinition>{
+            requiredFeatures: getRequiredFeature(provider),
+            models: await getAvailableModels(provider)
+        };
     }
     return models;
 }

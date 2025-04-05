@@ -1,11 +1,12 @@
 import { ApiBase } from "./api.base";
 import {Configuration} from "../../models/Configuration";
 import {ChatContext} from "../../models/chat/ChatContext";
-import {ModelDefinition} from "../../models/modelDefinition";
+import {ModelDefinition} from "../../models/ModelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {McpServerConfig} from "../../api/ai/mcp/models/McpServerConfig";
 import {ConfiguredApis} from "../../api/features/configuredApis";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
+import {ProviderDefinition} from "../../models/ProviderDefinition";
 
 export class Api extends ApiBase {
     static getConfig() {
@@ -42,7 +43,7 @@ export class Api extends ApiBase {
     }
 
     static getModels() {
-        return this.get<Record<string, ModelDefinition[]>>(`/models`);
+        return this.get<Record<string, ProviderDefinition>>(`/models`);
     }
 
     static getConfiguredApis() {

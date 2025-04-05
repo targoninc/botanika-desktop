@@ -8,7 +8,7 @@ import {Configuration} from "../../../models/Configuration";
 import {getSimpleResponse} from "./calls";
 
 export async function getChatName(model: LanguageModelV1, message: string): Promise<string> {
-    return await getSimpleResponse(model, getChatNameMessages(message), 10);
+    return await getSimpleResponse(model, getChatNameMessages(message), 1000);
 }
 
 export function newUserMessage(provider: string, model: string, message: string): ChatMessage {
@@ -96,13 +96,13 @@ export function getToolPromptMessages(messages: ChatMessage[]): CoreMessage[] {
 export function getChatNameMessages(message: string): CoreMessage[] {
     return [
         {
-            role: "system",
-            content: "You are a chat name generator. Generate a short name for the following chat message that describes the content in 3-4 words. Only output the name (no special characters) and nothing else or my employer will fire me. Do not include 'Chat' in the name. Don't actually answer the user's message."
-        },
-        {
             role: "user",
             content: message
-        }
+        },
+        {
+            role: "system",
+            content: "Describe the preceding user message in 3-4 words. Don't actually answer the user's message."
+        },
     ];
 }
 
