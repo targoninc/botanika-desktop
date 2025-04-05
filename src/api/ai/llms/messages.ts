@@ -1,14 +1,14 @@
 import {v4 as uuidv4} from "uuid";
 import {ChatContext} from "../../../models/chat/ChatContext";
 import {ChatStorage} from "../../storage/ChatStorage";
-import {CoreMessage} from "ai";
+import {CoreMessage, LanguageModelV1} from "ai";
 import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {Configuration} from "../../../models/Configuration";
 import {getSimpleResponse} from "./calls";
 
-export async function getChatName(message: string): Promise<string> {
-    return await getSimpleResponse(groq("llama-3.1-8b-instant"), getChatNameMessages(message), 10);
+export async function getChatName(model: LanguageModelV1, message: string): Promise<string> {
+    return await getSimpleResponse(model, getChatNameMessages(message), 10);
 }
 
 export function newUserMessage(provider: string, model: string, message: string): ChatMessage {
@@ -25,13 +25,13 @@ export function newUserMessage(provider: string, model: string, message: string)
     };
 }
 
-export async function createChat(newMessage: ChatMessage): Promise<ChatContext> {
+export async function createChat(model: LanguageModelV1, newMessage: ChatMessage): Promise<ChatContext> {
     const chatId = uuidv4();
     // create chat
     const chatContext = <ChatContext>{
         id: chatId,
         createdAt: Date.now(),
-        name: await getChatName(newMessage.text),
+        name: await getChatName(model, newMessage.text),
         history: [newMessage]
     };
     ChatStorage.writeChatContext(chatId, chatContext).then();

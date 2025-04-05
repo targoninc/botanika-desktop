@@ -96,3 +96,5 @@ release
 
 .idea
 .env
+.env.bak
+

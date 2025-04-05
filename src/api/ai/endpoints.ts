@@ -58,13 +58,14 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    const model = getModel(provider, modelName);
 
     let chatId = req.body.chatId;
     let chatContext: ChatContext;
     if (!chatId) {
         CLI.debug(`Creating chat`);
         const chatMsg = newUserMessage(provider, modelName, message);
-        chatContext = await createChat(chatMsg);
+        chatContext = await createChat(model, chatMsg);
         res.write(chunk(JSON.stringify(<ChatUpdate>{
             chatId,
             timestamp: Date.now(),
@@ -89,7 +90,6 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     }
 
     currentChatContext.value = chatContext;
-    const model = getModel(provider, modelName);
     if (modelDefinition.supportsTools) {
         const {tools, onClose: onMcpClose} = await getMcpTools();
         function onContextChange(c: ChatContext, changed: boolean) {
@@ -104,7 +104,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             }
         }
         currentChatContext.subscribe(onContextChange);
-        const calls = await tryCallTool(getModel(LlmProvider.groq, "llama-3.1-8b-instant"), getToolPromptMessages(chatContext.history), tools);
+        const calls = await tryCallTool(model, getToolPromptMessages(chatContext.history), tools);
         currentChatContext.unsubscribe(onContextChange);
         if (calls.length > 0) {
             await addToolCallsToContext(provider, modelName, calls, res, chatContext);
