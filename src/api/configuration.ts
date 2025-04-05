@@ -6,6 +6,7 @@ import {appDataPath} from "./appData";
 import {CLI} from "./CLI";
 import {Application} from "express";
 import {getConfiguredApis} from "./features/configuredFeatures";
+import { execSync } from "child_process";
 
 const configPath = path.join(appDataPath, 'config.json');
 CLI.log('Config path: ' + configPath);
@@ -52,5 +53,11 @@ export function addConfigEndpoints(app: Application) {
     app.get('/configuredApis', async (req, res) => {
         const apis = await getConfiguredApis();
         res.status(200).json(apis);
+    });
+
+    app.post('/openAppDataPath', async (req, res) => {
+        execSync(`start ${appDataPath}`);
+
+        res.status(200).send();
     });
 }

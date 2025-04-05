@@ -82,4 +82,8 @@ export class Api extends ApiBase {
     static setShortcutConfig(sc: ShortcutConfiguration) {
         return this.post("/shortCutConfig", sc);
     }
+
+    static openAppDataPath() {
+        return this.post("/openAppDataPath");
+    }
 }

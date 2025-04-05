@@ -2,7 +2,7 @@ import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
-import {configuration, mcpConfig, shortCutConfig} from "../classes/store";
+import {appDataPath, configuration, mcpConfig, shortCutConfig} from "../classes/store";
 import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
@@ -81,6 +81,9 @@ export class SettingsTemplates {
                 SettingsTemplates.shortcuts(),
                 SettingsTemplates.configuredApis(),
                 SettingsTemplates.mcpConfig(),
+                GenericTemplates.buttonWithIcon("folder_open", "Open app data folder", async () => {
+                    await Api.openAppDataPath();
+                }),
             ).build();
     }
 

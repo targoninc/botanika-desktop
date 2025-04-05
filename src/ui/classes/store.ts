@@ -22,6 +22,7 @@ export const availableModels = signal<Record<string, ModelDefinition[]>>({});
 export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
 export const currentlyPlayingAudio = signal<string>(null);
 export const shortCutConfig = signal<ShortcutConfiguration>(defaultShortcuts);
+export const appDataPath = signal<string>(null);
 
 export function initializeStore() {
     configuration.subscribe(c => {
