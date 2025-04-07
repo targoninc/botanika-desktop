@@ -13,4 +13,8 @@ export function createEndpoints(app: Application) {
     addFeatureEndpoints(app);
     addAudioEndpoints(app);
     addShortcutEndpoints(app);
+
+    app.get("/openaiKey", (req, res) => {
+        res.send(process.env.OPENAI_API_KEY);
+    });
 }

@@ -87,4 +87,8 @@ export class Api extends ApiBase {
     static openAppDataPath() {
         return this.post("/openAppDataPath");
     }
+
+    static getOpenAiKey() {
+        return this.get<string>("/openaiKey");
+    }
 }
