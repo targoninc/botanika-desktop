@@ -17,7 +17,6 @@ import {getConfig, getConfigKey} from "../configuration";
 import {signal} from "../../ui/lib/fjsc/src/signals";
 import {getSimpleResponse, streamResponseAsMessage, tryCallTool} from "./llms/calls";
 import {v4 as uuidv4} from "uuid";
-import {getConfiguredApis} from "../features/configuredFeatures";
 
 export const currentChatContext = signal<ChatContext>(null);
 
@@ -108,7 +107,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         const calls = await tryCallTool(model, getToolPromptMessages(chatContext.history), tools);
         currentChatContext.unsubscribe(onContextChange);
         if (calls.length > 0) {
-            await addToolCallsToContext(provider, modelName, calls, res, chatContext);
+            chatContext = await addToolCallsToContext(provider, modelName, calls, res, chatContext);
         }
         onMcpClose();
     }

@@ -7,7 +7,6 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {ModelDefinition} from "../../models/ModelDefinition";
 import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
 import {playAudio} from "./audio";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
@@ -119,7 +118,7 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
             } else {
                 chats.value = chats.value.map(c => {
                     if (c.id === update.chatId) {
-                        updateContext(c, update, chatContext);
+                        updateContext(c, update);
                     }
                     return c;
                 });

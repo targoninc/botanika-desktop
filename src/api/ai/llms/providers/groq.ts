@@ -8,6 +8,11 @@ export function getGroqModels(): ModelDefinition[] {
             supportsTools: false,
         },
         {
+            id: "meta-llama/llama-4-scout-17b-16e-instruct",
+            displayName: "meta-llama/llama-4-scout-17b-16e-instruct",
+            supportsTools: true,
+        },
+        {
             id: "llama-3.2-90b-vision-preview",
             displayName: "llama-3.2-90b-vision-preview",
             supportsTools: false,
