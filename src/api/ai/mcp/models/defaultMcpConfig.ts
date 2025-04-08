@@ -1,4 +1,4 @@
-import {McpConfiguration} from "./McpConfiguration";
+import {McpConfiguration} from "../../../../models/mcp/McpConfiguration";
 
 const APP_PORT = Number(process.env.PORT || "48678");
 

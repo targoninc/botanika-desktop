@@ -2,9 +2,9 @@ import path from "path";
 import fs from "fs";
 import {appDataPath} from "../../appData";
 import {CLI} from "../../CLI";
-import {McpConfiguration} from "./models/McpConfiguration";
+import {McpConfiguration} from "../../../models/mcp/McpConfiguration";
 import {defaultMcpConfig} from "./models/defaultMcpConfig";
-import {McpServerConfig} from "./models/McpServerConfig";
+import {McpServerConfig} from "../../../models/mcp/McpServerConfig";
 
 const configPath = path.join(appDataPath, 'mcp-config.json');
 CLI.log('MCP Config path: ' + configPath);
@@ -23,14 +23,11 @@ export function getMcpConfig() {
     return config;
 }
 
-export function addMcpServer(url: string, name: string) {
-    if (config.servers.find(server => server.url === url)) {
+export function addMcpServer(newServer: McpServerConfig) {
+    if (config.servers.find(server => server.url === newServer.url)) {
         return;
     }
-    config.servers.push({
-        url,
-        name
-    });
+    config.servers.push(newServer);
     fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
 }
 

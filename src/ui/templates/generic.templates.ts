@@ -1,4 +1,4 @@
-import {closeModal, toast} from "../classes/ui";
+import {closeModal, createModal, toast} from "../classes/ui";
 import {AnyElement, AnyNode, create, ifjs, signalMap, StringOrSignal, TypeOrSignal} from "../lib/fjsc/src/f2";
 import {compute, Signal, signal} from "../lib/fjsc/src/signals";
 import {FJSC} from "../lib/fjsc";
@@ -10,7 +10,8 @@ import {InputType} from "../lib/fjsc/src/Types";
 
 export class GenericTemplates {
     static input<T>(type: InputType, name: StringOrSignal, value: any, placeholder: StringOrSignal, label: StringOrSignal, id: any, classes: StringOrSignal[] = [],
-                 onchange: Callback<[T]> = () => {}, attributes: StringOrSignal[] = [], required = false) {
+                    onchange: Callback<[T]> = () => {
+                    }, attributes: StringOrSignal[] = [], required = false) {
         return FJSC.input<T>({
             type,
             name,
@@ -109,7 +110,10 @@ export class GenericTemplates {
             ).build();
     }
 
-    static select(label: StringOrSignal | null, options: Array<{ text: string; value: any; }>, value: any, onchange: (value: any) => void) {
+    static select(label: StringOrSignal | null, options: Array<{
+        text: string;
+        value: any;
+    }>, value: any, onchange: (value: any) => void) {
         return create("div")
             .classes("flex", "align-center")
             .children(
@@ -151,7 +155,9 @@ export class GenericTemplates {
     }
 
     static confirmModal(title: StringOrSignal, message: StringOrSignal, confirmText = "Confirm", cancelText = "Cancel",
-                        confirmCallback = () => {}, cancelCallback = () => {}) {
+                        confirmCallback = () => {
+                        }, cancelCallback = () => {
+        }) {
         return create("div")
             .classes("flex-v")
             .children(
@@ -176,8 +182,10 @@ export class GenericTemplates {
             ).build();
     }
 
-    static confirmModalWithContent(title: StringOrSignal, content: AnyNode|AnyNode[], confirmText = "Confirm", cancelText = "Cancel",
-                                   confirmCallback = () => {}, cancelCallback = () => {}) {
+    static confirmModalWithContent(title: StringOrSignal, content: AnyNode | AnyNode[], confirmText = "Confirm", cancelText = "Cancel",
+                                   confirmCallback = () => {
+                                   }, cancelCallback = () => {
+        }) {
         return create("div")
             .classes("flex-v")
             .children(
@@ -222,7 +230,8 @@ export class GenericTemplates {
         });
     }
 
-    static inlineToggle(text: StringOrSignal, checked = false, callback: Callback<[boolean]> = () => {}, extraClasses: StringOrSignal[] = [], id: StringOrSignal = null) {
+    static inlineToggle(text: StringOrSignal, checked = false, callback: Callback<[boolean]> = () => {
+    }, extraClasses: StringOrSignal[] = [], id: StringOrSignal = null) {
         return create("label")
             .classes("flex", "align-center", "inline-toggle", ...extraClasses)
             .children(
@@ -249,7 +258,7 @@ export class GenericTemplates {
             ).build();
     }
 
-    static tableListHeader(headerName: StringOrSignal, property: string|((c: any) => void), activeSortHeader: Signal<string>, listSignal: Signal<any[]>) {
+    static tableListHeader(headerName: StringOrSignal, property: string | ((c: any) => void), activeSortHeader: Signal<string>, listSignal: Signal<any[]>) {
         const currentSortType = signal("desc");
         if (headerName.constructor === String) {
             headerName = signal(headerName);
@@ -313,7 +322,9 @@ export class GenericTemplates {
             .build();
     }
 
-    static invisibleInput(onType: Callback<[string]> = () => {}, onChange: Callback<[string]> = () => {}) {
+    static invisibleInput(onType: Callback<[string]> = () => {
+    }, onChange: Callback<[string]> = () => {
+    }) {
         return create("input")
             .type(InputType.text)
             .classes("invisible-input")
@@ -420,7 +431,7 @@ export class GenericTemplates {
             .children(
                 FJSC.button({
                     text: "Info",
-                    icon: { icon: "info" },
+                    icon: {icon: "info"},
                     onclick: () => {
                         shown.value = !shown.value;
                     }
@@ -486,11 +497,90 @@ export class GenericTemplates {
             ).build();
     }
 
-    static iconButton(icon: string, onclick = () => {}) {
+    static iconButton(icon: string, onclick = () => {
+    }) {
         return FJSC.button({
-            icon: { icon },
+            icon: {icon},
             classes: ["flex"],
             onclick
         });
+    }
+
+    static keyValueInput(initialValue: Record<string, string> = {}, onChange: (value: Record<string, string>) => void) {
+        const value = signal(initialValue);
+
+        return create("div")
+            .classes("flex-v")
+            .children(
+                compute(v => {
+                    return create("div")
+                        .classes("flex-v")
+                        .children(
+                            ...Object.keys(v).map(key => {
+                                const key$ = signal(key);
+                                const val$ = signal(v[key]);
+
+                                return create("div")
+                                    .classes("flex", "align-center")
+                                    .children(
+                                        FJSC.input({
+                                            type: InputType.text,
+                                            value: key,
+                                            name: "key",
+                                            placeholder: "Key",
+                                            onchange: (newVal) => {
+                                                key$.value = newVal;
+                                            }
+                                        }),
+                                        FJSC.input({
+                                            type: InputType.text,
+                                            value: val$,
+                                            name: key,
+                                            placeholder: key,
+                                            onchange: (newVal) => {
+                                                val$.value = newVal;
+                                            }
+                                        }),
+                                        FJSC.button({
+                                            icon: {icon: "save"},
+                                            text: "Set",
+                                            disabled: compute(nv => !nv || nv.length === 0 || nv === v[key], val$),
+                                            classes: ["flex", "align-center"],
+                                            onclick: () => {
+                                                const old = value.value;
+                                                delete old[key];
+                                                const newVal = {
+                                                    ...old,
+                                                    [key$.value]: val$.value
+                                                };
+                                                onChange(newVal);
+                                            }
+                                        }),
+                                        GenericTemplates.buttonWithIcon("delete", "Delete", () => {
+                                            createModal(GenericTemplates.confirmModal("Delete header", `Are you sure you want to delete ${key}?`, "Yes", "No", () => {
+                                                const old = value.value;
+                                                delete old[key];
+                                                onChange(old);
+                                                toast("Header deleted");
+                                            }));
+                                        }, ["negative"])
+                                    ).build();
+                            })
+                        ).build();
+                }, value),
+                FJSC.button({
+                    text: "Add header",
+                    icon: {
+                        icon: "add",
+                    },
+                    classes: ["flex", "align-center", "positive"],
+                    onclick: () => {
+                        value.value = {
+                            ...value.value,
+                            ["New"]: ""
+                        };
+                    }
+                })
+            ).build();
     }
 }

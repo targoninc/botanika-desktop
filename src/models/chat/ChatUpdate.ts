@@ -5,4 +5,5 @@ export interface ChatUpdate {
     timestamp: number;
     messages?: ChatMessage[];
     audioUrl?: string;
+    error?: string;
 }

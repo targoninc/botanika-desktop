@@ -2,8 +2,8 @@ import { ApiBase } from "./api.base";
 import {Configuration} from "../../models/Configuration";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ModelDefinition} from "../../models/ModelDefinition";
-import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
-import {McpServerConfig} from "../../api/ai/mcp/models/McpServerConfig";
+import {McpConfiguration} from "../../models/mcp/McpConfiguration";
+import {McpServerConfig} from "../../models/mcp/McpServerConfig";
 import {ConfiguredApis} from "../../api/features/configuredApis";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {ProviderDefinition} from "../../models/ProviderDefinition";
@@ -62,11 +62,11 @@ export class Api extends ApiBase {
     }
 
     static deleteMcpServer(url: string) {
-        return this.delete(`/mcpServer/${encodeURIComponent(url)}`);
+        return this.delete(`/mcpServer?url=${encodeURIComponent(url)}`);
     }
 
     static updateMcpServer(mcpServerConfig: McpServerConfig) {
-        return this.put(`/mcpServer/${mcpServerConfig.url}`, mcpServerConfig);
+        return this.put(`/mcpServer?url=${encodeURIComponent(mcpServerConfig.url)}`, mcpServerConfig);
     }
 
     static setEnvironmentVariable(key: string, value: string) {

@@ -12,13 +12,14 @@ import {
 } from "../classes/store";
 import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
-import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
+import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
 import {ConfiguredApis} from "../../api/features/configuredApis";
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
-import {createModal} from "../classes/ui";
+import {createModal, toast} from "../classes/ui";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {shortcutNames} from "../../models/shortcuts/Shortcut";
+import {McpServerConfig} from "../../models/mcp/McpServerConfig";
 
 export class SettingsTemplates {
     static settings() {
@@ -247,11 +248,13 @@ export class SettingsTemplates {
             .classes("flex-v")
             .children(
                 GenericTemplates.heading(2, "Configured MCP servers"),
+                create("div")
+                    .classes("card")
+                    .children(
+                        GenericTemplates.warning("You might have to restart the application after changing environment variables")
+                    ).build(),
                 ...Object.keys(c?.servers ?? {}).map(server => {
-                    const name = c.servers[server].name;
-                    const url = c.servers[server].url;
-
-                    return SettingsTemplates.existingMcpServer(c, name, server, url);
+                    return SettingsTemplates.existingMcpServer(c.servers[server]);
                 }),
                 SettingsTemplates.addMcpServer()
             ).build();
@@ -266,11 +269,6 @@ export class SettingsTemplates {
             .children(
                 create("p")
                     .text("Add a new MCP server:"),
-                create("div")
-                    .classes("card")
-                    .children(
-                        GenericTemplates.warning("You might have to restart the application after changing environment variables")
-                    ).build(),
                 create("div")
                     .classes("flex", "align-center")
                     .children(
@@ -311,55 +309,79 @@ export class SettingsTemplates {
             ).build();
     }
 
-    private static existingMcpServer(c: McpConfiguration, name: string, server: string, url: string) {
+    private static existingMcpServer(server: McpServerConfig) {
         return create("div")
-            .classes("flex", "bordered-panel", "align-center")
+            .classes("flex-v", "bordered-panel")
             .children(
-                FJSC.input({
-                    type: InputType.text,
-                    value: name,
-                    name: "name",
-                    label: "Name",
-                    placeholder: "Name",
-                    onchange: (value) => {
-                        c.servers[server].name = value;
-                        Api.updateMcpServer(c.servers[server]).then(() => {
-                            Api.getMcpConfig().then(mcpConf => {
-                                if (mcpConf.data) {
-                                    mcpConfig.value = mcpConf.data as McpConfiguration;
-                                }
+                create("div")
+                    .classes("flex", "align-center", "space-between")
+                    .children(
+                        create("div")
+                            .classes("flex", "align-center")
+                            .children(
+                                FJSC.input({
+                                    type: InputType.text,
+                                    value: server.name,
+                                    name: "name",
+                                    label: "Name",
+                                    placeholder: "Name",
+                                    onchange: (value) => {
+                                        server.name = value;
+                                        Api.updateMcpServer(server).then(() => {
+                                            Api.getMcpConfig().then(mcpConf => {
+                                                if (mcpConf.data) {
+                                                    mcpConfig.value = mcpConf.data as McpConfiguration;
+                                                }
+                                            });
+                                        });
+                                    }
+                                }),
+                                FJSC.input({
+                                    type: InputType.text,
+                                    value: server.url,
+                                    name: "url",
+                                    label: "URL",
+                                    placeholder: "URL",
+                                    onchange: (value) => {
+                                        server.url = value;
+                                        Api.updateMcpServer(server).then(() => {
+                                            Api.getMcpConfig().then(mcpConf => {
+                                                if (mcpConf.data) {
+                                                    mcpConfig.value = mcpConf.data as McpConfiguration;
+                                                }
+                                            });
+                                        });
+                                    }
+                                }),
+                            ).build(),
+                        GenericTemplates.buttonWithIcon("delete", "Delete", () => {
+                            createModal(GenericTemplates.confirmModal("Delete MCP Server connection", `Are you sure you want to delete ${server.url}?`, "Yes", "No", () => {
+                                Api.deleteMcpServer(server.url).then(() => {
+                                    Api.getMcpConfig().then(mcpConf => {
+                                        if (mcpConf.data) {
+                                            mcpConfig.value = mcpConf.data as McpConfiguration;
+                                        }
+                                    });
+                                });
+                            }));
+                        }, ["negative"]),
+                    ).build(),
+                create("div")
+                    .classes("flex-v")
+                    .children(
+                        GenericTemplates.heading(3, "Headers"),
+                        GenericTemplates.keyValueInput(server.headers, headers => {
+                            server.headers = headers;
+                            Api.updateMcpServer(server).then(() => {
+                                toast("MCP server updated");
+                                Api.getMcpConfig().then(mcpConf => {
+                                    if (mcpConf.data) {
+                                        mcpConfig.value = mcpConf.data as McpConfiguration;
+                                    }
+                                });
                             });
-                        });
-                    }
-                }),
-                FJSC.input({
-                    type: InputType.text,
-                    value: url,
-                    name: "url",
-                    label: "URL",
-                    placeholder: "URL",
-                    onchange: (value) => {
-                        c.servers[server].url = value;
-                        Api.updateMcpServer(c.servers[server]).then(() => {
-                            Api.getMcpConfig().then(mcpConf => {
-                                if (mcpConf.data) {
-                                    mcpConfig.value = mcpConf.data as McpConfiguration;
-                                }
-                            });
-                        });
-                    }
-                }),
-                GenericTemplates.iconButton("delete", () => {
-                    createModal(GenericTemplates.confirmModal("Delete MCP Server connection", `Are you sure you want to delete ${url}?`, "Yes", "No", () => {
-                        Api.deleteMcpServer(url).then(() => {
-                            Api.getMcpConfig().then(mcpConf => {
-                                if (mcpConf.data) {
-                                    mcpConfig.value = mcpConf.data as McpConfiguration;
-                                }
-                            });
-                        });
-                    }));
-                }),
+                        })
+                    ).build(),
             ).build();
     }
 

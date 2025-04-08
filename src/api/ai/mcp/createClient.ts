@@ -1,16 +1,17 @@
 import {experimental_createMCPClient as createMCPClient, ToolSet} from 'ai';
 import {getMcpConfig} from "./clientConfig";
 import {TempMcpClient} from "./models/TempMcpClient";
-import {McpConfiguration} from "./models/McpConfiguration";
+import {McpConfiguration} from "../../../models/mcp/McpConfiguration";
 import {CLI} from "../../CLI";
 
-export async function createClient(url: string): Promise<TempMcpClient> {
+export async function createClient(url: string, headers: Record<string, string>): Promise<TempMcpClient> {
     return await createMCPClient({
         transport: {
             type: 'sse',
             url,
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...headers
             }
         },
         onUncaughtError: (e) => {
@@ -26,7 +27,7 @@ export async function createClientsFromConfig(config: McpConfiguration) {
 
     const clients: TempMcpClient[] = [];
     for (const server of config.servers) {
-        const client = await createClient(server.url);
+        const client = await createClient(server.url, server.headers ?? {});
         clients.push(client);
     }
     return clients;

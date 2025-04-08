@@ -75,7 +75,7 @@ export function getToolPromptMessages(messages: ChatMessage[]): CoreMessage[] {
     return [
         {
             role: "system",
-            content: "You are a helpful assistant. If the user requests something that you could answer without calling a tool, just answer."
+            content: "You are a helpful chatbot. Only call tools if absolutely necessary or explicitly requested."
         },
         ...messages.map(m => {
             if (m.type === "tool") {

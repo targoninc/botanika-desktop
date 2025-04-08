@@ -7,7 +7,7 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {McpConfiguration} from "../../api/ai/mcp/models/McpConfiguration";
+import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {playAudio} from "./audio";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
