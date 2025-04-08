@@ -14,6 +14,8 @@ import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguratio
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
 import {ProviderDefinition} from "../../models/ProviderDefinition";
 import {ConfiguredApis} from "../../api/features/configuredApis";
+import {toast} from "./ui";
+import {ToastType} from "../enums/ToastType";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -109,28 +111,36 @@ export async function updateContextFromStream(body: ReadableStream<Uint8Array>) 
         if (!lastUpdate) {
             continue;
         }
+        let update: ChatUpdate;
         try {
-            const update = JSON.parse(lastUpdate.trim()) as ChatUpdate;
-            updateContext(chatContext.value, update, chatContext);
-            const cs = chats.value;
-            if (!cs.find(c => c.id === update.chatId)) {
-                loadChats();
-            } else {
-                chats.value = chats.value.map(c => {
-                    if (c.id === update.chatId) {
-                        updateContext(c, update);
-                    }
-                    return c;
-                });
-            }
-
-            const playableMessage = update.messages?.find(m => m.hasAudio);
-            const isLast = playableMessage && update.messages.pop().id === playableMessage.id;
-            if (playableMessage && isLast) {
-                playAudio(playableMessage.id).then();
-            }
+            update = JSON.parse(lastUpdate.trim());
         } catch (e) {
             console.log("Error parsing update: ", lastUpdate, e.toString());
+            continue;
+        }
+
+        if (update.error) {
+            toast(update.error, null, ToastType.negative);
+            continue;
+        }
+
+        updateContext(chatContext.value, update, chatContext);
+        const cs = chats.value;
+        if (!cs.find(c => c.id === update.chatId)) {
+            loadChats();
+        } else {
+            chats.value = chats.value.map(c => {
+                if (c.id === update.chatId) {
+                    updateContext(c, update);
+                }
+                return c;
+            });
+        }
+
+        const playableMessage = update.messages?.find(m => m.hasAudio);
+        const isLast = playableMessage && update.messages.pop().id === playableMessage.id;
+        if (playableMessage && isLast) {
+            playAudio(playableMessage.id).then();
         }
     }
 }

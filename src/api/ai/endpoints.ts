@@ -4,7 +4,14 @@ import {getAvailableModels, getModel, initializeLlms} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
-import {createChat, getPromptMessages, getToolPromptMessages, getWorldContext, newUserMessage} from "./llms/messages";
+import {
+    createChat,
+    getPromptMessages,
+    getToolPromptMessages,
+    getWorldContext,
+    newAssistantMessage,
+    newUserMessage
+} from "./llms/messages";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
 import {getMcpTools} from "./initializer";
@@ -17,6 +24,7 @@ import {getConfig, getConfigKey} from "../configuration";
 import {signal} from "../../ui/lib/fjsc/src/signals";
 import {getSimpleResponse, streamResponseAsMessage, tryCallTool} from "./llms/calls";
 import {v4 as uuidv4} from "uuid";
+import {LanguageModelV1} from "ai";
 
 export const currentChatContext = signal<ChatContext>(null);
 
@@ -36,6 +44,50 @@ export async function sendMessages(messages: ChatMessage[], chatContext: ChatCon
         await ChatStorage.writeChatContext(chatContext.id, chatContext);
     }
     return chatContext;
+}
+
+async function tryCallTools(chatId: string, res: Response, chatContext: ChatContext, model: LanguageModelV1, provider: string, modelName: string) {
+    const {tools, onClose: onMcpClose} = await getMcpTools();
+
+    function onContextChange(c: ChatContext, changed: boolean) {
+        if (changed) {
+            const update = <ChatUpdate>{
+                chatId,
+                timestamp: Date.now(),
+                messages: [...c.history]
+            };
+            res.write(chunk(JSON.stringify(update)));
+            chatContext = updateContext(chatContext, update);
+        }
+    }
+
+    currentChatContext.subscribe(onContextChange);
+    const calls = await tryCallTool(model, getToolPromptMessages(chatContext.history), tools);
+    currentChatContext.unsubscribe(onContextChange);
+    if (calls.length > 0) {
+        chatContext = await addToolCallsToContext(provider, modelName, calls, res, chatContext);
+    }
+    onMcpClose();
+    return chatContext;
+}
+
+async function afterMessageFinished(m: ChatMessage, chatContext: ChatContext, res: e.Response<any, Record<string, any>>) {
+    await sendMessages([m], chatContext, res, true);
+    if (getConfigKey("enableTts") && m.text.length > 0) {
+        await sendAudioAndStop(chatContext, m, res);
+    } else {
+        res.end();
+    }
+}
+
+function sendError(chatId: string, e: string, res: Response) {
+    const update = <ChatUpdate>{
+        chatId,
+        timestamp: Date.now(),
+        error: e
+    };
+    res.write(chunk(JSON.stringify(update)));
+    res.end();
 }
 
 export const chatEndpoint = async (req: Request, res: Response) => {
@@ -65,7 +117,13 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     if (!chatId) {
         CLI.debug(`Creating chat`);
         const chatMsg = newUserMessage(provider, modelName, message);
-        chatContext = await createChat(model, chatMsg);
+        try {
+            chatContext = await createChat(model, chatMsg);
+        } catch (e) {
+            sendError(chatId, "An error occurred while creating the chat: " + e.toString(), res);
+            return;
+        }
+
         res.write(chunk(JSON.stringify(<ChatUpdate>{
             chatId,
             timestamp: Date.now(),
@@ -89,63 +147,29 @@ export const chatEndpoint = async (req: Request, res: Response) => {
         })));
     }
 
-    currentChatContext.value = chatContext;
-    if (modelDefinition.supportsTools) {
-        const {tools, onClose: onMcpClose} = await getMcpTools();
-        function onContextChange(c: ChatContext, changed: boolean) {
-            if (changed) {
-                const update = <ChatUpdate>{
-                    chatId,
-                    timestamp: Date.now(),
-                    messages: [...c.history]
-                };
-                res.write(chunk(JSON.stringify(update)));
-                chatContext = updateContext(chatContext, update);
-            }
+    try {
+        currentChatContext.value = chatContext;
+        if (modelDefinition.supportsTools) {
+            chatContext = await tryCallTools(chatId, res, chatContext, model, provider, modelName);
         }
-        currentChatContext.subscribe(onContextChange);
-        const calls = await tryCallTool(model, getToolPromptMessages(chatContext.history), tools);
-        currentChatContext.unsubscribe(onContextChange);
-        if (calls.length > 0) {
-            chatContext = await addToolCallsToContext(provider, modelName, calls, res, chatContext);
-        }
-        onMcpClose();
-    }
 
-    const worldContext = getWorldContext();
-    if (provider === LlmProvider.openrouter) {
-        const responseText = await getSimpleResponse(model, getPromptMessages(chatContext.history, worldContext, getConfig()));
-        const m = <ChatMessage>{
-            id: uuidv4(),
-            type: "assistant",
-            text: responseText,
-            time: Date.now(),
-            references: [],
-            files: [],
-            finished: true,
-            provider,
-            model: modelName
-        };
-        await sendMessages([m], chatContext, res, true);
-        if (getConfigKey("enableTts") && m.text.length > 0) {
-            await sendAudioAndStop(chatContext, m, res);
+        const worldContext = getWorldContext();
+        if (provider === LlmProvider.openrouter) {
+            const responseText = await getSimpleResponse(model, getPromptMessages(chatContext.history, worldContext, getConfig()));
+            const m = newAssistantMessage(responseText, provider, modelName);
+            await afterMessageFinished(m, chatContext, res);
         } else {
-            res.end();
-        }
-    } else {
-        const responseMsg = await streamResponseAsMessage(provider, modelName, model, getPromptMessages(chatContext.history, worldContext, getConfig()));
+            const responseMsg = await streamResponseAsMessage(provider, modelName, model, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
-        responseMsg.subscribe(async (m: ChatMessage) => {
-            await sendMessages([m], chatContext, res, false);
-            if (m.finished) {
-                await sendMessages([m], chatContext, res, true);
-                if (getConfigKey("enableTts") && m.text.length > 0) {
-                    await sendAudioAndStop(chatContext, m, res);
-                } else {
-                    res.end();
+            responseMsg.subscribe(async (m: ChatMessage) => {
+                await sendMessages([m], chatContext, res, false);
+                if (m.finished) {
+                    await afterMessageFinished(m, chatContext, res);
                 }
-            }
-        });
+            });
+        }
+    } catch (e) {
+        sendError(chatId, "An error occurred while responding: " + e.toString(), res);
     }
 
     req.on('close', () => {

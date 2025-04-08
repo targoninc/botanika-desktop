@@ -25,6 +25,20 @@ export function newUserMessage(provider: string, model: string, message: string)
     };
 }
 
+export function newAssistantMessage(responseText: string, provider: string, modelName: string) {
+    return <ChatMessage>{
+        id: uuidv4(),
+        type: "assistant",
+        text: responseText,
+        time: Date.now(),
+        references: [],
+        files: [],
+        finished: true,
+        provider,
+        model: modelName
+    };
+}
+
 export async function createChat(model: LanguageModelV1, newMessage: ChatMessage): Promise<ChatContext> {
     const chatId = uuidv4();
     // create chat
