@@ -74,7 +74,7 @@ export function getPromptMessages(messages: ChatMessage[], worldContext: Record<
                 return {
                     role: m.type,
                     content: [m.toolResult]
-                }
+                };
             }
 
             return {
@@ -110,12 +110,12 @@ export function getToolPromptMessages(messages: ChatMessage[]): CoreMessage[] {
 export function getChatNameMessages(message: string): CoreMessage[] {
     return [
         {
-            role: "user",
-            content: message
+            role: "system",
+            content: "Describe the following message in 3-4 words. Don't actually answer the message."
         },
         {
-            role: "system",
-            content: "Describe the preceding user message in 3-4 words. Don't actually answer the user's message."
+            role: "user",
+            content: message
         },
     ];
 }

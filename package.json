@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.35",
+  "version": "1.0.36",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -25,6 +25,7 @@
     "@types/electron-squirrel-startup": "^1.0.2",
     "@types/express": "^5.0.1",
     "@types/node": "^22.14.0",
+    "@types/spotify-web-api-node": "^5.0.11",
     "@types/winston": "^2.4.4",
     "@types/winston-syslog": "^2.4.3",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
@@ -56,6 +57,7 @@
     "marked": "^15.0.7",
     "ollama-ai-provider": "^1.2.0",
     "openai": "^4.91.1",
+    "spotify-web-api-node": "^5.0.2",
     "uuid": "^11.1.0",
     "vite": "^6.1.1",
     "zod": "^3.24.2"

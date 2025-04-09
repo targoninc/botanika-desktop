@@ -31,7 +31,7 @@ export async function tryCallTool(model: LanguageModelV1, messages: CoreMessage[
         model,
         messages,
         tools,
-        maxSteps: Math.min(Object.keys(tools).length, 5),
+        maxSteps: 1,
         toolChoice: "auto"
     });
 

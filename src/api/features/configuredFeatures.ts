@@ -42,5 +42,6 @@ export async function getConfiguredApis(): Promise<ConfiguredApis> {
         [ConfiguredApi.Ollama]: await urlConfigurationInfo(process.env.OLLAMA_URL ?? "http://localhost:11434"),
         [ConfiguredApi.Azure]: envConfigurationInfo("AZURE_RESOURCE_NAME", "AZURE_API_KEY"),
         [ConfiguredApi.OpenRouter]: envConfigurationInfo("OPENROUTER_API_KEY"),
+        [ConfiguredApi.Spotify]: envConfigurationInfo("SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"),
     }
 }

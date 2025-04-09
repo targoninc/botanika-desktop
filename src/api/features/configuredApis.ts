@@ -7,6 +7,7 @@ export enum ConfiguredApi {
     Ollama = "Ollama",
     Azure = "Azure",
     OpenRouter = "OpenRouter",
+    Spotify = "Spotify",
 }
 
 export type ConfiguredApis = Record<ConfiguredApi, FeatureConfigurationInfo>;
