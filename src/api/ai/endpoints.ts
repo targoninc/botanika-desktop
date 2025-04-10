@@ -30,7 +30,7 @@ export function chunk(content: string) {
     return `${content}${terminator}`;
 }
 
-export async function sendMessages(messages: ChatMessage[], chatContext: ChatContext, res: Response, persist: boolean) {
+export async function sendMessages(messages: ChatMessage[], chatContext: ChatContext, res: Response) {
     const update = <ChatUpdate>{
         chatId: chatContext.id,
         timestamp: Date.now(),
@@ -38,19 +38,18 @@ export async function sendMessages(messages: ChatMessage[], chatContext: ChatCon
     };
     res.write(chunk(JSON.stringify(update)));
     chatContext = updateContext(chatContext, update);
-    if (persist) {
-        await ChatStorage.writeChatContext(chatContext.id, chatContext);
-    }
     return chatContext;
 }
 
 async function afterMessageFinished(m: ChatMessage, chatContext: ChatContext, res: Response) {
-    await sendMessages([m], chatContext, res, true);
+    m.time = Date.now();
+    chatContext = await sendMessages([m], chatContext, res);
     if (getConfigKey("enableTts") && m.text.length > 0) {
-        await sendAudioAndStop(chatContext, m, res);
+        chatContext = await sendAudioAndStop(chatContext, m, res);
     } else {
         res.end();
     }
+    return chatContext;
 }
 
 function sendError(chatId: string, e: string, res: Response) {
@@ -143,25 +142,26 @@ export const chatEndpoint = async (req: Request, res: Response) => {
 
         const worldContext = getWorldContext();
         if (provider === LlmProvider.openrouter) {
-            const responseText = await getSimpleResponse(model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
-            const m = newAssistantMessage(responseText, provider, modelName);
-            await afterMessageFinished(m, chatContext, res);
+            const response = await getSimpleResponse(model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
+            const m = newAssistantMessage(response.text, provider, modelName);
+            chatContext = await afterMessageFinished(m, chatContext, res);
         } else {
             const streamResponse = await streamResponseAsMessage(provider, modelName, model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
-            streamResponse.message.subscribe(async (m: ChatMessage) => {
-                await sendMessages([m], chatContext, res, false);
-                if (m.finished) {
-                    await afterMessageFinished(m, chatContext, res);
-                }
+            let streamPromise = new Promise<void>((resolve, reject) => {
+                streamResponse.message.subscribe(async (m: ChatMessage) => {
+                    chatContext = await sendMessages([m], chatContext, res);
+                    if (m.finished) {
+                        chatContext = await afterMessageFinished(m, chatContext, res);
+                        resolve();
+                    }
+                });
             });
+
             const steps = await streamResponse.steps;
             const toolResults = steps.flatMap(s => s.toolResults);
-            CLI.debug(`Got ${toolResults.length} tool results`);
-            chatContext = await addToolCallsToContext(provider, modelName, toolResults, res, chatContext);
-            if (toolResults.length === steps.length) {
-                CLI.debug(`All tools called`);
-            }
+            CLI.debug(`Got ${toolResults.length} tool results, waiting for stream to finish`);
+            await streamPromise;
         }
         currentChatContext.unsubscribe(onContextChange);
         mcpInfo.onClose();
@@ -189,15 +189,16 @@ export async function getAudio(lastMessage: ChatMessage): Promise<string> {
 export async function sendAudioAndStop(chatContext: ChatContext, lastMessage: ChatMessage, res: Response) {
     const audioUrl = await getAudio(lastMessage);
     if (audioUrl) {
-        await sendMessages([
+        chatContext = await sendMessages([
             {
                 ...lastMessage,
                 hasAudio: true
             }
-        ], chatContext, res, true);
+        ], chatContext, res);
     }
 
     res.end();
+    return chatContext;
 }
 
 export async function getChatIdsEndpoint(req: Request, res: Response) {

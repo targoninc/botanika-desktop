@@ -36,6 +36,30 @@ export function wrapTool(id: string, execute: (input: any) => Promise<any>) {
         const diff = performance.now() - start;
         CLI.debug(`Tool ${id} took ${diff.toFixed()} ms to execute`);
         result.messageId = newMessage.id;
+        const chatContext = currentChatContext.value;
+        currentChatContext.value = {
+            ...chatContext,
+            // @ts-ignore
+            history: chatContext.history.map(m => {
+                if (m.id === newMessage.id) {
+                    return {
+                        ...m,
+                        time: Date.now(),
+                        finished: true,
+                        text: result.text,
+                        references: result.references,
+                        toolResult: {
+                            toolName: id,
+                            toolCallId: uuidv4(),
+                            result,
+                            type: "tool-result",
+                            args: input
+                        }
+                    };
+                }
+                return m;
+            })
+        };
         return result;
     }
 }

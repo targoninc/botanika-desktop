@@ -6,7 +6,10 @@ import {v4 as uuidv4} from "uuid";
 import {updateMessageFromStream} from "./functions";
 import {LanguageModelSourceV1} from "./models/LanguageModelSourceV1";
 
-export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[], maxTokens: number = 1000): Promise<string> {
+export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[], maxTokens: number = 1000): Promise<{
+    thoughts: string;
+    text: string
+}> {
     const res = await generateText({
         model,
         messages,
@@ -21,10 +24,17 @@ export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, 
 
     if (res.text.length === 0) {
         CLI.warning("Got empty response");
-        return "";
+        return {
+            thoughts: undefined,
+            text: ""
+        };
     }
 
-    return res.text;
+    const thoughts = res.text.match(/<think>(.*?)<\/think>/gms);
+    return {
+        thoughts: thoughts ? thoughts[0].trim() : undefined,
+        text: res.text.replace(/<think>(.*?)<\/think>/gms, "").trim()
+    };
 }
 
 export async function streamResponseAsMessage(provider: string, modelName: string, model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[]): Promise<{

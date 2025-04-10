@@ -25,19 +25,26 @@ async function searchToolCall(input: SpotifySearchOptions) {
 
     const result = await search(input.query, input.searchTypes);
     const refs = Object.keys(result).flatMap(key => {
-        return result[key].items.map((i: any) => {
-            return <ResourceReference>{
-                type: "resource-reference",
-                name: i?.name ?? "Unknown",
-                link: i.href,
-                imageUrl: i.images ? i.images[0]?.url : null
-            }
-        })
+        return result[key].items
+            .filter(i => !!i)
+            .map((i: any) => {
+                const artists = i.artists ? i.artists.map(a => a.name).join(", ") : "Unknown";
+
+                return <ResourceReference>{
+                    type: "resource-reference",
+                    name: artists + " - " + i.name,
+                    link: i.external_urls?.spotify,
+                    imageUrl: i.images ? i.images[0]?.url : null,
+                    metadata: {
+                        uri: i?.uri
+                    }
+                }
+            })
     });
 
     return <ChatToolResult>{
         text: `${refs.length} Spotify search results`,
-        references: refs,
+        references: refs
     };
 }
 

@@ -7,7 +7,8 @@ import {Configuration} from "../../../models/Configuration";
 import {getSimpleResponse} from "./calls";
 
 export async function getChatName(model: LanguageModelV1, message: string): Promise<string> {
-    return await getSimpleResponse(model, {}, getChatNameMessages(message), 1000);
+    const response = await getSimpleResponse(model, {}, getChatNameMessages(message), 1000);
+    return response.text;
 }
 
 export function newUserMessage(provider: string, model: string, message: string): ChatMessage {

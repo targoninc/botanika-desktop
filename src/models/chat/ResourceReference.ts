@@ -4,4 +4,5 @@ export interface ResourceReference {
     link?: string;
     snippet?: string;
     imageUrl?: string;
+    metadata?: any;
 }

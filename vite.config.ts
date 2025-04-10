@@ -4,6 +4,9 @@ import electron from 'vite-plugin-electron/simple'
 import native from 'vite-plugin-native'
 
 export default defineConfig({
+  server: {
+    hmr: false
+  },
   plugins: [
     electron({
       main: {

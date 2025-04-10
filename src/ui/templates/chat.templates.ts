@@ -100,7 +100,7 @@ export class ChatTemplates {
                     create("div")
                         .classes("flex-v", "small-gap", "chat-message-references")
                         .children(
-                            ...message.references.map(r => ChatTemplates.reference(r)),
+                            ...(message.references ?? []).map(r => ChatTemplates.reference(r)),
                         ).build(),
                     !message.finished ? GenericTemplates.spinner() : null,
                 ).build();
