@@ -39,7 +39,7 @@ export async function addToolCallsToContext(provider: string, model: string, cal
 
         const existingMessage = chatContext.history
             .filter(m => !m.finished)
-            .find(m => m.toolResult.toolName === toolCall.toolName);
+            .find(m => m.id === result.messageId);
 
         if (existingMessage) {
             return {

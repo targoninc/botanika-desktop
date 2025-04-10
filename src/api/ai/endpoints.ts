@@ -22,6 +22,7 @@ import {getConfig, getConfigKey} from "../configuration";
 import {signal} from "../../ui/lib/fjsc/src/signals";
 import {getSimpleResponse, streamResponseAsMessage} from "./llms/calls";
 import {addToolCallsToContext} from "./llms/functions";
+import {tool} from "ai";
 
 export const currentChatContext = signal<ChatContext>(null);
 
@@ -155,7 +156,12 @@ export const chatEndpoint = async (req: Request, res: Response) => {
                 }
             });
             const steps = await streamResponse.steps;
-            chatContext = await addToolCallsToContext(provider, modelName, steps.flatMap(s => s.toolResults), res, chatContext);
+            const toolResults = steps.flatMap(s => s.toolResults);
+            CLI.debug(`Got ${toolResults.length} tool results`);
+            chatContext = await addToolCallsToContext(provider, modelName, toolResults, res, chatContext);
+            if (toolResults.length === steps.length) {
+                CLI.debug(`All tools called`);
+            }
         }
         currentChatContext.unsubscribe(onContextChange);
         mcpInfo.onClose();

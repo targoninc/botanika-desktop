@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import * as readline from "node:readline";
 import {shell} from "electron";
 import {app} from "../../../../../../../server-utils";
+import {setEnvironmentVariable} from "../../../../../../features/environment";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 
@@ -27,47 +28,75 @@ const scopes = [
     'user-library-modify',
     'user-library-read',
 ];
+let endpointAdded = false;
+let code: string = process.env.SPOTIFY_CODE;
 
-export async function createClient() {
-    if (api) {
-        return api;
+async function authorize() {
+    if (!endpointAdded) {
+        app.get('/mcp/spotify/callback', async (req, res) => {
+            code = req.query.code;
+            if (!code) {
+                res.status(400).send('Missing code parameter');
+                return;
+            }
+            await setEnvironmentVariable("SPOTIFY_CODE", code);
+            CLI.info("Spotify code set");
+            res.send();
+        });
+        endpointAdded = true;
     }
-    CLI.info("Creating Spotify client");
 
-    api = new SpotifyWebApi({
-        clientId: process.env.SPOTIFY_CLIENT_ID,
-        clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-        redirectUri: 'http://localhost:48678/mcp/spotify/callback',
-    });
-    const authorizeURL = api.createAuthorizeURL(scopes, "");
-    CLI.info(`Opening Spotify authorization page: ${authorizeURL}`);
-    await shell.openExternal(authorizeURL);
+    if (!code) {
+        const authorizeURL = api.createAuthorizeURL(scopes, "");
+        CLI.info(`Opening Spotify authorization page: ${authorizeURL}`);
+        await shell.openExternal(authorizeURL);
 
-    let code: string;
-    app.get('/mcp/spotify/callback', async (req, res) => {
-        code = req.query.code;
-        if (!code) {
-            res.status(400).send('Missing code parameter');
+        await new Promise<string>((resolve, reject) => {
+            const interval = setInterval(() => {
+                if (code) {
+                    clearInterval(interval);
+                    resolve(code);
+                } else {
+                    CLI.debug("Waiting for Spotify authorization code...");
+                }
+            }, 500);
+        });
+    }
+
+    try {
+        const data = await api.authorizationCodeGrant(code);
+
+        api.setAccessToken(data.body['access_token']);
+        api.setRefreshToken(data.body['refresh_token']);
+    } catch (e) {
+        if (e.toString().includes("code expired")) {
+            code = null;
+            await authorize();
             return;
         }
-        res.send();
-    });
+    }
+}
 
-    await new Promise<string>((resolve, reject) => {
-        const interval = setInterval(() => {
-            if (code) {
-                clearInterval(interval);
-                resolve(code);
-            } else {
-                CLI.debug("Waiting for Spotify authorization code...");
-            }
-        }, 500);
-    });
+export async function createClient() {
+    if (!api) {
+        api = new SpotifyWebApi({
+            clientId: process.env.SPOTIFY_CLIENT_ID,
+            clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+            redirectUri: 'http://localhost:48678/mcp/spotify/callback',
+        });
+    }
 
-    const data = await api.authorizationCodeGrant(code);
+    await authorize();
 
-    api.setAccessToken(data.body['access_token']);
-    api.setRefreshToken(data.body['refresh_token']);
+    try {
+        await api.getMyCurrentPlaybackState();
+    } catch (e) {
+        CLI.warning("Spotify authentication failed, trying again");
+        code = null;
+        await authorize();
+    }
+    CLI.success("SUCCESS AUTH");
+
     return api;
 }
 

@@ -7,9 +7,8 @@ import {checkIfEnabled, createClient} from "../createClient";
 import {SpotifySearchOptions} from "../models/SpotifySearchOptions";
 
 async function search(query: string, searchTypes: SearchType[]): Promise<SpotifyApi.SearchResponse> {
+    const api = await createClient();
     try {
-        const api = await createClient();
-
         const response = await api.search(query, searchTypes, {
             limit: 10,
         });
@@ -29,7 +28,7 @@ async function searchToolCall(input: SpotifySearchOptions) {
         return result[key].items.map((i: any) => {
             return <ResourceReference>{
                 type: "resource-reference",
-                name: i.name,
+                name: i?.name ?? "Unknown",
                 link: i.href,
                 imageUrl: i.images ? i.images[0]?.url : null
             }

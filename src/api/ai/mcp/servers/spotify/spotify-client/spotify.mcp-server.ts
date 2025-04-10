@@ -1,10 +1,12 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {connectServerWithSse} from "../../connectServer";
 import {Application} from "express";
 import {spotifySearchTool} from "./integration/tools/search.tool";
 import {CLI} from "../../../../../CLI";
 import {spotifyGetDevicesTool} from "./integration/tools/getDevices.tool";
 import {spotifyPlayTool} from "./integration/tools/play.tool";
+import {spotifyPauseTool} from "./integration/tools/pause.tool";
+import {spotifyGetCurrentPlaybackTool} from "./integration/tools/getCurrentPlayback.tool";
 
 export function createSpotifyServer(app: Application) {
     const server = new McpServer({
@@ -24,6 +26,12 @@ export function createSpotifyServer(app: Application) {
 
     const playTool = spotifyPlayTool();
     server.tool(playTool.id, playTool.description, playTool.parameters, playTool.execute);
+
+    const pauseTool = spotifyPauseTool();
+    server.tool(pauseTool.id, pauseTool.description, pauseTool.parameters, pauseTool.execute);
+
+    const getCurrentPlaybackTool = spotifyGetCurrentPlaybackTool();
+    server.tool(getCurrentPlaybackTool.id, getCurrentPlaybackTool.description, getCurrentPlaybackTool.parameters, getCurrentPlaybackTool.execute);
 
     CLI.log("Creating Spotify server");
     connectServerWithSse(server, "spotify", app);

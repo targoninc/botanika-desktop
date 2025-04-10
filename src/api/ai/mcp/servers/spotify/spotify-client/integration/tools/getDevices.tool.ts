@@ -4,9 +4,8 @@ import {wrapTool} from "../../../../../tooling";
 import {checkIfEnabled, createClient} from "../createClient";
 
 async function getDevices(): Promise<SpotifyApi.UserDevicesResponse> {
+    const api = await createClient();
     try {
-        const api = await createClient();
-
         const response = await api.getMyDevices();
 
         return response.body;
