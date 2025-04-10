@@ -155,10 +155,11 @@ export const chatEndpoint = async (req: Request, res: Response) => {
                 }
             });
             const steps = await streamResponse.steps;
-            await addToolCallsToContext(provider, modelName, steps.flatMap(s => s.toolResults), res, chatContext);
+            chatContext = await addToolCallsToContext(provider, modelName, steps.flatMap(s => s.toolResults), res, chatContext);
         }
         currentChatContext.unsubscribe(onContextChange);
         mcpInfo.onClose();
+        await ChatStorage.writeChatContext(chatContext.id, chatContext);
     } catch (e) {
         sendError(chatId, "An error occurred while responding: " + e.toString(), res);
     }

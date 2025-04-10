@@ -66,5 +66,5 @@ export async function addToolCallsToContext(provider: string, model: string, cal
         }
     });
 
-    return await sendMessages(updatedMessages, chatContext, res, true);
+    return await sendMessages(updatedMessages, chatContext, res, false);
 }
