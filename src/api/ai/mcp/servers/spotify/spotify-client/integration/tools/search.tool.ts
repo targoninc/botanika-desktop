@@ -1,37 +1,14 @@
 import {z} from "zod";
-import {ResourceReference} from "../../../../../../../models/chat/ResourceReference";
-import dotenv from "dotenv";
-import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
-import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
-import {ConfiguredApi} from "../../../../../../features/configuredApis";
-import {wrapTool} from "../../../../tooling";
-import {SearchType} from "./searchType";
-import {CLI} from "../../../../../../CLI";
-
-const SpotifyWebApi = require("spotify-web-api-node");
-
-dotenv.config();
-
-let api: SpotifyWebApi;
-
-async function createClient() {
-    if (api) {
-        return;
-    }
-    CLI.info("Creating Spotify client");
-    api = new SpotifyWebApi({
-        clientId: process.env.SPOTIFY_CLIENT_ID,
-        clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-    });
-
-    const data = await api.clientCredentialsGrant();
-
-    api.setAccessToken(data.body['access_token']);
-}
+import {ResourceReference} from "../../../../../../../../models/chat/ResourceReference";
+import {ChatToolResult} from "../../../../../../../../models/chat/ChatToolResult";
+import {wrapTool} from "../../../../../tooling";
+import {SearchType} from "../models/SearchType";
+import {checkIfEnabled, createClient} from "../createClient";
+import {SpotifySearchOptions} from "../models/SpotifySearchOptions";
 
 async function search(query: string, searchTypes: SearchType[]): Promise<SpotifyApi.SearchResponse> {
     try {
-        await createClient();
+        const api = await createClient();
 
         const response = await api.search(query, searchTypes, {
             limit: 10,
@@ -44,14 +21,7 @@ async function search(query: string, searchTypes: SearchType[]): Promise<Spotify
     }
 }
 
-async function checkIfEnabled() {
-    const configuredApis = await getConfiguredApis();
-    if (!configuredApis[ConfiguredApi.Spotify].enabled) {
-        throw new Error("Spotify API is not enabled.");
-    }
-}
-
-async function toolCall(input: any) {
+async function searchToolCall(input: SpotifySearchOptions) {
     await checkIfEnabled();
 
     const result = await search(input.query, input.searchTypes);
@@ -80,6 +50,6 @@ export function spotifySearchTool() {
             query: z.string().describe('What to search for'),
             searchTypes: z.array(z.nativeEnum(SearchType)).describe('What types to search for'),
         },
-        execute: wrapTool("spotify.search", toolCall),
+        execute: wrapTool("spotify.search", searchToolCall),
     };
 }

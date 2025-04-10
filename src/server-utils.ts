@@ -9,6 +9,7 @@ import {createMcpServers} from "./api/ai/mcp/servers/createServers";
 dotenv.config();
 
 const APP_PORT = Number(process.env.PORT || "48678");
+export let app = null;
 
 async function startServer() {
     const port = APP_PORT;
@@ -22,7 +23,7 @@ async function startServer() {
         console.log('Server not running, starting...');
     }
 
-    const app = express();
+    app = express();
     app.use(express.json());
     app.use(cors({
         origin: "*",

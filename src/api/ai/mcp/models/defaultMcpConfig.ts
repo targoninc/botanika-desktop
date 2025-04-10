@@ -7,6 +7,10 @@ export const defaultMcpConfig: McpConfiguration = {
         {
             name: "Google Search",
             url: `http://localhost:${APP_PORT}/mcp/sse/google/search`
+        },
+        {
+            name: "Spotify",
+            url: `http://localhost:${APP_PORT}/mcp/sse/spotify`
         }
     ]
 }
