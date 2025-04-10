@@ -1,4 +1,4 @@
-import {CoreMessage, GeneratedFile, generateText, LanguageModelV1, streamText, ToolResultUnion, ToolSet} from "ai";
+import {CoreMessage, GeneratedFile, generateText, LanguageModelV1, StepResult, streamText, ToolSet} from "ai";
 import {signal, Signal} from "../../../ui/lib/fjsc/src/signals";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {CLI} from "../../CLI";
@@ -6,13 +6,14 @@ import {v4 as uuidv4} from "uuid";
 import {updateMessageFromStream} from "./functions";
 import {LanguageModelSourceV1} from "./models/LanguageModelSourceV1";
 
-export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMessage[], maxTokens: number = 1000): Promise<string> {
+export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[], maxTokens: number = 1000): Promise<string> {
     const res = await generateText({
         model,
         messages,
         maxTokens,
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
+        tools
     });
     if (res.finishReason !== "stop") {
         CLI.warning(`Got finish reason ${res.finishReason}`);
@@ -26,29 +27,23 @@ export async function getSimpleResponse(model: LanguageModelV1, messages: CoreMe
     return res.text;
 }
 
-export async function tryCallTool(model: LanguageModelV1, messages: CoreMessage[], tools: ToolSet): Promise<Array<ToolResultUnion<ToolSet>>> {
-    const res = await generateText({
-        model,
-        messages,
-        tools,
-        maxSteps: 1,
-        toolChoice: "auto"
-    });
-
-    return res.toolResults;
-}
-
-export async function streamResponseAsMessage(provider: string, modelName: string, model: LanguageModelV1, messages: CoreMessage[]): Promise<Signal<ChatMessage>> {
+export async function streamResponseAsMessage(provider: string, modelName: string, model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[]): Promise<{
+    message: Signal<ChatMessage>;
+    steps: Promise<Array<StepResult<ToolSet>>>
+}> {
     CLI.debug("Streaming response...");
     const {
         textStream,
         files,
+        steps,
         sources
     } = streamText({
         model,
         messages,
+        tools,
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
+        maxSteps: 5,
     });
 
     const messageId = uuidv4();
@@ -81,5 +76,8 @@ export async function streamResponseAsMessage(provider: string, modelName: strin
         }));
     });
 
-    return message;
+    return {
+        message,
+        steps
+    };
 }

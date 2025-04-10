@@ -2,13 +2,12 @@ import {v4 as uuidv4} from "uuid";
 import {ChatContext} from "../../../models/chat/ChatContext";
 import {ChatStorage} from "../../storage/ChatStorage";
 import {CoreMessage, LanguageModelV1} from "ai";
-import {groq} from "@ai-sdk/groq";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {Configuration} from "../../../models/Configuration";
 import {getSimpleResponse} from "./calls";
 
 export async function getChatName(model: LanguageModelV1, message: string): Promise<string> {
-    return await getSimpleResponse(model, getChatNameMessages(message), 1000);
+    return await getSimpleResponse(model, {}, getChatNameMessages(message), 1000);
 }
 
 export function newUserMessage(provider: string, model: string, message: string): ChatMessage {
@@ -57,7 +56,7 @@ export function getPromptMessages(messages: ChatMessage[], worldContext: Record<
     return [
         {
             role: "system",
-            content: `You are ${configuration.botname}, an assistant. If the last messages were tool calls, give the user a summary of what you did. Otherwise, here is a description of you: ${configuration.botDescription}`
+            content: `You are ${configuration.botname}, an assistant. Only call tools if absolutely necessary or explicitly requested. Here is a description of you: ${configuration.botDescription}`
         },
         {
             role: "system",
@@ -75,28 +74,6 @@ export function getPromptMessages(messages: ChatMessage[], worldContext: Record<
                     role: m.type,
                     content: [m.toolResult]
                 };
-            }
-
-            return {
-                role: m.type,
-                content: m.text
-            }
-        }) as CoreMessage[]
-    ];
-}
-
-export function getToolPromptMessages(messages: ChatMessage[]): CoreMessage[] {
-    return [
-        {
-            role: "system",
-            content: "You are a helpful chatbot. Only call tools if absolutely necessary or explicitly requested."
-        },
-        ...messages.map(m => {
-            if (m.type === "tool") {
-                return {
-                    role: m.type,
-                    content: [m.toolResult]
-                }
             }
 
             return {

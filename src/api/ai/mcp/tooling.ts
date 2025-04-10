@@ -2,13 +2,14 @@ import {CLI} from "../../CLI";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
 import {v4 as uuidv4} from "uuid";
 import {currentChatContext} from "../endpoints";
+import {ToolResultUnion, ToolSet} from "ai";
 
 export function wrapTool(id: string, execute: (input: any) => Promise<any>) {
     return async (input: any) => {
         const newMessage = <ChatMessage>{
             type: "tool",
             text: `Calling tool ${id}`,
-            toolResult: {
+            toolResult: <ToolResultUnion<ToolSet>>{
                 toolName: id,
                 text: null,
                 references: [],
