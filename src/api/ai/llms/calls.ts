@@ -8,7 +8,8 @@ import {LanguageModelSourceV1} from "./models/LanguageModelSourceV1";
 
 export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[], maxTokens: number = 1000): Promise<{
     thoughts: string;
-    text: string
+    text: string;
+    steps: Array<StepResult<ToolSet>>
 }> {
     const res = await generateText({
         model,
@@ -26,14 +27,16 @@ export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, 
         CLI.warning("Got empty response");
         return {
             thoughts: undefined,
-            text: ""
+            text: "",
+            steps: []
         };
     }
 
     const thoughts = res.text.match(/<think>(.*?)<\/think>/gms);
     return {
         thoughts: thoughts ? thoughts[0].trim() : undefined,
-        text: res.text.replace(/<think>(.*?)<\/think>/gms, "").trim()
+        text: res.text.replace(/<think>(.*?)<\/think>/gms, "").trim(),
+        steps: res.steps
     };
 }
 
@@ -46,6 +49,7 @@ export async function streamResponseAsMessage(provider: string, modelName: strin
         textStream,
         files,
         steps,
+        text,
         sources
     } = streamText({
         model,
@@ -69,7 +73,7 @@ export async function streamResponseAsMessage(provider: string, modelName: strin
         model: modelName
     });
 
-    updateMessageFromStream(message, textStream).then();
+    updateMessageFromStream(message, textStream, text).then();
 
     files.then((f: GeneratedFile[]) => {
         CLI.debug(`Generated ${f.length} files`);

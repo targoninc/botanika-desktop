@@ -21,8 +21,6 @@ import {AudioStorage} from "../storage/AudioStorage";
 import {getConfig, getConfigKey} from "../configuration";
 import {signal} from "../../ui/lib/fjsc/src/signals";
 import {getSimpleResponse, streamResponseAsMessage} from "./llms/calls";
-import {addToolCallsToContext} from "./llms/functions";
-import {tool} from "ai";
 
 export const currentChatContext = signal<ChatContext>(null);
 

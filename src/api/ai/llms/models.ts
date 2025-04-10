@@ -3,7 +3,7 @@ import {groq} from "@ai-sdk/groq";
 import {openai} from "@ai-sdk/openai";
 import {azure} from "@ai-sdk/azure";
 import {openrouter} from "@openrouter/ai-sdk-provider";
-import {createOllama} from 'ollama-ai-provider';
+import {createOllama, ollama} from 'ollama-ai-provider';
 import {LlmProvider} from "../../../models/llmProvider";
 import {ProviderV1} from "@ai-sdk/provider";
 import {ModelDefinition} from "../../../models/ModelDefinition";
@@ -21,8 +21,8 @@ dotenv.config();
 export const providerMap: Record<LlmProvider, ProviderV1|any> = {
     [LlmProvider.groq]: groq,
     [LlmProvider.openai]: openai,
-    [LlmProvider.ollama]: createOllama({
-        baseURL: process.env.OLLAMA_BASE_URL ?? "http://localhost:11434/api",
+    [LlmProvider.ollama]: (modelName: string) => ollama(modelName, {
+        simulateStreaming: true
     }),
     [LlmProvider.azure]: azure,
     [LlmProvider.openrouter]: openrouter
@@ -34,7 +34,7 @@ export function getModel(providerName: LlmProvider, model: string): LanguageMode
         throw new Error("Invalid LLM provider");
     }
 
-    return provider.languageModel(model);
+    return provider(model);
 }
 
 export async function getAvailableModels(provider: string): Promise<ModelDefinition[]> {
