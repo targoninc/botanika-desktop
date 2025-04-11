@@ -1,7 +1,7 @@
 import {z} from "zod";
-import {ResourceReference} from "../../../../../../../../models/chat/ResourceReference";
-import {ChatToolResult} from "../../../../../../../../models/chat/ChatToolResult";
-import {wrapTool} from "../../../../../tooling";
+import {ResourceReference} from "../../../../../../../models/chat/ResourceReference";
+import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
+import {wrapTool} from "../../../../tooling";
 import {SearchType} from "../models/SearchType";
 import {checkIfEnabled, createClient} from "../createClient";
 import {SpotifySearchOptions} from "../models/SpotifySearchOptions";

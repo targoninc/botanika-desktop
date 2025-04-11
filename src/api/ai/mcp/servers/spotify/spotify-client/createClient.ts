@@ -1,11 +1,10 @@
-import {CLI} from "../../../../../../CLI";
-import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
-import {ConfiguredApi} from "../../../../../../features/configuredApis";
 import dotenv from "dotenv";
-import * as readline from "node:readline";
 import {shell} from "electron";
-import {app} from "../../../../../../../server-utils";
-import {setEnvironmentVariable} from "../../../../../../features/environment";
+import {app, currentWindow} from "../../../../../../server-utils";
+import {setEnvironmentVariable} from "../../../../../features/environment";
+import {CLI} from "../../../../../CLI";
+import {getConfiguredApis} from "../../../../../features/configuredFeatures";
+import {ConfiguredApi} from "../../../../../features/configuredApis";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 
@@ -28,30 +27,26 @@ const scopes = [
     'user-library-modify',
     'user-library-read',
 ];
-let endpointAdded = false;
-let code: string = process.env.SPOTIFY_CODE;
+let token: string = process.env.SPOTIFY_TOKEN;
 
 async function authorize() {
-    if (!endpointAdded) {
+    if (!token) {
+        let code: string;
         app.get('/mcp/spotify/callback', async (req, res) => {
             code = req.query.code;
             if (!code) {
                 res.status(400).send('Missing code parameter');
                 return;
             }
-            await setEnvironmentVariable("SPOTIFY_CODE", code);
             CLI.info("Spotify code set");
             res.send();
         });
-        endpointAdded = true;
-    }
 
-    if (!code) {
         const authorizeURL = api.createAuthorizeURL(scopes, "");
         CLI.info(`Opening Spotify authorization page: ${authorizeURL}`);
         await shell.openExternal(authorizeURL);
 
-        await new Promise<string>((resolve, reject) => {
+        await new Promise<string>((resolve, _) => {
             const interval = setInterval(() => {
                 if (code) {
                     clearInterval(interval);
@@ -61,18 +56,21 @@ async function authorize() {
                 }
             }, 500);
         });
-    }
 
-    try {
-        const data = await api.authorizationCodeGrant(code);
+        try {
+            const data = await api.authorizationCodeGrant(code);
+            currentWindow.focus();
+            await setEnvironmentVariable("SPOTIFY_TOKEN", data.body['access_token']);
+            token = data.body['access_token'];
 
-        api.setAccessToken(data.body['access_token']);
-        api.setRefreshToken(data.body['refresh_token']);
-    } catch (e) {
-        if (e.toString().includes("code expired")) {
-            code = null;
-            await authorize();
-            return;
+            api.setAccessToken(data.body['access_token']);
+            api.setRefreshToken(data.body['refresh_token']);
+        } catch (e) {
+            if (e.toString().includes("code expired")) {
+                token = null;
+                await authorize();
+                return;
+            }
         }
     }
 }
@@ -86,16 +84,12 @@ export async function createClient() {
         });
     }
 
-    await authorize();
-
     try {
         await api.getMyCurrentPlaybackState();
-    } catch (e) {
-        CLI.warning("Spotify authentication failed, trying again");
-        code = null;
+    } catch (e: any) {
+        CLI.warning("Spotify authentication failed, trying to refresh");
         await authorize();
     }
-    CLI.success("SUCCESS AUTH");
 
     return api;
 }

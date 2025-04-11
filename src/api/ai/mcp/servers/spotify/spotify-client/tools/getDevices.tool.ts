@@ -1,7 +1,7 @@
-import {ResourceReference} from "../../../../../../../../models/chat/ResourceReference";
-import {ChatToolResult} from "../../../../../../../../models/chat/ChatToolResult";
-import {wrapTool} from "../../../../../tooling";
 import {checkIfEnabled, createClient} from "../createClient";
+import {ResourceReference} from "../../../../../../../models/chat/ResourceReference";
+import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
+import {wrapTool} from "../../../../tooling";
 
 async function getDevices(): Promise<SpotifyApi.UserDevicesResponse> {
     const api = await createClient();

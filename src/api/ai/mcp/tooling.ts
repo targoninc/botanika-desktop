@@ -25,6 +25,7 @@ export function wrapTool(id: string, execute: (input: any) => Promise<any>) {
             history: [...currentChatContext.value.history, newMessage]
         };
         const start = performance.now();
+        CLI.debug(`Calling tool ${id}`);
         let result;
         try {
             result = await execute(input);
@@ -34,7 +35,7 @@ export function wrapTool(id: string, execute: (input: any) => Promise<any>) {
             };
         }
         const diff = performance.now() - start;
-        CLI.debug(`Tool ${id} took ${diff.toFixed()} ms to execute`);
+        CLI.success(`Tool ${id} took ${diff.toFixed()} ms to execute`);
         result.messageId = newMessage.id;
         const chatContext = currentChatContext.value;
         currentChatContext.value = {

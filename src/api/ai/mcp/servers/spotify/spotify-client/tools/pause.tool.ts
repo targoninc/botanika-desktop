@@ -1,6 +1,6 @@
 import {z} from "zod";
-import {ChatToolResult} from "../../../../../../../../models/chat/ChatToolResult";
-import {wrapTool} from "../../../../../tooling";
+import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
+import {wrapTool} from "../../../../tooling";
 import {checkIfEnabled, createClient} from "../createClient";
 
 async function pause(deviceId: string): Promise<void> {

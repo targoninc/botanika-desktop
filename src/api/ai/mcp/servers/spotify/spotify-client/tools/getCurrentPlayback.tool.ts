@@ -1,6 +1,6 @@
-import {ChatToolResult} from "../../../../../../../../models/chat/ChatToolResult";
-import {wrapTool} from "../../../../../tooling";
 import {checkIfEnabled, createClient} from "../createClient";
+import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
+import {wrapTool} from "../../../../tooling";
 
 async function getCurrentPlayback(): Promise<SpotifyApi.CurrentPlaybackResponse> {
     const api = await createClient();

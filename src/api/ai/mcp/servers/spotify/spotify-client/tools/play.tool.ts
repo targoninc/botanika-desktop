@@ -1,6 +1,6 @@
 import {z} from "zod";
-import {ChatToolResult} from "../../../../../../../../models/chat/ChatToolResult";
-import {wrapTool} from "../../../../../tooling";
+import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
+import {wrapTool} from "../../../../tooling";
 import {checkIfEnabled, createClient} from "../createClient";
 
 async function play(deviceId: string, contextUri: string, uris: string[], positionMs: number): Promise<void> {

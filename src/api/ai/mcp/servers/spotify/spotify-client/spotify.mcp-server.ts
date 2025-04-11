@@ -1,12 +1,12 @@
 import {McpServer} from "@modelcontextprotocol/sdk/server/mcp.js";
 import {connectServerWithSse} from "../../connectServer";
 import {Application} from "express";
-import {spotifySearchTool} from "./integration/tools/search.tool";
 import {CLI} from "../../../../../CLI";
-import {spotifyGetDevicesTool} from "./integration/tools/getDevices.tool";
-import {spotifyPlayTool} from "./integration/tools/play.tool";
-import {spotifyPauseTool} from "./integration/tools/pause.tool";
-import {spotifyGetCurrentPlaybackTool} from "./integration/tools/getCurrentPlayback.tool";
+import {spotifySearchTool} from "./tools/search.tool";
+import {spotifyGetDevicesTool} from "./tools/getDevices.tool";
+import {spotifyPlayTool} from "./tools/play.tool";
+import {spotifyPauseTool} from "./tools/pause.tool";
+import {spotifyGetCurrentPlaybackTool} from "./tools/getCurrentPlayback.tool";
 
 export function createSpotifyServer(app: Application) {
     const server = new McpServer({

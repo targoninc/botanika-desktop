@@ -42,6 +42,8 @@ async function startServer() {
     });
 }
 
+export let currentWindow: BrowserWindow;
+
 export function createWindow() {
     console.log('Creating window...');
     const win = new BrowserWindow({
@@ -72,6 +74,8 @@ export function createWindow() {
         shell.openExternal(url);
         return { action: 'deny' };
     });
+
+    currentWindow = win;
 
     return win;
 }
