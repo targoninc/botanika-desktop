@@ -29,7 +29,7 @@ If you want to use any of these integrations, add them on the "Settings" page.
 | Groq       |                | [Groq](https://console.groq.com/keys)                  | GROQ_API_KEY                       |
 | OpenRouter |                | [OpenRouter](https://openrouter.ai/settings/keys)      | OPENROUTER_API_KEY                 |
 | Azure      |                |                                                        | AZURE_RESOURCE_NAME, AZURE_API_KEY |
-| Ollama     | Might not work | N/A                                                    | OLLAMA_URL                         |
+| Ollama     | Might not work |                                                        | OLLAMA_URL                         |
 
 ## Screenshots
 
