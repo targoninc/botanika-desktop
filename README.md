@@ -21,6 +21,16 @@ If you want to use any of these integrations, add them on the "Settings" page.
 | Google Search    | http://localhost:48678/mcp/sse/google/search |
 | Spotify          | http://localhost:48678/mcp/sse/spotify       |
 
+### Supported LLM providers
+
+| Provider   | Notes          | API key link                                           | Environment variable               |
+|------------|----------------|--------------------------------------------------------|------------------------------------|
+| OpenAI     |                | [OpenAI](https://platform.openai.com/account/api-keys) | OPENAI_API_KEY                     |
+| Groq       |                | [Groq](https://console.groq.com/keys)                  | GROQ_API_KEY                       |
+| OpenRouter |                | [OpenRouter](https://openrouter.ai/settings/keys)      | OPENROUTER_API_KEY                 |
+| Azure      |                |                                                        | AZURE_RESOURCE_NAME, AZURE_API_KEY |
+| Ollama     | Might not work | N/A                                                    | OLLAMA_URL                         |
+
 ## Screenshots
 
 ![A screenshot of the chat interface](https://github.com/user-attachments/assets/8ea3df6a-00f6-4c6e-aea7-4562551af144)
