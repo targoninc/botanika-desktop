@@ -50,7 +50,7 @@ async function toolCall(input: any) {
                 name: i.title,
                 link: i.link,
                 snippet: i.snippet,
-                imageUrl: i.pagemap.cse_thumbnail?.length > 0 ? i.pagemap.cse_thumbnail[0].src : null
+                imageUrl: i.pagemap?.cse_thumbnail?.length > 0 ? i.pagemap.cse_thumbnail[0].src : null
             }
         }),
     };

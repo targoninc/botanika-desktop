@@ -167,6 +167,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             await streamPromise;
         }
         currentChatContext.unsubscribe(onContextChange);
+        CLI.debug(`Closing MCP connections`);
         mcpInfo.onClose();
         await ChatStorage.writeChatContext(chatContext.id, chatContext);
     } catch (e) {

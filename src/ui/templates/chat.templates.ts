@@ -310,7 +310,7 @@ export class ChatTemplates {
         const provider = compute((c, p) => {
             const val = c.provider ?? "groq";
             const toUse = p.includes(val) ? val : p[0];
-            if (toUse !== c.provider) {
+            if (toUse !== c.provider && toUse) {
                 setProvider(toUse).then();
             }
             return toUse;

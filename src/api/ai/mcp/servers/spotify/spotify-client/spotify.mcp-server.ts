@@ -9,6 +9,8 @@ import {spotifyPauseTool} from "./tools/pause.tool";
 import {spotifyGetCurrentPlaybackTool} from "./tools/getCurrentPlayback.tool";
 import {spotifyGetProfileTool} from "./tools/getProfile.tool";
 import {spotifyAddToQueueTool} from "./tools/addToQueue.tool";
+import {spotifyAddToSavedTracksTool} from "./tools/addToSavedTracks.tool";
+import {spotifyGetArtistTopTracksTool} from "./tools/getArtistTopTracks.tool";
 
 export function createSpotifyServer(app: Application) {
     const server = new McpServer({
@@ -28,6 +30,8 @@ export function createSpotifyServer(app: Application) {
         spotifyGetCurrentPlaybackTool(),
         spotifyGetProfileTool(),
         spotifyAddToQueueTool(),
+        spotifyAddToSavedTracksTool(),
+        spotifyGetArtistTopTracksTool(),
     ];
 
     for (const tool of tools) {
