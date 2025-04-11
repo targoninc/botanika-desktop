@@ -105,6 +105,11 @@ export class ChatTemplates {
                     !message.finished ? GenericTemplates.spinner() : null,
                 ).build();
         }
+
+        if (message.text.trim().length === 0) {
+            return nullElement();
+        }
+
         const rawMdParsed = marked.parse(message.text, {
             async: false
         });

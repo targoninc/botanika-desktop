@@ -40,7 +40,7 @@ export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, 
     };
 }
 
-export async function streamResponseAsMessage(provider: string, modelName: string, model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[]): Promise<{
+export async function streamResponseAsMessage(maxSteps: number, provider: string, modelName: string, model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[]): Promise<{
     message: Signal<ChatMessage>;
     steps: Promise<Array<StepResult<ToolSet>>>
 }> {
@@ -57,7 +57,7 @@ export async function streamResponseAsMessage(provider: string, modelName: strin
         tools,
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
-        maxSteps: 5,
+        maxSteps,
     });
 
     const messageId = uuidv4();

@@ -46,11 +46,11 @@ async function authorize() {
         CLI.info(`Opening Spotify authorization page: ${authorizeURL}`);
         await shell.openExternal(authorizeURL);
 
-        await new Promise<string>((resolve, _) => {
+        await new Promise<void>((resolve, _) => {
             const interval = setInterval(() => {
-                if (code) {
+                if (code || token) {
                     clearInterval(interval);
-                    resolve(code);
+                    resolve();
                 } else {
                     CLI.debug("Waiting for Spotify authorization code...");
                 }

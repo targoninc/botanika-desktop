@@ -144,9 +144,10 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             const m = newAssistantMessage(response.text, provider, modelName);
             chatContext = await afterMessageFinished(m, chatContext, res);
         } else {
-            const streamResponse = await streamResponseAsMessage(provider, modelName, model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
+            const maxSteps = 5;
+            const streamResponse = await streamResponseAsMessage(maxSteps, provider, modelName, model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
-            let streamPromise = new Promise<void>((resolve, reject) => {
+            const streamPromise = new Promise<void>((resolve, reject) => {
                 streamResponse.message.subscribe(async (m: ChatMessage) => {
                     chatContext = await sendMessages([m], chatContext, res);
                     if (m.finished) {
@@ -158,7 +159,11 @@ export const chatEndpoint = async (req: Request, res: Response) => {
 
             const steps = await streamResponse.steps;
             const toolResults = steps.flatMap(s => s.toolResults);
-            CLI.debug(`Got ${toolResults.length} tool results, waiting for stream to finish`);
+            if (toolResults.length === maxSteps) {
+                const response = await getSimpleResponse(model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
+                const m = newAssistantMessage(response.text, provider, modelName);
+                chatContext = await afterMessageFinished(m, chatContext, res);
+            }
             await streamPromise;
         }
         currentChatContext.unsubscribe(onContextChange);
