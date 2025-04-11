@@ -39,7 +39,7 @@ async function authorize() {
                 return;
             }
             CLI.info("Spotify code set");
-            res.send();
+            res.send(`<html lang="en"><head><script>window.close()</script><title>Spotify Auth Success</title></head></html>`);
         });
 
         const authorizeURL = api.createAuthorizeURL(scopes, "");
