@@ -491,6 +491,14 @@ kbd {
     color: var(--text-4);
 }
 
+.text-small {
+    font-size: 0.8em;
+}
+
+.pill-padding {
+    padding: calc(2 * var(--input-padding-v)) var(--input-padding-h);
+}
+
 .chat-message {
     line-height: 1.4;
     font-size: .9em;

@@ -97,11 +97,11 @@ export class ChatTemplates {
                                     .text(message.text)
                                     .build(),
                         ).build(),
-                    create("div")
+                    (message.references && message.references.length > 0) ? create("div")
                         .classes("flex-v", "small-gap", "chat-message-references")
                         .children(
                             ...(message.references ?? []).map(r => ChatTemplates.reference(r)),
-                        ).build(),
+                        ).build() : null,
                     !message.finished ? GenericTemplates.spinner() : null,
                 ).build();
         }
@@ -392,7 +392,6 @@ export class ChatTemplates {
                     .classes("flex", "align-center", "no-wrap", "space-between")
                     .children(
                         create("span")
-                            .classes("text-small")
                             .text(chat.name)
                             .build(),
                         FJSC.button({
@@ -433,7 +432,7 @@ export class ChatTemplates {
             })
             .children(
                 create("div")
-                    .classes("flex", "align-center", "padded", "rounded", "no-wrap")
+                    .classes("flex", "align-center", "padded", "pill-padding", "no-wrap")
                     .children(
                         r.link ? GenericTemplates.icon("link") : null,
                         r.link ? create("a")
@@ -443,6 +442,7 @@ export class ChatTemplates {
                                 .text(r.name)
                                 .build()
                             : create("span")
+                                .classes("text-small")
                                 .text(r.name)
                                 .build(),
                     ).build(),
