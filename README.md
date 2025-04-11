@@ -7,10 +7,19 @@ A local LLM + tooling (with MCP support) client. All data is stored locally. Bri
 | Support  | TTS | STT | Open source | MCP Support | Desktop App | Web App |
 |----------|-----|-----|-------------|-------------|-------------|---------|
 | Botanika | ✅   | ❌   | ✅           | ✅           | ✅           | ❌       |
-| Claude   | ❌   | ❌   | ❌           | ✅           | ✅           | ✅       |
 | ChatGPT  | ✅   | ✅   | ❌           | ❌           | ❌           | ✅       |
-| T3.Chat  | ❌   | ❌   | ❌           | ❌           | ❌           | ✅       |
 | Copilot  | ✅   | ✅   | ❌           | ❌           | ❌           | ✅       |
+| Claude   | ❌   | ❌   | ❌           | ✅           | ✅           | ✅       |
+| T3.Chat  | ❌   | ❌   | ❌           | ❌           | ❌           | ✅       |
+
+### Native integrations
+
+If you want to use any of these integrations, add them on the "Settings" page.
+
+| Integration name | MCP Server URL                               |
+|------------------|----------------------------------------------|
+| Google Search    | http://localhost:48678/mcp/sse/google/search |
+| Spotify          | http://localhost:48678/mcp/sse/spotify       |
 
 ## Screenshots
 
