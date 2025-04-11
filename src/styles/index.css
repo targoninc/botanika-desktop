@@ -205,7 +205,6 @@ div {
 a {
     color: var(--text);
     text-decoration: none;
-    font-size: 0.8em;
 }
 
 a .material-symbols-outlined {

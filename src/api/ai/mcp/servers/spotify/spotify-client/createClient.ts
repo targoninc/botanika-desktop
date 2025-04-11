@@ -88,6 +88,7 @@ export async function createClient() {
         await api.getMyCurrentPlaybackState();
     } catch (e: any) {
         CLI.warning("Spotify authentication failed, trying to refresh");
+        token = null;
         await authorize();
     }
 

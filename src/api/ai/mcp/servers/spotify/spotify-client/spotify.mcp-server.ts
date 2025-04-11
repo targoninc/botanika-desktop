@@ -7,6 +7,7 @@ import {spotifyGetDevicesTool} from "./tools/getDevices.tool";
 import {spotifyPlayTool} from "./tools/play.tool";
 import {spotifyPauseTool} from "./tools/pause.tool";
 import {spotifyGetCurrentPlaybackTool} from "./tools/getCurrentPlayback.tool";
+import {spotifyGetProfileTool} from "./tools/getProfile.tool";
 
 export function createSpotifyServer(app: Application) {
     const server = new McpServer({
@@ -18,20 +19,18 @@ export function createSpotifyServer(app: Application) {
         },
     });
 
-    const searchTool = spotifySearchTool();
-    server.tool(searchTool.id, searchTool.description, searchTool.parameters, searchTool.execute);
+    const tools = [
+        spotifySearchTool(),
+        spotifyGetDevicesTool(),
+        spotifyPlayTool(),
+        spotifyPauseTool(),
+        spotifyGetCurrentPlaybackTool(),
+        spotifyGetProfileTool(),
+    ];
 
-    const getDevicesTool = spotifyGetDevicesTool();
-    server.tool(getDevicesTool.id, getDevicesTool.description, getDevicesTool.parameters, getDevicesTool.execute);
-
-    const playTool = spotifyPlayTool();
-    server.tool(playTool.id, playTool.description, playTool.parameters, playTool.execute);
-
-    const pauseTool = spotifyPauseTool();
-    server.tool(pauseTool.id, pauseTool.description, pauseTool.parameters, pauseTool.execute);
-
-    const getCurrentPlaybackTool = spotifyGetCurrentPlaybackTool();
-    server.tool(getCurrentPlaybackTool.id, getCurrentPlaybackTool.description, getCurrentPlaybackTool.parameters, getCurrentPlaybackTool.execute);
+    for (const tool of tools) {
+        server.tool(tool.id, tool.description, tool.parameters, tool.execute);
+    }
 
     CLI.log("Creating Spotify server");
     connectServerWithSse(server, "spotify", app);
