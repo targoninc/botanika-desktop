@@ -30,7 +30,7 @@ If you want to use any of these integrations, add them on the "Settings" page.
 
 # Run
 
-⚠️ **Don't forget to set your environment variables in the `.env` file.**
+**You can set your environment variables in the `.env` file or through the "Settings" page.**
 
 ```bash
 npm install
