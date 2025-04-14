@@ -6,7 +6,7 @@ A local LLM + tooling (with MCP support) client. All data is stored locally. Bri
 
 | Support  | TTS | STT | Open source | MCP Support | Desktop App | Web App |
 |----------|-----|-----|-------------|-------------|-------------|---------|
-| Botanika | ✅   | ❌   | ✅           | ✅           | ✅           | ❌       |
+| Botanika | ✅   | ✅   | ✅           | ✅           | ✅           | ❌       |
 | ChatGPT  | ✅   | ✅   | ❌           | ❌           | ❌           | ✅       |
 | Copilot  | ✅   | ✅   | ❌           | ❌           | ❌           | ✅       |
 | Claude   | ❌   | ❌   | ❌           | ✅           | ✅           | ✅       |
@@ -30,6 +30,16 @@ If you want to use any of these integrations, add them on the "Settings" page.
 | OpenRouter |                | [OpenRouter](https://openrouter.ai/settings/keys)      | OPENROUTER_API_KEY                 |
 | Azure      |                |                                                        | AZURE_RESOURCE_NAME, AZURE_API_KEY |
 | Ollama     | Might not work |                                                        | OLLAMA_URL                         |
+
+### Transcription
+
+If you **don't** want to use OpenAI, you can use Whisper locally. This requires a bit of setup:
+
+Install [pnpm](https://pnpm.io/installation), then run the following command and wait until the model is downloaded:
+
+```bash
+pnpm whisper-tnode download --model large-v1
+```
 
 ## Screenshots
 

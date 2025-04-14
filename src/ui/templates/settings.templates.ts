@@ -68,6 +68,13 @@ export class SettingsTemplates {
                 label: "Your birthdate",
                 description: "Will be given to the model(s) as context",
                 type: "date",
+            },
+            {
+                key: "transcriptionProvider",
+                icon: "speech_to_text",
+                label: "Transcription provider",
+                description: "The provider to use for transcription (openai or local)",
+                type: "string",
             }
         ];
         const loading = signal(false);

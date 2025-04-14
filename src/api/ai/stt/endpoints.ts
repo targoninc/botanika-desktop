@@ -1,21 +1,14 @@
 import { Request, Response } from "express";
-import {OpenAI} from "openai";
 import fs from "fs";
 import {appDataPath} from "../../appData";
-import {terminator} from "../../../models/chat/terminator";
-
-let openAi: OpenAI;
+import {getConfigKey} from "../../configuration";
+import {transcribeLocal} from "./localWhisper";
+import {transcribeOpenAI} from "./openaiWhisper";
 
 export async function transcribeEndpoint(req: Request, res: Response) {
     if (!req.file) {
         res.status(400).send("No file uploaded.");
         return;
-    }
-
-    if (!openAi) {
-        openAi = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
     }
 
     const file = req.file;
@@ -27,24 +20,16 @@ export async function transcribeEndpoint(req: Request, res: Response) {
 
     const startTime = performance.now();
     try {
-        const text = await openAi.audio.transcriptions.create({
-            model: "gpt-4o-mini-transcribe",
-            file: fs.createReadStream(tmpFileName),
-            response_format: "text",
-            stream: true,
-            language: "en",
-        });
-        const reader = text.toReadableStream().getReader();
-        let done = false;
-        while (!done) {
-            const { value, done: doneReading } = await reader.read();
-            if (doneReading) {
+        switch (getConfigKey("transcriptionProvider")) {
+            case "openai":
+                await transcribeOpenAI(tmpFileName, res);
                 break;
-            }
-            const text = new TextDecoder().decode(value);
-            res.write(text + terminator);
+            case "local":
+                await transcribeLocal(tmpFileName, res);
+                break;
+            default:
+                throw new Error("Invalid transcription provider");
         }
-        res.end();
     } catch (e) {
         console.error("Error during transcription:", e);
         res.status(500).send(e.toString());

@@ -18,18 +18,24 @@
     "target": [
       {
         "target": "msi",
-        "arch": ["x64"]
+        "arch": [
+          "x64"
+        ]
       }
     ],
     "requestedExecutionLevel": "requireAdministrator",
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
   "mac": {
-    "target": ["dmg"],
+    "target": [
+      "dmg"
+    ],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "linux": {
-    "target": ["AppImage"],
+    "target": [
+      "AppImage"
+    ],
     "icon": "build/256x256.png",
     "category": "Office",
     "artifactName": "${productName}-Linux-${version}.${ext}"

@@ -9,4 +9,5 @@ export interface Configuration extends Record<string, any> {
     provider: string;
     model: string;
     enableTts: boolean;
+    transcriptionProvider: "openai" | "local";
 }
