@@ -91,4 +91,8 @@ export class Api extends ApiBase {
     static getOpenAiKey() {
         return this.get<string>("/openaiKey");
     }
+
+    static transcribe(formData: FormData) {
+        return this.post("/transcribe", formData);
+    }
 }
