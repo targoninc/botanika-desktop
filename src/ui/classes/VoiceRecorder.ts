@@ -1,12 +1,8 @@
 import {Api} from "./api";
 import { Signal } from "../lib/fjsc/src/signals";
 import {terminator} from "../../models/chat/terminator";
-import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {toast} from "./ui";
-import {ToastType} from "../enums/ToastType";
-import {updateContext} from "../../models/updateContext";
-import {playAudio} from "./audio";
-import {chatContext, chats, currentText, loadChats} from "./store";
+import {chatContext, configuration, currentText, updateContextFromStream} from "./store";
 
 export class VoiceRecorder {
     private readonly threshold = 0.015;
@@ -149,6 +145,14 @@ export class VoiceRecorder {
                 const obj = JSON.parse(lastUpdate);
                 if (obj.type === "transcript.text.delta") {
                     currentText.value += obj.delta;
+                } else if (obj.type === "transcript.text.done") {
+                    const config = configuration.value;
+                    try {
+                        Api.sendMessage(currentText.value, config.provider, config.model, chatContext.value.id).then(updateContextFromStream);
+                    } catch (e) {
+                        toast(e.toString());
+                    }
+                    currentText.value = "";
                 }
             }
         });

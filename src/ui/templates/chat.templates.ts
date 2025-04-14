@@ -246,7 +246,9 @@ export class ChatTemplates {
             input.style.height = "auto";
             input.style.height = Math.min(input.scrollHeight, 300) + "px";
         }
-        input.subscribe(updateInputHeight);
+        input.subscribe(() => {
+            updateInputHeight();
+        });
 
         return create("div")
             .classes("chat-input", "flex-v", "small-gap")
@@ -275,7 +277,6 @@ export class ChatTemplates {
                         create("div")
                             .classes("flex", "align-center")
                             .children(
-                                AudioTemplates.voiceButton(),
                                 GenericTemplates.verticalButtonWithIcon("arrow_upward", "", send, ["send-button"]),
                             ).build(),
                     ).build(),
@@ -283,6 +284,7 @@ export class ChatTemplates {
                     .classes("flex", "space-between")
                     .children(
                         ChatTemplates.llmSelector(),
+                        AudioTemplates.voiceButton(),
                     ).build(),
             ).build();
     }

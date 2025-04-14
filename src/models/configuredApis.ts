@@ -1,4 +1,4 @@
-import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
+import {FeatureConfigurationInfo} from "./FeatureConfigurationInfo";
 
 export enum ConfiguredApi {
     GoogleSearch = "Google Search",

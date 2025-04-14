@@ -1,5 +1,5 @@
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
-import {ConfiguredApi, ConfiguredApis} from "./configuredApis";
+import {ConfiguredApi, ConfiguredApis} from "../../models/configuredApis";
 
 function envSet(key: string) {
     return process.env[key] && process.env[key].trim().length > 0;

@@ -1,4 +1,4 @@
-import {ConfiguredApi} from "../api/features/configuredApis";
+import {ConfiguredApi} from "./configuredApis";
 import {ModelDefinition} from "./ModelDefinition";
 
 export interface ProviderDefinition {

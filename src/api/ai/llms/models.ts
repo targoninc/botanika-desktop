@@ -13,7 +13,7 @@ import {getOllamaModels} from "./providers/ollama";
 import {getAzureModels} from "./providers/azure";
 import {getOpenrouterModels} from "./providers/openrouter";
 import dotenv from "dotenv";
-import {ConfiguredApi} from "../../features/configuredApis";
+import {ConfiguredApi} from "../../../models/configuredApis";
 import {ProviderDefinition} from "../../../models/ProviderDefinition";
 
 dotenv.config();

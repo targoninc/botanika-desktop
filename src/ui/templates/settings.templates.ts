@@ -3,7 +3,6 @@ import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
 import {
-    appDataPath,
     configuration,
     configuredApis,
     loadConfiguredApis,
@@ -14,7 +13,7 @@ import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
-import {ConfiguredApis} from "../../api/features/configuredApis";
+import {ConfiguredApis} from "../../models/configuredApis";
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
 import {createModal, toast} from "../classes/ui";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";

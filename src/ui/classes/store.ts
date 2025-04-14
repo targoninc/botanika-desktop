@@ -13,7 +13,7 @@ import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
 import {ProviderDefinition} from "../../models/ProviderDefinition";
-import {ConfiguredApis} from "../../api/features/configuredApis";
+import {ConfiguredApis} from "../../models/configuredApis";
 import {toast} from "./ui";
 import {ToastType} from "../enums/ToastType";
 
@@ -26,7 +26,6 @@ export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
 export const configuredApis = signal<ConfiguredApis>({} as ConfiguredApis);
 export const currentlyPlayingAudio = signal<string>(null);
 export const shortCutConfig = signal<ShortcutConfiguration>(defaultShortcuts);
-export const appDataPath = signal<string>(null);
 export const currentText = signal<string>("");
 
 export function initializeStore() {

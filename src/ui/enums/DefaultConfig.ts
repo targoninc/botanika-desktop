@@ -9,5 +9,6 @@ export const defaultConfig: Configuration = {
     language: "en",
     provider: "groq",
     model: "llama-3.1-8b-instant",
-    enableTts: false
+    enableTts: false,
+    botDescription: ""
 }

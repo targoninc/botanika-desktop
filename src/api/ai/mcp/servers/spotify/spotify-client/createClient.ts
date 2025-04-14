@@ -4,7 +4,7 @@ import {app, currentWindow} from "../../../../../../server-utils";
 import {setEnvironmentVariable} from "../../../../../features/environment";
 import {CLI} from "../../../../../CLI";
 import {getConfiguredApis} from "../../../../../features/configuredFeatures";
-import {ConfiguredApi} from "../../../../../features/configuredApis";
+import {ConfiguredApi} from "../../../../../../models/configuredApis";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 

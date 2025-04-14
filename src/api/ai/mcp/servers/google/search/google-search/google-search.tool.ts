@@ -5,7 +5,7 @@ import {ResourceReference} from "../../../../../../../models/chat/ResourceRefere
 import dotenv from "dotenv";
 import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
 import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
-import {ConfiguredApi} from "../../../../../../features/configuredApis";
+import {ConfiguredApi} from "../../../../../../../models/configuredApis";
 import {wrapTool} from "../../../../tooling";
 
 dotenv.config();
