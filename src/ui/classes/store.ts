@@ -27,7 +27,7 @@ export const configuredApis = signal<ConfiguredApis>({} as ConfiguredApis);
 export const currentlyPlayingAudio = signal<string>(null);
 export const shortCutConfig = signal<ShortcutConfiguration>(defaultShortcuts);
 export const appDataPath = signal<string>(null);
-export const currentLoudness = signal<number>(0);
+export const currentText = signal<string>("");
 
 export function initializeStore() {
     configuration.subscribe(c => {

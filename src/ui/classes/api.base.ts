@@ -19,6 +19,18 @@ export class ApiBase {
         return res.body;
     }
 
+    static async streamWithFormData(url: string, formData: FormData, sendCredentials = false) {
+        const res = await fetch(ApiBase.baseUrl + url, {
+            method: 'POST',
+            body: formData,
+            credentials: sendCredentials ? 'include' : 'omit'
+        });
+        if (!res.ok) {
+            throw new Error(res.statusText + " (" + res.body + ")");
+        }
+        return res.body;
+    }
+
     static async post(url: string, data = {}, sendCredentials = false) {
         const res = await fetch(ApiBase.baseUrl + url, {
             method: 'POST',

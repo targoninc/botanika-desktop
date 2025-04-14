@@ -230,140 +230,6 @@ export class GenericTemplates {
         });
     }
 
-    static inlineToggle(text: StringOrSignal, checked = false, callback: Callback<[boolean]> = () => {
-    }, extraClasses: StringOrSignal[] = [], id: StringOrSignal = null) {
-        return create("label")
-            .classes("flex", "align-center", "inline-toggle", ...extraClasses)
-            .children(
-                create("span")
-                    .classes("toggle-text")
-                    .text(text)
-                    .build(),
-                create("input")
-                    .type(InputType.checkbox)
-                    .classes("hidden", "slider")
-                    .id(id)
-                    .checked(checked)
-                    .onclick(e => {
-                        callback(target(e).checked);
-                    })
-                    .build(),
-                create("div")
-                    .classes("toggle-container", "align-center")
-                    .children(
-                        create("span")
-                            .classes("toggle-slider")
-                            .build()
-                    ).build(),
-            ).build();
-    }
-
-    static tableListHeader(headerName: StringOrSignal, property: string | ((c: any) => void), activeSortHeader: Signal<string>, listSignal: Signal<any[]>) {
-        const currentSortType = signal("desc");
-        if (headerName.constructor === String) {
-            headerName = signal(headerName);
-        }
-        headerName = headerName as Signal<string>;
-        const headerNameFull = compute((h, c, a) => {
-            if (a && a === h) {
-                return `${h} ${c === "asc" ? "▲" : "▼"}`;
-            }
-            return h;
-        }, headerName, currentSortType, activeSortHeader);
-
-        return create("th")
-            .classes("clickable")
-            .text(headerNameFull)
-            .onclick(() => {
-                if (!property) {
-                    return;
-                }
-
-                activeSortHeader.value = headerName;
-                if (currentSortType.value === "asc") {
-                    currentSortType.value = "desc";
-                } else {
-                    currentSortType.value = "asc";
-                }
-                listSignal.value = listSignal.value.sort((a, b) => {
-                    if (property.constructor === String) {
-                        let propA = a[property];
-                        let propB = b[property];
-                        if (property.includes(".")) {
-                            propA = property.split(".").reduce((obj, key) => obj[key], a);
-                            propB = property.split(".").reduce((obj, key) => obj[key], b);
-                        }
-
-                        if (currentSortType.value === "asc") {
-                            if (!propA || !propB) {
-                                return 0;
-                            }
-                            if (propA.constructor === String) {
-                                return propA.localeCompare(propB);
-                            } else {
-                                return propA - propB;
-                            }
-                        } else {
-                            if (!propB || !propA) {
-                                return 0;
-                            }
-                            if (propA.constructor === String) {
-                                return propB.localeCompare(propA);
-                            } else {
-                                return propB - propA;
-                            }
-                        }
-                    } else if (property.constructor === Function) {
-                        // @ts-expect-error - property is a function
-                        return property(a) - property(b);
-                    }
-                });
-            })
-            .build();
-    }
-
-    static invisibleInput(onType: Callback<[string]> = () => {
-    }, onChange: Callback<[string]> = () => {
-    }) {
-        return create("input")
-            .type(InputType.text)
-            .classes("invisible-input")
-            .onchange(e => {
-                onChange(target(e).value);
-                target(e).value = "";
-            })
-            .onkeydown((e: KeyboardEvent) => {
-                if (e.key === "Escape") {
-                    target(e).value = "";
-                    return;
-                }
-
-                if (e.key === "Enter" || e.key === "Tab" || e.key === ",") {
-                    onChange(target(e).value);
-                    target(e).value = "";
-                    setTimeout(() => {
-                        if (target(e).value === ",") {
-                            target(e).value = "";
-                        }
-                        target(e).focus();
-                    }, 0);
-                    return;
-                }
-
-                setTimeout(() => {
-                    onType(target(e).value);
-                }, 0);
-            })
-            .build();
-    }
-
-    static error(error: StringOrSignal) {
-        return create("div")
-            .classes("error")
-            .text(error)
-            .build();
-    }
-
     static tabs(tabs: Array<AnyElement>, tabDefs: Signal<Tab[]>, activeTab: Signal<string>) {
         const tabButtons = signalMap(tabDefs, create("div").classes("flex", "align-center", "no-gap"), (tabDef: Tab) => {
             const active = compute(activeTab => activeTab === tabDef.id, activeTab);
@@ -581,6 +447,26 @@ export class GenericTemplates {
                         };
                     }
                 })
+            ).build();
+    }
+
+    static redDot(onState: Signal<boolean>, scaleState: Signal<number>) {
+        const classExt = compute(o => o ? "_" : "hidden", onState);
+        const transform = compute(s => {
+            const inverseLinear = (1 - s);
+            const squaredInverse = inverseLinear * inverseLinear * inverseLinear;
+            const factor = 1 - squaredInverse;
+            const scale = Math.max(.5, Math.min(1.5, .5 + factor));
+            return `scale(${scale})`;
+        }, scaleState);
+
+        return create("div")
+            .classes("red-dot-container")
+            .children(
+                create("div")
+                    .styles("transform", transform)
+                    .classes("red-dot", classExt)
+                    .build()
             ).build();
     }
 }

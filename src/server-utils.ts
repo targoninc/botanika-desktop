@@ -5,6 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import cors from "cors";
 import {createMcpServers} from "./api/ai/mcp/servers/createServers";
+import {addTranscribeEndpoints} from "./api/ai/tts/endpoints";
 
 dotenv.config();
 
@@ -24,13 +25,15 @@ async function startServer() {
     }
 
     app = express();
-    app.use(express.json());
     app.use(cors({
         origin: "*",
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         preflightContinue: false,
         optionsSuccessStatus: 204,
     }));
+    addTranscribeEndpoints(app);
+    app.use(express.json());
+
     app.get('/', (req, res) => {
         res.send('API up and running');
     });

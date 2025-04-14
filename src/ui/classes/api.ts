@@ -93,6 +93,6 @@ export class Api extends ApiBase {
     }
 
     static transcribe(formData: FormData) {
-        return this.post("/transcribe", formData);
+        return this.streamWithFormData("/transcribe", formData, false);
     }
 }

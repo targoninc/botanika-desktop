@@ -6,7 +6,7 @@ import {
     chatContext, currentlyPlayingAudio,
     deleteChat,
     target,
-    updateContextFromStream, shortCutConfig, configuredApis
+    updateContextFromStream, shortCutConfig, configuredApis, currentText
 } from "../classes/store";
 import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
@@ -24,6 +24,7 @@ import {ModelDefinition} from "../../models/ModelDefinition";
 import {LlmProvider} from "../../models/llmProvider";
 import {playAudio, stopAudio} from "../classes/audio";
 import {ProviderDefinition} from "../../models/ProviderDefinition";
+import {AudioTemplates} from "./audio.templates";
 
 export class ChatTemplates {
     static chat() {
@@ -198,7 +199,7 @@ export class ChatTemplates {
             ).build();
     }
 
-    static messageAction(icon: string, text: string, onclick: () => void) {
+    static messageAction(icon: string, text: string, onclick: (e: any) => void) {
         return FJSC.button({
             icon: { icon },
             classes: ["flex", "align-center", "message-action"],
@@ -222,7 +223,7 @@ export class ChatTemplates {
     }
 
     static chatInput() {
-        const input = signal("");
+        const input = currentText;
         const chatId = compute(c => c?.id, chatContext);
         const provider = compute(c => c.provider, configuration);
         const model = compute(c => c.model, configuration);
@@ -245,6 +246,7 @@ export class ChatTemplates {
             input.style.height = "auto";
             input.style.height = Math.min(input.scrollHeight, 300) + "px";
         }
+        input.subscribe(updateInputHeight);
 
         return create("div")
             .classes("chat-input", "flex-v", "small-gap")
@@ -262,7 +264,6 @@ export class ChatTemplates {
                             .value(input)
                             .oninput((e: any) => {
                                 input.value = target(e).value;
-                                updateInputHeight();
                             })
                             .onkeydown((e: any) => {
                                 if (e.key === "Enter" && !e.shiftKey) {
@@ -271,7 +272,12 @@ export class ChatTemplates {
                                 }
                             })
                             .build(),
-                        GenericTemplates.verticalButtonWithIcon("arrow_upward", "", send, ["send-button"]),
+                        create("div")
+                            .classes("flex", "align-center")
+                            .children(
+                                AudioTemplates.voiceButton(),
+                                GenericTemplates.verticalButtonWithIcon("arrow_upward", "", send, ["send-button"]),
+                            ).build(),
                     ).build(),
                 create("div")
                     .classes("flex", "space-between")

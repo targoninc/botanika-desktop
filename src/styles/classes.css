@@ -716,3 +716,19 @@ pre {
     max-height: 300px;
     overflow-y: auto;
 }
+
+.red-dot-container {
+    --red-dot-max-size: calc(1em + (2 * var(--input-padding-h)));
+    width: var(--red-dot-max-size);
+    height: var(--red-dot-max-size);
+    display: flex;
+}
+
+.red-dot {
+    margin: auto;
+    height: calc(var(--red-dot-max-size) * .5);
+    width: calc(var(--red-dot-max-size) * .5);
+    transform-origin: center;
+    background: var(--red);
+    border-radius: 50%;
+}

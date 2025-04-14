@@ -1,14 +1,17 @@
-import {currentLoudness} from "./store";
 import {Api} from "./api";
+import { Signal } from "../lib/fjsc/src/signals";
+import {terminator} from "../../models/chat/terminator";
+import {ChatUpdate} from "../../models/chat/ChatUpdate";
+import {toast} from "./ui";
+import {ToastType} from "../enums/ToastType";
+import {updateContext} from "../../models/updateContext";
+import {playAudio} from "./audio";
+import {chatContext, chats, currentText, loadChats} from "./store";
 
 export class VoiceRecorder {
-    private threshold = 0.015;
-    private timeout = 2000;
-    private mimeType = 'audio/webm; codecs=opus';
-    private audioChunks = [];
-    private currentVolume = 0;
-    private sum = 0.0;
-    private recording = false;
+    private readonly threshold = 0.015;
+    private readonly timeout = 2000;
+    private readonly mimeType = 'audio/webm; codecs=opus';
 
     private mediaRecorder: MediaRecorder;
     private audioContext: AudioContext;
@@ -16,29 +19,28 @@ export class VoiceRecorder {
     private audioHeader: BlobPart;
     private lastDataTime: number;
     private dataInterval: number;
+    private audioChunks = [];
+    private currentVolume = 0;
+    private sum = 0.0;
+    private recording = false;
     private processing = false;
 
-    constructor() {
-        currentLoudness.value = this.currentVolume;
+    private loudness: Signal<number>;
+
+    constructor(loudness: Signal<number>) {
+        this.loudness = loudness;
+        this.loudness.value = this.currentVolume;
     }
 
-    static start() {
-        recorder.start();
-    }
-
-    static stop() {
-        recorder.stop();
-    }
-
-    static toggleRecording() {
-        if (recorder.recording) {
-            recorder.stop();
+    public toggleRecording() {
+        if (this.recording) {
+            this.stop();
         } else {
-            recorder.start();
+            this.start();
         }
     }
 
-    start() {
+    private start() {
         this.recording = true;
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(stream => {
@@ -90,7 +92,7 @@ export class VoiceRecorder {
         }
         const level = Math.sqrt(sum / input.length);
         this.currentVolume = level;
-        currentLoudness.value = this.currentVolume;
+        this.loudness.value = this.currentVolume;
         if (level > this.threshold) {
             this.lastDataTime = Date.now();
             this.sum += level;
@@ -102,7 +104,7 @@ export class VoiceRecorder {
         }
     }
 
-    stop() {
+    private stop() {
         if (this.mediaRecorder) {
             this.mediaRecorder.stop();
         }
@@ -110,11 +112,11 @@ export class VoiceRecorder {
         this.recording = false;
     }
 
-    getAverageVolume(chunks: BlobPart[]) {
+    private getAverageVolume(chunks: BlobPart[]) {
         return this.sum / chunks.length;
     }
 
-    async sendAudio() {
+    private async sendAudio() {
         if (this.audioChunks.length === 0) {
             return;
         }
@@ -129,10 +131,26 @@ export class VoiceRecorder {
         const audioBlob = new Blob(allAudioData, {type: this.mimeType});
 
         const formData = new FormData();
-        formData.append('file', audioBlob);
+        formData.append('file', audioBlob, "file.webm");
         console.log("Transcribing audio...");
-        Api.transcribe(formData).then(res => {
-            console.log("Audio transcribed: ", res.data);
+        Api.transcribe(formData).then(async stream => {
+            const reader = stream.getReader();
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) {
+                    break;
+                }
+                const decodedUpdates = new TextDecoder().decode(value).split(terminator).filter(s => s.length > 0);
+                const lastUpdate = decodedUpdates.pop();
+                if (!lastUpdate) {
+                    continue;
+                }
+                const obj = JSON.parse(lastUpdate);
+                if (obj.type === "transcript.text.delta") {
+                    currentText.value += obj.delta;
+                }
+            }
         });
 
         this.audioChunks = [];
@@ -140,5 +158,3 @@ export class VoiceRecorder {
         this.lastDataTime = null;
     }
 }
-
-const recorder = new VoiceRecorder();
