@@ -38,8 +38,23 @@ export function getOpenaiModels(): ModelDefinition[] {
             supportsTools: false
         },
         {
+            id: "gpt-4.1",
+            displayName: "GPT-4.1",
+            supportsTools: true
+        },
+        {
+            id: "gpt-4.1-mini",
+            displayName: "GPT-4.1 mini",
+            supportsTools: true
+        },
+        {
             id: "gpt-4o",
             displayName: "GPT 4o",
+            supportsTools: true
+        },
+        {
+            id: "chatgpt-4o-latest",
+            displayName: "ChatGPT 4o",
             supportsTools: true
         },
         {
