@@ -6,22 +6,23 @@ import {McpServerConfig} from "../../models/mcp/McpServerConfig";
 import {ConfiguredApis} from "../../models/configuredApis";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {ProviderDefinition} from "../../models/ProviderDefinition";
+import {ApiEndpoint} from "../../models/ApiEndpoints";
 
 export class Api extends ApiBase {
     static getConfig() {
-        return this.get<Configuration>("/config");
+        return this.get<Configuration>(ApiEndpoint.CONFIG);
     }
 
     static getConfigKey<T>(key: string) {
-        return this.get<T>(`/config/${key}`);
+        return this.get<T>(`${ApiEndpoint.CONFIG_KEY}${key}`);
     }
 
     static setConfigKey(key: string, value: any) {
-        return this.put(`/config/${key}`, { value });
+        return this.put(`${ApiEndpoint.CONFIG_KEY}${key}`, { value });
     }
 
     static sendMessage(message: string, provider: string, model: string, chatId: string = null) {
-        return this.stream(`/chat`, {
+        return this.stream(ApiEndpoint.CHAT, {
             message,
             provider,
             model,
@@ -30,68 +31,68 @@ export class Api extends ApiBase {
     }
 
     static getChatIds() {
-        return this.get<string[]>("/chats");
+        return this.get<string[]>(ApiEndpoint.CHATS);
     }
 
     static getChat(chatId: string) {
-        return this.get<ChatContext>(`/chat/${chatId}`);
+        return this.get<ChatContext>(`${ApiEndpoint.CHAT_BY_ID}${chatId}`);
     }
 
     static deleteChat(chatId: string) {
-        return this.delete(`/chat/${chatId}`);
+        return this.delete(`${ApiEndpoint.CHAT_BY_ID}${chatId}`);
     }
 
     static getModels() {
-        return this.get<Record<string, ProviderDefinition>>(`/models`);
+        return this.get<Record<string, ProviderDefinition>>(ApiEndpoint.MODELS);
     }
 
     static getConfiguredApis() {
-        return this.get<ConfiguredApis>(`/configuredApis`);
+        return this.get<ConfiguredApis>(ApiEndpoint.CONFIGURED_APIS);
     }
 
     static getMcpConfig() {
-        return this.get<McpConfiguration>("/mcpConfig");
+        return this.get<McpConfiguration>(ApiEndpoint.MCP_CONFIG);
     }
 
     static addMcpServer(url: string, name: string) {
-        return this.post("/mcpServer", {
+        return this.post(ApiEndpoint.MCP_SERVER, {
             url,
             name
         });
     }
 
     static deleteMcpServer(url: string) {
-        return this.delete(`/mcpServer?url=${encodeURIComponent(url)}`);
+        return this.delete(`${ApiEndpoint.MCP_SERVER}?url=${encodeURIComponent(url)}`);
     }
 
     static updateMcpServer(mcpServerConfig: McpServerConfig) {
-        return this.put(`/mcpServer?url=${encodeURIComponent(mcpServerConfig.url)}`, mcpServerConfig);
+        return this.put(`${ApiEndpoint.MCP_SERVER}?url=${encodeURIComponent(mcpServerConfig.url)}`, mcpServerConfig);
     }
 
     static setEnvironmentVariable(key: string, value: string) {
-        return this.post("/setEnvironmentVariable", {
+        return this.post(ApiEndpoint.SET_ENVIRONMENT_VARIABLE, {
             key,
             value
         });
     }
 
     static getShortcutConfig() {
-        return this.get<ShortcutConfiguration>("/shortCutConfig");
+        return this.get<ShortcutConfiguration>(ApiEndpoint.SHORTCUT_CONFIG);
     }
 
     static setShortcutConfig(sc: ShortcutConfiguration) {
-        return this.post("/shortCutConfig", sc);
+        return this.post(ApiEndpoint.SHORTCUT_CONFIG, sc);
     }
 
     static openAppDataPath() {
-        return this.post("/openAppDataPath");
+        return this.post(ApiEndpoint.OPEN_APP_DATA_PATH);
     }
 
     static getOpenAiKey() {
-        return this.get<string>("/openaiKey");
+        return this.get<string>(ApiEndpoint.OPENAI_KEY);
     }
 
     static transcribe(formData: FormData) {
-        return this.streamWithFormData("/transcribe", formData, false);
+        return this.streamWithFormData(ApiEndpoint.TRANSCRIBE, formData, false);
     }
 }

@@ -3,6 +3,7 @@ import {Application} from "express";
 import {appDataPath} from "../appData";
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
+import {ApiEndpoint} from "../../models/ApiEndpoints";
 import fs from "fs";
 import {mkdir} from "fs/promises";
 
@@ -34,11 +35,11 @@ export function setConfig(sc: ShortcutConfiguration) {
 export function addShortcutEndpoints(app: Application) {
     initializeConfig().then();
 
-    app.get('/shortCutConfig', async (req, res) => {
+    app.get(ApiEndpoint.SHORTCUT_CONFIG, async (req, res) => {
         res.status(200).send(getConfig());
     });
 
-    app.post('/shortCutConfig', async (req, res) => {
+    app.post(ApiEndpoint.SHORTCUT_CONFIG, async (req, res) => {
         const sc = req.body as ShortcutConfiguration;
         setConfig(sc);
         res.status(200).send(getConfig());

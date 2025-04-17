@@ -3,6 +3,7 @@ import { createReadStream, existsSync, statSync } from "fs";
 import { extname, resolve } from "path";
 import {CLI} from "../../CLI";
 import {appDataPath} from "../../appData";
+import { ApiEndpoint } from "../../../models/ApiEndpoints";
 import multer from "multer";
 import {transcribeEndpoint} from "../stt/endpoints";
 
@@ -73,9 +74,9 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 export function addAudioEndpoints(app: Application) {
-    app.get("/audio", getAudioEndpoint);
+    app.get(ApiEndpoint.AUDIO, getAudioEndpoint);
 }
 
 export function addTranscribeEndpoints(app: Application) {
-    app.post("/transcribe", upload.single('file'), transcribeEndpoint);
+    app.post(ApiEndpoint.TRANSCRIBE, upload.single('file'), transcribeEndpoint);
 }

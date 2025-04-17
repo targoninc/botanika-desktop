@@ -1,5 +1,6 @@
 import {Application, Request, Response} from "express";
 import {getValidEnvironmentVariables, setEnvironmentVariable} from "./environment";
+import {ApiEndpoint} from "../../models/ApiEndpoints";
 
 export async function setEnvironmentVariableEndpoint(req: Request, res: Response) {
     const key = req.body.key;
@@ -20,5 +21,5 @@ export async function setEnvironmentVariableEndpoint(req: Request, res: Response
 }
 
 export function addFeatureEndpoints(app: Application) {
-    app.post('/setEnvironmentVariable', setEnvironmentVariableEndpoint);
+    app.post(ApiEndpoint.SET_ENVIRONMENT_VARIABLE, setEnvironmentVariableEndpoint);
 }

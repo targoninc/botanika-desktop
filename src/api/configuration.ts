@@ -5,6 +5,7 @@ import {defaultConfig} from "../ui/enums/DefaultConfig";
 import {appDataPath} from "./appData";
 import {CLI} from "./CLI";
 import {Application} from "express";
+import {ApiEndpoint} from "../models/ApiEndpoints";
 import {getConfiguredApis} from "./features/configuredFeatures";
 import { execSync } from "child_process";
 
@@ -34,28 +35,28 @@ export function getConfigKey(key: string) {
 }
 
 export function addConfigEndpoints(app: Application) {
-    app.get('/config', async (req, res) => {
+    app.get(ApiEndpoint.CONFIG, async (req, res) => {
         res.status(200).send(getConfig());
     });
 
-    app.get('/config/:key', async (req, res) => {
+    app.get(`${ApiEndpoint.CONFIG_KEY}:key`, async (req, res) => {
         const key = req.params.key;
         res.status(200).send(getConfigKey(key));
     });
 
-    app.put('/config/:key', async (req, res) => {
+    app.put(`${ApiEndpoint.CONFIG_KEY}:key`, async (req, res) => {
         const key = req.params.key;
         const value = req.body.value;
         setConfigKey(key, value);
         res.status(200).send(getConfigKey(key));
     });
 
-    app.get('/configuredApis', async (req, res) => {
+    app.get(ApiEndpoint.CONFIGURED_APIS, async (req, res) => {
         const apis = await getConfiguredApis();
         res.status(200).json(apis);
     });
 
-    app.post('/openAppDataPath', async (req, res) => {
+    app.post(ApiEndpoint.OPEN_APP_DATA_PATH, async (req, res) => {
         execSync(`start ${appDataPath}`);
 
         res.status(200).send();

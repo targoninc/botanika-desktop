@@ -4,6 +4,7 @@ import {getAvailableModels, getModel, initializeLlms} from "./llms/models";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
+import {ApiEndpoint} from "../../models/ApiEndpoints";
 import {
     createChat,
     getPromptMessages,
@@ -247,9 +248,9 @@ export async function getModelsEndpoint(req: Request, res: Response) {
 }
 
 export function addChatEndpoints(app: Application) {
-    app.post('/chat', chatEndpoint);
-    app.get('/chat/:chatId', getChatEndpoint);
-    app.get('/chats', getChatIdsEndpoint);
-    app.delete('/chat/:chatId', deleteChatEndpoint);
-    app.get('/models', getModelsEndpoint);
+    app.post(ApiEndpoint.CHAT, chatEndpoint);
+    app.get(`${ApiEndpoint.CHAT_BY_ID}:chatId`, getChatEndpoint);
+    app.get(ApiEndpoint.CHATS, getChatIdsEndpoint);
+    app.delete(`${ApiEndpoint.CHAT_BY_ID}:chatId`, deleteChatEndpoint);
+    app.get(ApiEndpoint.MODELS, getModelsEndpoint);
 }

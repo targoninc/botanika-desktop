@@ -1,6 +1,7 @@
 import {addMcpServer, deleteMcpServer, getMcpConfig, updateMcpServer} from "./clientConfig";
 import {Application, Request, Response} from "express";
 import { McpServerConfig } from "../../../models/mcp/McpServerConfig";
+import { ApiEndpoint } from "../../../models/ApiEndpoints";
 
 export function getMcpConfigEndpoint(req: Request, res: Response) {
     res.json(getMcpConfig());
@@ -32,8 +33,8 @@ export async function updateMcpServerEndpoint(req: Request, res: Response) {
 }
 
 export function addMcpEndpoints(app: Application) {
-    app.get('/mcpConfig', getMcpConfigEndpoint);
-    app.post('/mcpServer', addMcpServerEndpoint);
-    app.delete('/mcpServer', deleteMcpServerEndpoint);
-    app.put('/mcpServer', updateMcpServerEndpoint);
+    app.get(ApiEndpoint.MCP_CONFIG, getMcpConfigEndpoint);
+    app.post(ApiEndpoint.MCP_SERVER, addMcpServerEndpoint);
+    app.delete(ApiEndpoint.MCP_SERVER, deleteMcpServerEndpoint);
+    app.put(ApiEndpoint.MCP_SERVER, updateMcpServerEndpoint);
 }
