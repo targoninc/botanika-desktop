@@ -448,7 +448,7 @@ export class ChatTemplates {
                     .classes("flex", "align-center", "padded", "pill-padding", "no-wrap")
                     .children(
                         r.link ? GenericTemplates.icon("link") : null,
-                        r.link ? create("a")
+                        (r.link && !r.link.startsWith("file://")) ? create("a")
                                 .href(r.link)
                                 .target("_blank")
                                 .title(r.link)

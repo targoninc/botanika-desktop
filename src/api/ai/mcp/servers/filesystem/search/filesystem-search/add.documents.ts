@@ -27,6 +27,7 @@ async function collectFilesFromDirectory(
     directory: string,
     files: string[],
     textFileExtensions: string[],
+    sizeLimitMb: number,
 ): Promise<void> {
     const entries = await readdir(directory, {withFileTypes: true});
 
@@ -41,10 +42,15 @@ async function collectFilesFromDirectory(
                 if (excludedDirectories.includes(entry.name)) {
                     continue;
                 }
-                await collectFilesFromDirectory(fullPath, files, textFileExtensions);
+                await collectFilesFromDirectory(fullPath, files, textFileExtensions, sizeLimitMb);
             } else if (entry.isFile()) {
                 const ext = path.extname(entry.name).toLowerCase();
                 if (textFileExtensions.includes(ext)) {
+                    const stats = await fs.promises.stat(fullPath);
+                    if (stats.size > sizeLimitMb * 1024 * 1024) {
+                        continue;
+                    }
+
                     files.push(fullPath);
                 }
             }
@@ -54,32 +60,26 @@ async function collectFilesFromDirectory(
     }
 }
 
-async function collectFiles(): Promise<string[]> {
+async function collectFiles(sizeLimitMb: number): Promise<string[]> {
     const files = [];
     for (const dir of userDirectories) {
         try {
             await access(dir);
-            await collectFilesFromDirectory(dir, files, textFileExtensions);
+            await collectFilesFromDirectory(dir, files, textFileExtensions, sizeLimitMb);
         } catch (_: any) {
-            console.log(`Directory ${dir} is not accessible, skipping`);
+            CLI.warning(`Directory ${dir} is not accessible, skipping`);
         }
     }
     return files;
 }
 
 export async function addDocuments(index: MiniSearch, sizeLimitMb = 10) {
-    const files = await collectFiles();
+    const files = await collectFiles(sizeLimitMb);
     CLI.debug(`Found ${files.length} files to index`);
+
     let previousPercentDone = 0;
     for (let i = 0; i < files.length; i++){
         const file = files[i];
-        const stats = await fs.promises.stat(file);
-        if (stats.size > sizeLimitMb * 1024 * 1024) {
-            const inMb = stats.size / (1024 * 1024);
-            CLI.debug(`Skipping ${file} because it's too large (${inMb} MB)`);
-            continue;
-        }
-
         const percentDone = Math.round((i / files.length) * 100);
         if (percentDone !== previousPercentDone) {
             CLI.debug(`Indexed ${percentDone}% of files`);

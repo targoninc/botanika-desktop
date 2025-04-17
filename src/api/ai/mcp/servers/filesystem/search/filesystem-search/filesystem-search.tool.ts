@@ -7,6 +7,7 @@ import {addDocuments} from "./add.documents";
 import {appDataPath} from "../../../../../../appData";
 import path from "node:path";
 import fs from "fs";
+import {CLI} from "../../../../../../CLI";
 
 let index: MiniSearch;
 const indexPath = path.join(appDataPath, 'filesystem-search-index.json');
@@ -17,14 +18,17 @@ const indexOptions = {
 
 export async function initializeSearchIndex() {
     if (fs.existsSync(indexPath)) {
+        CLI.debug(`Loading filesystem search index from ${indexPath}`);
         const json = fs.readFileSync(indexPath, 'utf-8');
-        index = MiniSearch.loadJSON(json, indexOptions);
+        CLI.debug(`Read filesystem search index with ${json.length / 1024 / 1024} MB`);
+        index = await MiniSearch.loadJSONAsync(json, indexOptions);
+        CLI.success(`Loaded filesystem search index`);
         return;
     }
 
     index = new MiniSearch(indexOptions);
 
-    await addDocuments(index, 2);
+    await addDocuments(index, .5);
     const json = JSON.stringify(index);
     fs.writeFileSync(indexPath, json);
 }
