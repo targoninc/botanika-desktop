@@ -43,13 +43,10 @@ async function toolCall(input: any) {
     return <ChatToolResult>{
         text: `${result.length} filesystem search results`,
         references: result.map(item => {
-            console.log(item);
-
             return <ResourceReference>{
                 type: "resource-reference",
                 name: item.id,
-                link: `file://${item.id}`,
-                snippet: item.text?.substring(0, 100)
+                link: `file://${item.id}`
             };
         }),
     };
