@@ -1,9 +1,9 @@
-import flexsearch from "flexsearch";
 import path from "node:path";
 import * as os from "node:os";
 import fs from "fs";
 import {access, readdir } from "node:fs/promises";
 import {CLI} from "../../../../../../CLI";
+import MiniSearch from "minisearch";
 
 const userDirectories = [
     path.join(os.homedir(), 'Documents'),
@@ -17,7 +17,7 @@ const userDirectories = [
 // File extensions to search
 const textFileExtensions = [
     '.txt', '.md', '.doc', '.docx', '.pdf', '.rtf',
-    '.html', '.htm', '.xml', '.json', '.csv', '.xls', '.xlsx',
+    '.json', '.csv', '.xls', '.xlsx',
     '.ppt', '.pptx', '.odt', '.ods', '.odp'
 ];
 
@@ -67,22 +67,32 @@ async function collectFiles(): Promise<string[]> {
     return files;
 }
 
-export async function addDocuments(index: flexsearch.Index) {
+export async function addDocuments(index: MiniSearch, sizeLimitMb = 10) {
     const files = await collectFiles();
     CLI.debug(`Found ${files.length} files to index`);
+    let previousPercentDone = 0;
     for (let i = 0; i < files.length; i++){
         const file = files[i];
         const stats = await fs.promises.stat(file);
-        if (stats.size > 10 * 1024 * 1024) {
+        if (stats.size > sizeLimitMb * 1024 * 1024) {
             const inMb = stats.size / (1024 * 1024);
             CLI.debug(`Skipping ${file} because it's too large (${inMb} MB)`);
             continue;
         }
 
-        CLI.debug(`Indexing ${file}...`);
+        const percentDone = Math.round((i / files.length) * 100);
+        if (percentDone !== previousPercentDone) {
+            CLI.debug(`Indexed ${percentDone}% of files`);
+        }
         const content = await fs.promises.readFile(file, 'utf-8');
 
-        index.add(file, content);
+        index.add({
+            id: file,
+            title: path.basename(file),
+            text: content,
+            category: 'file'
+        });
+        previousPercentDone = percentDone;
     }
     CLI.success(`Indexed ${files.length} files`);
 }

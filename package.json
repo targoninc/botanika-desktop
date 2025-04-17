@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.67",
+  "version": "1.0.68",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -58,9 +58,9 @@
     "dompurify": "^3.2.4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "flexsearch": "^0.7.31",
     "highlight.js": "^11.11.1",
     "marked": "^15.0.7",
+    "minisearch": "^7.1.2",
     "multer": "^1.4.5-lts.2",
     "ollama-ai-provider": "^1.2.0",
     "openai": "^4.91.1",
