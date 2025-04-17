@@ -77,7 +77,10 @@ export async function streamResponseAsMessage(maxSteps: number, provider: string
 
     files.then((f: GeneratedFile[]) => {
         CLI.debug(`Generated ${f.length} files`);
-        message.value.files = f;
+        message.value = {
+            ...message.value,
+            files: f
+        };
     });
 
     sources.then((s: LanguageModelSourceV1[]) => {
