@@ -4,7 +4,7 @@ import {createSpotifyServers} from "./spotify/createServers";
 import {createFilesystemServers} from "./filesystem/createServers";
 
 export function createMcpServers(app: Application) {
+    createFilesystemServers(app);
     createGoogleServers(app);
     createSpotifyServers(app);
-    createFilesystemServers(app);
 }
