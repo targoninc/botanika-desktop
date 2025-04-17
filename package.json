@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.62",
+  "version": "1.0.63",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
