@@ -1,17 +1,19 @@
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
-import {ConfiguredApi, ConfiguredApis} from "../../models/configuredApis";
+import {BotanikaFeature, ConfiguredApis} from "../../models/configuredApis";
+import {featureOptions} from "./featureOptions";
 
 function envSet(key: string) {
     return process.env[key] && process.env[key].trim().length > 0;
 }
 
-function envConfigurationInfo(...envVarNames: string[]): FeatureConfigurationInfo {
+function envConfigurationInfo(feature: BotanikaFeature, ...envVarNames: string[]): FeatureConfigurationInfo {
     return {
         enabled: envVarNames.every(envSet),
         envVars: envVarNames.map(n => ({
             key: n,
             isSet: envSet(n)
-        }))
+        })),
+        options: featureOptions[feature]
     };
 }
 
@@ -24,24 +26,25 @@ async function urlReachable(url: string): Promise<boolean> {
     }
 }
 
-async function urlConfigurationInfo(url: string, envVarNames: string[] = []): Promise<FeatureConfigurationInfo> {
+async function urlConfigurationInfo(feature: BotanikaFeature, url: string, envVarNames: string[] = []): Promise<FeatureConfigurationInfo> {
     return {
         enabled: await urlReachable(url),
         envVars: envVarNames.map(n => ({
             key: n,
             isSet: envSet(n)
-        }))
+        })),
+        options: featureOptions[feature]
     };
 }
 
 export async function getConfiguredApis(): Promise<ConfiguredApis> {
     return {
-        [ConfiguredApi.GoogleSearch]: envConfigurationInfo("GOOGLE_API_KEY", "GOOGLE_SEARCH_ENGINE_ID"),
-        [ConfiguredApi.OpenAI]: envConfigurationInfo("OPENAI_API_KEY"),
-        [ConfiguredApi.Groq]: envConfigurationInfo("GROQ_API_KEY"),
-        [ConfiguredApi.Ollama]: await urlConfigurationInfo(process.env.OLLAMA_URL ?? "http://localhost:11434"),
-        [ConfiguredApi.Azure]: envConfigurationInfo("AZURE_RESOURCE_NAME", "AZURE_API_KEY"),
-        [ConfiguredApi.OpenRouter]: envConfigurationInfo("OPENROUTER_API_KEY"),
-        [ConfiguredApi.Spotify]: envConfigurationInfo("SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"),
+        [BotanikaFeature.GoogleSearch]: envConfigurationInfo(BotanikaFeature.GoogleSearch, "GOOGLE_API_KEY", "GOOGLE_SEARCH_ENGINE_ID"),
+        [BotanikaFeature.OpenAI]: envConfigurationInfo(BotanikaFeature.OpenAI, "OPENAI_API_KEY"),
+        [BotanikaFeature.Groq]: envConfigurationInfo(BotanikaFeature.Groq, "GROQ_API_KEY"),
+        [BotanikaFeature.Ollama]: await urlConfigurationInfo(BotanikaFeature.Ollama, process.env.OLLAMA_URL ?? "http://localhost:11434"),
+        [BotanikaFeature.Azure]: envConfigurationInfo(BotanikaFeature.Azure, "AZURE_RESOURCE_NAME", "AZURE_API_KEY"),
+        [BotanikaFeature.OpenRouter]: envConfigurationInfo(BotanikaFeature.OpenRouter, "OPENROUTER_API_KEY"),
+        [BotanikaFeature.Spotify]: envConfigurationInfo(BotanikaFeature.Spotify, "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"),
     }
 }

@@ -4,7 +4,7 @@ import {app, currentWindow} from "../../../../../../server-utils";
 import {setEnvironmentVariable} from "../../../../../features/environment";
 import {CLI} from "../../../../../CLI";
 import {getConfiguredApis} from "../../../../../features/configuredFeatures";
-import {ConfiguredApi} from "../../../../../../models/configuredApis";
+import {BotanikaFeature} from "../../../../../../models/configuredApis";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 
@@ -97,7 +97,7 @@ export async function createClient() {
 
 export async function checkIfEnabled() {
     const configuredApis = await getConfiguredApis();
-    if (!configuredApis[ConfiguredApi.Spotify].enabled) {
+    if (!configuredApis[BotanikaFeature.Spotify].enabled) {
         throw new Error("Spotify API is not enabled.");
     }
 }

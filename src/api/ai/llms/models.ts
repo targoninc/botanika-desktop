@@ -13,7 +13,7 @@ import {getOllamaModels} from "./providers/ollama";
 import {getAzureModels} from "./providers/azure";
 import {getOpenrouterModels} from "./providers/openrouter";
 import dotenv from "dotenv";
-import {ConfiguredApi} from "../../../models/configuredApis";
+import {BotanikaFeature} from "../../../models/configuredApis";
 import {ProviderDefinition} from "../../../models/ProviderDefinition";
 
 dotenv.config();
@@ -54,18 +54,18 @@ export async function getAvailableModels(provider: string): Promise<ModelDefinit
     }
 }
 
-function getRequiredFeature(provider: LlmProvider): ConfiguredApi[] {
+function getRequiredFeature(provider: LlmProvider): BotanikaFeature[] {
     switch (provider) {
         case LlmProvider.groq:
-            return [ConfiguredApi.Groq];
+            return [BotanikaFeature.Groq];
         case LlmProvider.openai:
-            return [ConfiguredApi.OpenAI];
+            return [BotanikaFeature.OpenAI];
         case LlmProvider.ollama:
-            return [ConfiguredApi.Ollama];
+            return [BotanikaFeature.Ollama];
         case LlmProvider.azure:
-            return [ConfiguredApi.Azure];
+            return [BotanikaFeature.Azure];
         case LlmProvider.openrouter:
-            return [ConfiguredApi.OpenRouter];
+            return [BotanikaFeature.OpenRouter];
     }
 }
 

@@ -8,6 +8,7 @@ import {appDataPath} from "../../../../../../appData";
 import path from "node:path";
 import fs from "fs";
 import {CLI} from "../../../../../../CLI";
+import { stat } from "node:fs/promises";
 
 let index: MiniSearch;
 const indexPath = path.join(appDataPath, 'filesystem-search-index.json');
@@ -15,16 +16,22 @@ const indexOptions = {
     fields: ['title', 'text'],
     storeFields: ['title', 'category']
 };
+const skipSizeInMb = 20;
 
 export async function initializeSearchIndex() {
-    /*if (fs.existsSync(indexPath)) {
-        CLI.debug(`Loading filesystem search index from ${indexPath}`);
-        const json = fs.readFileSync(indexPath, 'utf-8');
-        CLI.debug(`Read filesystem search index with ${json.length / 1024 / 1024} MB`);
-        index = await MiniSearch.loadJSONAsync(json, indexOptions);
-        CLI.success(`Loaded filesystem search index`);
-        return;
-    }*/
+    if (fs.existsSync(indexPath)) {
+        const indexStat = await stat(indexPath);
+        if (indexStat.size < skipSizeInMb * 1024 * 1024) {
+            CLI.debug(`Loading filesystem search index from ${indexPath}`);
+            const json = fs.readFileSync(indexPath, 'utf-8');
+            CLI.debug(`Read filesystem search index with ${json.length / 1024 / 1024} MB`);
+            index = await MiniSearch.loadJSONAsync(json, indexOptions);
+            CLI.success(`Loaded filesystem search index`);
+            return;
+        } else {
+            CLI.debug(`Skipping cached search index because it is bigger than ${skipSizeInMb} MB`);
+        }
+    }
 
     index = new MiniSearch(indexOptions);
 
@@ -38,6 +45,9 @@ function searchFilesystem(query: string): SearchResult[] {
 }
 
 async function toolCall(input: any) {
+    if (!index) {
+        await initializeSearchIndex();
+    }
     const result = searchFilesystem(input.query);
 
     return <ChatToolResult>{

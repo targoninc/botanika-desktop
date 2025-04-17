@@ -1,7 +1,7 @@
-import {ConfiguredApi} from "./configuredApis";
+import {BotanikaFeature} from "./configuredApis";
 import {ModelDefinition} from "./ModelDefinition";
 
 export interface ProviderDefinition {
-    requiredFeatures: ConfiguredApi[];
+    requiredFeatures: BotanikaFeature[];
     models: ModelDefinition[];
 }

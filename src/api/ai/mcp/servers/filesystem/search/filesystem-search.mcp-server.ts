@@ -16,7 +16,5 @@ export function createFilesystemSearchServer(app: Application) {
     const searchTool = filesystemSearchTool();
     server.tool(searchTool.id, searchTool.description, searchTool.parameters, searchTool.execute);
 
-    initializeSearchIndex().then();
-
     connectServerWithSse(server, "filesystem/search", app);
 }

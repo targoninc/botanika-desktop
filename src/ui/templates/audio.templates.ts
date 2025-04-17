@@ -4,7 +4,7 @@ import {VoiceRecorder} from "../classes/VoiceRecorder";
 import { create } from "../lib/fjsc/src/f2";
 import {configuredApis} from "../classes/store";
 import {FJSC} from "../lib/fjsc";
-import {ConfiguredApi} from "../../models/configuredApis";
+import {BotanikaFeature} from "../../models/configuredApis";
 
 const currentLoudness = signal(0);
 let recorder: VoiceRecorder;
@@ -27,7 +27,7 @@ export class AudioTemplates {
                     icon: { icon: iconState },
                     classes: ["flex", "align-children"],
                     title: "Currently only OpenAI is supported",
-                    disabled: compute(a => !a[ConfiguredApi.OpenAI]?.enabled, configuredApis),
+                    disabled: compute(a => !a[BotanikaFeature.OpenAI]?.enabled, configuredApis),
                     onclick: () => {
                         recorder.toggleRecording();
                         onState.value = !onState.value;

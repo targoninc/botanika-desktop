@@ -5,7 +5,7 @@ import {ResourceReference} from "../../../../../../../models/chat/ResourceRefere
 import dotenv from "dotenv";
 import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
 import {getConfiguredApis} from "../../../../../../features/configuredFeatures";
-import {ConfiguredApi} from "../../../../../../../models/configuredApis";
+import {BotanikaFeature} from "../../../../../../../models/configuredApis";
 import {wrapTool} from "../../../../tooling";
 
 dotenv.config();
@@ -37,7 +37,7 @@ async function search(query: string): Promise<GoogleSearchResult> {
 
 async function toolCall(input: any) {
     const configuredApis = await getConfiguredApis();
-    if (!configuredApis[ConfiguredApi.GoogleSearch].enabled) {
+    if (!configuredApis[BotanikaFeature.GoogleSearch].enabled) {
         throw new Error("Google Search API is not enabled.");
     }
 
