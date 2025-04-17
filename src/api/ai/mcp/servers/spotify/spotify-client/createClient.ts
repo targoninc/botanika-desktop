@@ -3,8 +3,8 @@ import {shell} from "electron";
 import {app, currentWindow} from "../../../../../../server-utils";
 import {setEnvironmentVariable} from "../../../../../features/environment";
 import {CLI} from "../../../../../CLI";
-import {getConfiguredApis} from "../../../../../features/configuredFeatures";
-import {BotanikaFeature} from "../../../../../../models/configuredApis";
+import {featureEnabled} from "../../../../../features/configuredFeatures";
+import {BotanikaFeature} from "../../../../../../models/BotanikaFeature";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 
@@ -96,8 +96,7 @@ export async function createClient() {
 }
 
 export async function checkIfEnabled() {
-    const configuredApis = await getConfiguredApis();
-    if (!configuredApis[BotanikaFeature.Spotify].enabled) {
+    if (!await featureEnabled(BotanikaFeature.Spotify)) {
         throw new Error("Spotify API is not enabled.");
     }
 }

@@ -8,8 +8,8 @@ import {ChatTemplates} from "./chat.templates";
 export class LayoutTemplates {
     static app(activePage: Signal<string>) {
         const tabs = [
-            ChatTemplates.chat(activePage),
-            SettingsTemplates.settings(activePage),
+            ChatTemplates.chat(),
+            SettingsTemplates.settings(),
         ];
 
         return create("div")

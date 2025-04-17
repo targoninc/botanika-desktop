@@ -1,5 +1,3 @@
-import {FeatureConfigurationInfo} from "./FeatureConfigurationInfo";
-
 export enum BotanikaFeature {
     GoogleSearch = "Google Search",
     OpenAI = "OpenAI",
@@ -9,5 +7,3 @@ export enum BotanikaFeature {
     OpenRouter = "OpenRouter",
     Spotify = "Spotify",
 }
-
-export type ConfiguredApis = Record<BotanikaFeature, FeatureConfigurationInfo>;

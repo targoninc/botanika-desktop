@@ -1,10 +1,10 @@
 import {compute, signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {VoiceRecorder} from "../classes/VoiceRecorder";
-import { create } from "../lib/fjsc/src/f2";
-import {configuredApis} from "../classes/store";
+import {create} from "../lib/fjsc/src/f2";
+import {configuredFeatures} from "../classes/store";
 import {FJSC} from "../lib/fjsc";
-import {BotanikaFeature} from "../../models/configuredApis";
+import {BotanikaFeature} from "../../models/BotanikaFeature";
 
 const currentLoudness = signal(0);
 let recorder: VoiceRecorder;
@@ -24,10 +24,10 @@ export class AudioTemplates {
                 GenericTemplates.redDot(onState, currentLoudness),
                 FJSC.button({
                     text: textState,
-                    icon: { icon: iconState },
+                    icon: {icon: iconState},
                     classes: ["flex", "align-children"],
                     title: "Currently only OpenAI is supported",
-                    disabled: compute(a => !a[BotanikaFeature.OpenAI]?.enabled, configuredApis),
+                    disabled: compute(a => !a[BotanikaFeature.OpenAI]?.enabled, configuredFeatures),
                     onclick: () => {
                         recorder.toggleRecording();
                         onState.value = !onState.value;

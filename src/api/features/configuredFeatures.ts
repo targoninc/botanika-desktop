@@ -1,6 +1,7 @@
+import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
-import {BotanikaFeature, ConfiguredApis} from "../../models/configuredApis";
 import {featureOptions} from "./featureOptions";
+import {BotanikaFeature} from "../../models/BotanikaFeature";
 
 function envSet(key: string) {
     return process.env[key] && process.env[key].trim().length > 0;
@@ -37,7 +38,7 @@ async function urlConfigurationInfo(feature: BotanikaFeature, url: string, envVa
     };
 }
 
-export async function getConfiguredApis(): Promise<ConfiguredApis> {
+export async function getConfiguredFeatures(): Promise<ConfiguredFeatures> {
     return {
         [BotanikaFeature.GoogleSearch]: envConfigurationInfo(BotanikaFeature.GoogleSearch, "GOOGLE_API_KEY", "GOOGLE_SEARCH_ENGINE_ID"),
         [BotanikaFeature.OpenAI]: envConfigurationInfo(BotanikaFeature.OpenAI, "OPENAI_API_KEY"),
@@ -47,4 +48,8 @@ export async function getConfiguredApis(): Promise<ConfiguredApis> {
         [BotanikaFeature.OpenRouter]: envConfigurationInfo(BotanikaFeature.OpenRouter, "OPENROUTER_API_KEY"),
         [BotanikaFeature.Spotify]: envConfigurationInfo(BotanikaFeature.Spotify, "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET"),
     }
+}
+
+export async function featureEnabled(feature: BotanikaFeature): Promise<boolean> {
+    return (await getConfiguredFeatures())[feature].enabled;
 }

@@ -6,7 +6,7 @@ import {
     chatContext, currentlyPlayingAudio,
     deleteChat,
     target,
-    updateContextFromStream, shortCutConfig, configuredApis, currentText
+    updateContextFromStream, shortCutConfig, configuredFeatures, currentText
 } from "../classes/store";
 import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
@@ -298,7 +298,7 @@ export class ChatTemplates {
                 }
             }
             return out;
-        }, availableModels, configuredApis);
+        }, availableModels, configuredFeatures);
         const filteredModels = compute((a, p) => {
             const out = {};
             for (const provider in a) {

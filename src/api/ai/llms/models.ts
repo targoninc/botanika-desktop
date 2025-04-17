@@ -3,7 +3,7 @@ import {groq} from "@ai-sdk/groq";
 import {openai} from "@ai-sdk/openai";
 import {azure} from "@ai-sdk/azure";
 import {openrouter} from "@openrouter/ai-sdk-provider";
-import {createOllama, ollama} from 'ollama-ai-provider';
+import {ollama} from 'ollama-ai-provider';
 import {LlmProvider} from "../../../models/llmProvider";
 import {ProviderV1} from "@ai-sdk/provider";
 import {ModelDefinition} from "../../../models/ModelDefinition";
@@ -13,8 +13,8 @@ import {getOllamaModels} from "./providers/ollama";
 import {getAzureModels} from "./providers/azure";
 import {getOpenrouterModels} from "./providers/openrouter";
 import dotenv from "dotenv";
-import {BotanikaFeature} from "../../../models/configuredApis";
 import {ProviderDefinition} from "../../../models/ProviderDefinition";
+import { BotanikaFeature } from "../../../models/BotanikaFeature";
 
 dotenv.config();
 

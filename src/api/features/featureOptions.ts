@@ -1,5 +1,5 @@
-import {BotanikaFeature} from "../../models/configuredApis";
 import {FeatureOption} from "../../models/FeatureOption";
+import {BotanikaFeature} from "../../models/BotanikaFeature";
 
 export const featureOptions: Record<BotanikaFeature, FeatureOption<any>[]> = {
     [BotanikaFeature.OpenAI]: [

@@ -4,8 +4,8 @@ import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
 import {
     configuration,
-    configuredApis,
-    loadConfiguredApis,
+    configuredFeatures,
+    loadconfiguredFeatures,
     mcpConfig,
     shortCutConfig
 } from "../classes/store";
@@ -13,7 +13,7 @@ import {SettingsConfiguration} from "./settingsConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
-import {ConfiguredApis} from "../../models/configuredApis";
+import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
 import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
 import {createModal, toast} from "../classes/ui";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
@@ -68,13 +68,6 @@ export class SettingsTemplates {
                 label: "Your birthdate",
                 description: "Will be given to the model(s) as context",
                 type: "date",
-            },
-            {
-                key: "transcriptionProvider",
-                icon: "speech_to_text",
-                label: "Transcription provider",
-                description: "The provider to use for transcription (openai or local)",
-                type: "string",
             }
         ];
         const loading = signal(false);
@@ -93,7 +86,7 @@ export class SettingsTemplates {
                 GenericTemplates.heading(2, "General"),
                 ...settings.map(s => SettingsTemplates.setting(s, loading)),
                 SettingsTemplates.shortcuts(),
-                SettingsTemplates.configuredApis(),
+                SettingsTemplates.configuredFeatures(),
                 SettingsTemplates.mcpConfig(),
                 GenericTemplates.buttonWithIcon("folder_open", "Open app data folder", async () => {
                     await Api.openAppDataPath();
@@ -160,15 +153,15 @@ export class SettingsTemplates {
         }
     }
 
-    static configuredApis() {
+    static configuredFeatures() {
         return create("div")
             .classes("flex-v")
             .children(
-                compute(a => SettingsTemplates.configuredApisInternal(a, loadConfiguredApis), configuredApis)
+                compute(a => SettingsTemplates.configuredFeaturesInternal(a, loadconfiguredFeatures), configuredFeatures)
             ).build();
     }
 
-    static configuredApisInternal(apis: ConfiguredApis, load: () => void) {
+    static configuredFeaturesInternal(apis: ConfiguredFeatures, load: () => void) {
         return create("div")
             .classes("flex-v")
             .children(

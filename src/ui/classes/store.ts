@@ -13,7 +13,7 @@ import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
 import {ProviderDefinition} from "../../models/ProviderDefinition";
-import {ConfiguredApis} from "../../models/configuredApis";
+import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
 import {toast} from "./ui";
 import {ToastType} from "../enums/ToastType";
 
@@ -23,7 +23,7 @@ export const chatContext = signal<ChatContext>(INITIAL_CONTEXT);
 export const chats = signal<ChatContext[]>([]);
 export const availableModels = signal<Record<string, ProviderDefinition>>({});
 export const mcpConfig = signal<McpConfiguration>({} as McpConfiguration);
-export const configuredApis = signal<ConfiguredApis>({} as ConfiguredApis);
+export const configuredFeatures = signal<ConfiguredFeatures>({} as ConfiguredFeatures);
 export const currentlyPlayingAudio = signal<string>(null);
 export const shortCutConfig = signal<ShortcutConfiguration>(defaultShortcuts);
 export const currentText = signal<string>("");
@@ -58,7 +58,7 @@ export function initializeStore() {
         }
     });
 
-    loadConfiguredApis();
+    loadconfiguredFeatures();
 
     Api.getShortcutConfig().then(sc => {
         if (sc.data) {
@@ -69,10 +69,10 @@ export function initializeStore() {
     loadChats();
 }
 
-export function loadConfiguredApis() {
-    Api.getConfiguredApis().then(res => {
+export function loadconfiguredFeatures() {
+    Api.getconfiguredFeatures().then(res => {
         if (res.data) {
-            configuredApis.value = res.data as ConfiguredApis;
+            configuredFeatures.value = res.data as ConfiguredFeatures;
         }
     });
 }

@@ -1,4 +1,4 @@
-import {BotanikaFeature} from "./configuredApis";
+import {BotanikaFeature} from "./BotanikaFeature";
 import {ModelDefinition} from "./ModelDefinition";
 
 export interface ProviderDefinition {
