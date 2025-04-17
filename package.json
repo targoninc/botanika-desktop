@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.64",
+  "version": "1.0.65",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -51,6 +51,7 @@
     "@modelcontextprotocol/sdk": "^1.8.0",
     "@openrouter/ai-sdk-provider": "^0.4.5",
     "@rollup/plugin-commonjs": "^28.0.3",
+    "@types/lunr": "^2.3.7",
     "@types/uuid": "^10.0.0",
     "ai": "^4.2.10",
     "axios": "^1.8.4",
@@ -59,6 +60,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "highlight.js": "^11.11.1",
+    "lunr": "^2.3.9",
     "marked": "^15.0.7",
     "multer": "^1.4.5-lts.2",
     "ollama-ai-provider": "^1.2.0",

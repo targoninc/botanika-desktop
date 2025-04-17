@@ -11,6 +11,10 @@ export const defaultMcpConfig: McpConfiguration = {
         {
             name: "Spotify",
             url: `http://localhost:${APP_PORT}/mcp/sse/spotify`
+        },
+        {
+            name: "Filesystem Search",
+            url: `http://localhost:${APP_PORT}/mcp/sse/filesystem/search`
         }
     ]
 }
