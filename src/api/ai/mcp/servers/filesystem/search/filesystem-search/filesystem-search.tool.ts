@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { promises as fs } from "node:fs";
+import { promises as fs, Stats } from "node:fs";
 import path from "node:path";
 import { FilesystemSearchResult, FilesystemSearchItem } from "./filesystem-search.models";
 import { ResourceReference } from "../../../../../../../models/chat/ResourceReference";
@@ -8,6 +8,7 @@ import { wrapTool } from "../../../../tooling";
 import os from "node:os";
 import lunr from "lunr";
 import crypto from "crypto";
+import { CLI } from "../../../../../../../api/CLI";
 
 // Common user directories to search
 const userDirectories = [
@@ -45,7 +46,7 @@ async function ensureIndexDirectory() {
     try {
         await fs.mkdir(indexDir, { recursive: true });
     } catch (error) {
-        console.error('Error creating index directory:', error);
+        CLI.error('Error creating index directory: ' + error);
     }
 }
 
@@ -59,7 +60,7 @@ async function loadIndex(): Promise<boolean> {
             await fs.access(indexPath);
             await fs.access(documentsPath);
         } catch {
-            console.log('Index files do not exist yet, will create new index');
+            CLI.log('Index files do not exist yet, will create new index');
             return false;
         }
 
@@ -74,10 +75,10 @@ async function loadIndex(): Promise<boolean> {
         const stats = await fs.stat(indexPath);
         indexLastUpdated = stats.mtime;
 
-        console.log(`Loaded search index with ${documentStore.size} documents, last updated: ${indexLastUpdated}`);
+        CLI.log(`Loaded search index with ${documentStore.size} documents, last updated: ${indexLastUpdated}`);
         return true;
     } catch (error) {
-        console.error('Error loading index:', error);
+        CLI.error('Error loading index:' + error);
         return false;
     }
 }
@@ -100,66 +101,55 @@ async function saveIndex() {
         const stats = await fs.stat(indexPath);
         indexLastUpdated = stats.mtime;
 
-        console.log(`Saved search index with ${documentStore.size} documents`);
+        CLI.log(`Saved search index with ${documentStore.size} documents`);
     } catch (error) {
-        console.error('Error saving index:', error);
+        CLI.error('Error saving index:' + error);
     }
 }
 
-// Build or update the index
 async function buildIndex(forceRebuild = false): Promise<void> {
     // Prevent concurrent indexing
     if (isIndexing) {
-        console.log('Indexing already in progress, skipping');
+        CLI.log('Indexing already in progress, skipping');
         return;
     }
 
     isIndexing = true;
 
     try {
-        // Check if we need to rebuild the index
         if (!forceRebuild && searchIndex && indexLastUpdated) {
-            // Check if the index is recent enough (less than 24 hours old)
             const now = new Date();
             const hoursSinceLastUpdate = (now.getTime() - indexLastUpdated.getTime()) / (1000 * 60 * 60);
 
             if (hoursSinceLastUpdate < 24) {
-                console.log(`Index is recent (${hoursSinceLastUpdate.toFixed(2)} hours old), skipping rebuild`);
+                CLI.log(`Index is recent (${hoursSinceLastUpdate.toFixed(2)} hours old), skipping rebuild`);
                 isIndexing = false;
                 return;
             }
         }
 
-        console.log('Building search index...');
-
-        // Clear existing documents if rebuilding
+        CLI.log('Building search index...');
         if (forceRebuild || !searchIndex) {
             documentStore = new Map();
         }
 
-        // Collect all files to index
         const filesToIndex = await collectFiles();
-        console.log(`Found ${filesToIndex.length} files to index`);
+        CLI.log(`Found ${filesToIndex.length} files to index`);
 
-        // Build the index
         const builder = new lunr.Builder();
         builder.ref('id');
         builder.field('name', { boost: 10 });
         builder.field('path', { boost: 5 });
         builder.field('content');
 
-        // Add documents to the index
+        let processedCount = 0;
         for (const file of filesToIndex) {
             try {
-                // Generate a unique ID for the file
                 const id = crypto.createHash('md5').update(file.path).digest('hex');
-
-                // Skip if already indexed and not rebuilding
                 if (!forceRebuild && documentStore.has(id)) {
                     continue;
                 }
 
-                // Read file content
                 const content = await fs.readFile(file.path, 'utf-8');
 
                 // Create document
@@ -184,37 +174,39 @@ async function buildIndex(forceRebuild = false): Promise<void> {
                     // Store a preview of the content instead of the full content
                     contentPreview: content.length > 1000 ? content.substring(0, 1000) + '...' : content
                 });
+
+                processedCount++;
+                if (processedCount % 100 === 0) {
+                    CLI.log(`Indexing progress: ${processedCount}/${filesToIndex.length} files processed`);
+                }
             } catch (error) {
-                console.error(`Error indexing file ${file.path}:`, error);
+                CLI.error(`Error indexing file ${file.path}: ${error}`);
             }
         }
 
-        // Create the index
+        CLI.debug(`Building index...`);
         searchIndex = builder.build();
+        CLI.info(`Index built`);
 
-        // Save the index to disk
         await saveIndex();
-
-        console.log(`Indexing complete, indexed ${documentStore.size} documents`);
+        CLI.success(`Indexing complete, indexed ${documentStore.size} documents`);
     } catch (error) {
-        console.error('Error building index:', error);
+        CLI.error('Error building index: ' + error);
     } finally {
         isIndexing = false;
     }
 }
 
-// Collect files to index
-async function collectFiles(): Promise<Array<{ path: string, stats: fs.Stats }>> {
-    const files: Array<{ path: string, stats: fs.Stats }> = [];
+async function collectFiles(): Promise<Array<{ path: string, stats: Stats }>> {
+    const files: Array<{ path: string, stats: Stats }> = [];
     const dirPromises = [];
 
-    // Collect files from each user directory
     for (const dir of userDirectories) {
         try {
             await fs.access(dir);
             dirPromises.push(collectFilesFromDirectory(dir, files));
-        } catch (error) {
-            console.log(`Directory ${dir} is not accessible, skipping`);
+        } catch (_: any) {
+            CLI.log(`Directory ${dir} is not accessible, skipping`);
         }
     }
 
@@ -255,11 +247,11 @@ async function collectFilesFromDirectory(directory: string, files: Array<{ path:
                     }
                 }
             } catch (error) {
-                console.error(`Error processing ${fullPath}:`, error);
+                CLI.error(`Error processing ${fullPath}: ${error}`);
             }
         }
     } catch (error) {
-        console.error(`Error reading directory ${directory}:`, error);
+        CLI.error(`Error reading directory ${directory}: ${error}`);
     }
 }
 
@@ -276,7 +268,7 @@ async function searchFilesystem(query: string): Promise<FilesystemSearchResult> 
 
     // If still no index, return empty results
     if (!searchIndex) {
-        console.error('Failed to load or build search index');
+        CLI.error('Failed to load or build search index');
         return { items: [] };
     }
 
@@ -328,7 +320,7 @@ async function searchFilesystem(query: string): Promise<FilesystemSearchResult> 
         // Limit results
         return { items: items.slice(0, 20) };
     } catch (error) {
-        console.error('Error searching index:', error);
+        CLI.error('Error searching index: ' + error);
         return { items: [] };
     }
 }
@@ -358,18 +350,18 @@ function isIndexStale(): boolean {
 
 // Initialize the search index
 export async function initializeSearchIndex(): Promise<void> {
-    console.log('Initializing filesystem search index...');
+    CLI.log('Initializing filesystem search index...');
 
     // Try to load the existing index
     const loaded = await loadIndex();
 
     if (!loaded) {
         // If loading failed, schedule a background index build
-        console.log('No existing index found, scheduling background indexing...');
+        CLI.log('No existing index found, scheduling background indexing...');
         setTimeout(() => buildIndex(), 1000);
     } else if (isIndexStale()) {
         // If the index is stale, schedule a background update
-        console.log('Index is stale, scheduling background update...');
+        CLI.log('Index is stale, scheduling background update...');
         setTimeout(() => buildIndex(), 5000);
     }
 }
