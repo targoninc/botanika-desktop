@@ -147,6 +147,7 @@ export class VoiceRecorder {
                     currentText.value += obj.delta;
                 } else if (obj.type === "transcript.text.done") {
                     const config = configuration.value;
+                    currentText.value = obj.text;
                     try {
                         Api.sendMessage(currentText.value, config.provider, config.model, chatContext.value.id).then(updateContextFromStream);
                     } catch (e) {
