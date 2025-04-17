@@ -72,7 +72,17 @@ export function addConfigEndpoints(app: Application) {
     });
 
     app.post(ApiEndpoint.OPEN_APP_DATA_PATH, async (req, res) => {
-        execSync(`start ${appDataPath}`);
+        switch (process.platform) {
+            case 'win32':
+                execSync(`start ${appDataPath}`);
+                break;
+            case "linux":
+                execSync(`xdg-open ${appDataPath}`);
+                break;
+            case "darwin":
+                execSync(`open ${appDataPath}`);
+                break;
+        }
 
         res.status(200).send();
     });
