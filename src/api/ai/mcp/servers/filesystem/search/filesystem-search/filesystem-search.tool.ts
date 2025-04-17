@@ -17,18 +17,18 @@ const indexOptions = {
 };
 
 export async function initializeSearchIndex() {
-    if (fs.existsSync(indexPath)) {
+    /*if (fs.existsSync(indexPath)) {
         CLI.debug(`Loading filesystem search index from ${indexPath}`);
         const json = fs.readFileSync(indexPath, 'utf-8');
         CLI.debug(`Read filesystem search index with ${json.length / 1024 / 1024} MB`);
         index = await MiniSearch.loadJSONAsync(json, indexOptions);
         CLI.success(`Loaded filesystem search index`);
         return;
-    }
+    }*/
 
     index = new MiniSearch(indexOptions);
 
-    await addDocuments(index, .5);
+    await addDocuments(index, .2);
     const json = JSON.stringify(index);
     fs.writeFileSync(indexPath, json);
 }

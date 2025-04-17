@@ -1,7 +1,7 @@
 import path from "node:path";
 import * as os from "node:os";
 import fs from "fs";
-import {access, readdir } from "node:fs/promises";
+import {access, readdir, readFile } from "node:fs/promises";
 import {CLI} from "../../../../../../CLI";
 import MiniSearch from "minisearch";
 
@@ -73,26 +73,36 @@ async function collectFiles(sizeLimitMb: number): Promise<string[]> {
     return files;
 }
 
+async function addBatchToIndex(index: MiniSearch, batch: string[]) {
+    const documents = await Promise.all(batch.map(async (file) => {
+        const content = await readFile(file, 'utf-8');
+        return {
+            id: file,
+            title: path.basename(file),
+            text: content,
+            category: 'file',
+        };
+    }));
+    await index.addAllAsync(documents);
+}
+
 export async function addDocuments(index: MiniSearch, sizeLimitMb = 10) {
     const files = await collectFiles(sizeLimitMb);
     CLI.debug(`Found ${files.length} files to index`);
 
+    const batchSize = 10;
     let previousPercentDone = 0;
-    for (let i = 0; i < files.length; i++){
-        const file = files[i];
-        const percentDone = Math.round((i / files.length) * 100);
+
+    for (let i = 0; i < files.length; i += batchSize) {
+        const batch = files.slice(i, i + batchSize);
+        await addBatchToIndex(index, batch);
+
+        const percentDone = Math.round(((i + batch.length) / files.length) * 100);
         if (percentDone !== previousPercentDone) {
             CLI.debug(`Indexed ${percentDone}% of files`);
+            previousPercentDone = percentDone;
         }
-        const content = await fs.promises.readFile(file, 'utf-8');
-
-        index.add({
-            id: file,
-            title: path.basename(file),
-            text: content,
-            category: 'file'
-        });
-        previousPercentDone = percentDone;
     }
+
     CLI.success(`Indexed ${files.length} files`);
 }
