@@ -20,10 +20,10 @@ import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
 import {ResourceReference} from "../../models/chat/ResourceReference";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {ModelDefinition} from "../../models/ModelDefinition";
-import {LlmProvider} from "../../models/llmProvider";
+import {ModelDefinition} from "../../models/llms/ModelDefinition";
+import {LlmProvider} from "../../models/llms/llmProvider";
 import {playAudio, stopAudio} from "../classes/audio";
-import {ProviderDefinition} from "../../models/ProviderDefinition";
+import {ProviderDefinition} from "../../models/llms/ProviderDefinition";
 import {AudioTemplates} from "./audio.templates";
 
 export class ChatTemplates {

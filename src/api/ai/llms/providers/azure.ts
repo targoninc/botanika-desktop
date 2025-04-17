@@ -1,4 +1,4 @@
-import { ModelDefinition } from "../../../../models/ModelDefinition";
+import { ModelDefinition } from "../../../../models/llms/ModelDefinition";
 
 export function getAzureModels(): ModelDefinition[] {
     return [

@@ -3,7 +3,7 @@ import {terminator} from "../../../models/chat/terminator";
 import {OpenAI} from "openai";
 import {Response} from "express";
 import {getConfig, getFeatureOption} from "../../configuration";
-import {BotanikaFeature} from "../../../models/BotanikaFeature";
+import {BotanikaFeature} from "../../../models/features/BotanikaFeature";
 import {OpenAiFeatureKeys} from "./OpenAiFeatureKeys";
 
 let openAi: OpenAI;

@@ -12,8 +12,8 @@ import {playAudio} from "./audio";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
-import {ProviderDefinition} from "../../models/ProviderDefinition";
-import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
+import {ProviderDefinition} from "../../models/llms/ProviderDefinition";
+import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
 import {toast} from "./ui";
 import {ToastType} from "../enums/ToastType";
 

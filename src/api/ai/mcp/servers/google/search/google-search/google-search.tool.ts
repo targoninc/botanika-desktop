@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import {ChatToolResult} from "../../../../../../../models/chat/ChatToolResult";
 import {featureEnabled} from "../../../../../../features/configuredFeatures";
 import {wrapTool} from "../../../../tooling";
-import {BotanikaFeature} from "../../../../../../../models/BotanikaFeature";
+import {BotanikaFeature} from "../../../../../../../models/features/BotanikaFeature";
 
 dotenv.config();
 

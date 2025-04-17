@@ -4,7 +4,7 @@ import {app, currentWindow} from "../../../../../../server-utils";
 import {setEnvironmentVariable} from "../../../../../features/environment";
 import {CLI} from "../../../../../CLI";
 import {featureEnabled} from "../../../../../features/configuredFeatures";
-import {BotanikaFeature} from "../../../../../../models/BotanikaFeature";
+import {BotanikaFeature} from "../../../../../../models/features/BotanikaFeature";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 

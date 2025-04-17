@@ -8,8 +8,7 @@ import {Application} from "express";
 import {ApiEndpoint} from "../models/ApiEndpoints";
 import {getConfiguredFeatures} from "./features/configuredFeatures";
 import {execSync} from "child_process";
-import {BotanikaFeature} from "../models/BotanikaFeature";
-import {setConfig} from "./shortcuts/shortcuts";
+import {BotanikaFeature} from "../models/features/BotanikaFeature";
 
 const configPath = path.join(appDataPath, 'config.json');
 CLI.log('Config path: ' + configPath);
@@ -25,6 +24,11 @@ const config = JSON.parse(fs.readFileSync(configPath).toString()) as Configurati
 
 export function getConfig() {
     return Object.assign(defaultConfig, config);
+}
+
+export function setConfig(newConfig: Configuration) {
+    Object.assign(config, newConfig);
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
 }
 
 export function getFeatureOption(feature: BotanikaFeature, optionKey: string) {

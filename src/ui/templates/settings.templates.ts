@@ -13,13 +13,14 @@ import {SettingConfiguration} from "../../models/uiExtensions/SettingConfigurati
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
-import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
-import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
+import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
+import {FeatureConfigurationInfo} from "../../models/features/FeatureConfigurationInfo";
 import {createModal, toast} from "../classes/ui";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {shortcutNames} from "../../models/shortcuts/Shortcut";
 import {McpServerConfig} from "../../models/mcp/McpServerConfig";
 import {Configuration} from "../../models/Configuration";
+import {featureOptions} from "../../models/features/featureOptions";
 
 export class SettingsTemplates {
     static settings() {
@@ -85,7 +86,7 @@ export class SettingsTemplates {
                         ifjs(loading, GenericTemplates.spinner()),
                     ).build(),
                 GenericTemplates.heading(2, "General"),
-                ...settings.map(s => SettingsTemplates.setting(s, loading, (c, k, v) => ({
+                ...settings.map(s => SettingsTemplates.setting(s, loading, c => c[s.key], (c, k, v) => ({
                     ...c,
                     [k]: v
                 }))),
@@ -98,24 +99,27 @@ export class SettingsTemplates {
             ).build();
     }
 
-    static setting(sc: SettingConfiguration, loading: Signal<boolean>, updateFunction: (config: Configuration, key: string, value: any) => Configuration) {
+    static setting(sc: SettingConfiguration, loading: Signal<boolean>, getter: (config: Configuration) => any, updateFunction: (config: Configuration, key: string, value: any) => Configuration) {
         const errors = signal<string[]>([]);
         async function updateKey(key: string, value: any) {
-            const valErrors = sc.validator(value);
-            errors.value = valErrors;
-            if (valErrors.length > 0) {
-                return;
+            if (sc.validator) {
+                const valErrors = sc.validator(value);
+                errors.value = valErrors;
+                if (valErrors.length > 0) {
+                    return;
+                }
             }
+
             loading.value = true;
             configuration.value = updateFunction(configuration.value, key, value);
             await Api.setConfig(configuration.value);
             loading.value = false;
         }
 
-        const value = compute(c => c[sc.key] ?? null, configuration);
+        const value = compute(c => getter(c) ?? null, configuration);
 
         return create("div")
-            .classes("flex-v", "card")
+            .classes("flex-v", "card", "small-gap")
             .children(
                 create("div")
                     .classes("flex", "align-center")
@@ -127,6 +131,7 @@ export class SettingsTemplates {
                         SettingsTemplates.settingImplementation(sc, value, updateKey),
                     ).build(),
                 create("p")
+                    .classes("text-small")
                     .text(sc.description)
                     .build(),
                 signalMap(errors, create("div").classes("flex-v"), e => create("span")
@@ -184,7 +189,8 @@ export class SettingsTemplates {
                     ).build(),
                 ...Object.keys(apis).map(api => {
                     const name = api;
-                    const feature = apis[api] as FeatureConfigurationInfo;
+                    const feature = apis[name] as FeatureConfigurationInfo;
+                    const fOptions = featureOptions[name] as SettingConfiguration[];
                     const loading = signal(false);
 
                     return create("div")
@@ -199,12 +205,14 @@ export class SettingsTemplates {
                                     ifjs(loading, GenericTemplates.spinner())
                                 ).build(),
                             feature.envVars && feature.envVars.length > 0 ? SettingsTemplates.configuredApiEnvVars(feature, load) : null,
-                            ...(feature.options && feature.options.length > 0 ? feature.options.map(s => SettingsTemplates.setting(s, loading, (c, k, v) => ({
+                            ...(fOptions && fOptions.length > 0 ? fOptions.map(s => SettingsTemplates.setting(s, loading, c => {
+                                return c.featureOptions && c.featureOptions[name] ? c.featureOptions[name][s.key] : null;
+                            }, (c, k, v) => ({
                                 ...c,
                                 featureOptions: {
-                                    ...c.featureOptions,
+                                    ...(c.featureOptions ?? {}),
                                     [name]: {
-                                        ...c.featureOptions[name],
+                                        ...((c.featureOptions ?? {})[name] ?? {}),
                                         [k]: v,
                                     }
                                 }
@@ -224,7 +232,7 @@ export class SettingsTemplates {
                     return create("div")
                         .classes("flex", "align-center", "indent-left")
                         .children(
-                            GenericTemplates.icon(envVar.isSet ? "check" : "key_off", [envVar.isSet ? "positive" : "negative"]),
+                            GenericTemplates.icon(envVar.isSet ? "key" : "key_off", [envVar.isSet ? "positive" : "negative"]),
                             FJSC.input({
                                 type: InputType.text,
                                 value: "",

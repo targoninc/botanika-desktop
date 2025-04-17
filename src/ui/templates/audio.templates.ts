@@ -4,7 +4,7 @@ import {VoiceRecorder} from "../classes/VoiceRecorder";
 import {create} from "../lib/fjsc/src/f2";
 import {configuredFeatures} from "../classes/store";
 import {FJSC} from "../lib/fjsc";
-import {BotanikaFeature} from "../../models/BotanikaFeature";
+import {BotanikaFeature} from "../../models/features/BotanikaFeature";
 
 const currentLoudness = signal(0);
 let recorder: VoiceRecorder;

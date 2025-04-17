@@ -16,7 +16,7 @@ import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
 import {getMcpTools} from "./initializer";
 import {CLI} from "../CLI";
-import {LlmProvider} from "../../models/llmProvider";
+import {LlmProvider} from "../../models/llms/llmProvider";
 import {getTtsAudio} from "./tts/tts";
 import {AudioStorage} from "../storage/AudioStorage";
 import {getConfig, getConfigKey} from "../configuration";

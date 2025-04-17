@@ -1,7 +1,7 @@
-import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
-import {FeatureConfigurationInfo} from "../../models/FeatureConfigurationInfo";
-import {featureOptions} from "./featureOptions";
-import {BotanikaFeature} from "../../models/BotanikaFeature";
+import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
+import {FeatureConfigurationInfo} from "../../models/features/FeatureConfigurationInfo";
+import {featureOptions} from "../../models/features/featureOptions";
+import {BotanikaFeature} from "../../models/features/BotanikaFeature";
 
 function envSet(key: string) {
     return process.env[key] && process.env[key].trim().length > 0;

@@ -10,7 +10,7 @@ import fs from "fs";
 import {CLI} from "../../../../../../CLI";
 import { stat } from "node:fs/promises";
 import {featureEnabled} from "../../../../../../features/configuredFeatures";
-import {BotanikaFeature} from "../../../../../../../models/BotanikaFeature";
+import {BotanikaFeature} from "../../../../../../../models/features/BotanikaFeature";
 
 let index: MiniSearch;
 const indexPath = path.join(appDataPath, 'filesystem-search-index.json');

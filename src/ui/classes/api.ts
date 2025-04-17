@@ -3,9 +3,9 @@ import {Configuration} from "../../models/Configuration";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {McpServerConfig} from "../../models/mcp/McpServerConfig";
-import {ConfiguredFeatures} from "../../models/ConfiguredFeatures";
+import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
-import {ProviderDefinition} from "../../models/ProviderDefinition";
+import {ProviderDefinition} from "../../models/llms/ProviderDefinition";
 import {ApiEndpoint} from "../../models/ApiEndpoints";
 
 export class Api extends ApiBase {
