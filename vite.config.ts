@@ -2,7 +2,7 @@ import path from 'node:path'
 import {defineConfig} from 'vite'
 import electron from 'vite-plugin-electron/simple'
 import native from 'vite-plugin-native'
-import commonjs from "@rollup/plugin-commonjs";
+/// <reference types="vitest" />
 
 export default defineConfig({
     server: {
@@ -26,4 +26,10 @@ export default defineConfig({
             },
         }),
     ],
+    test: {
+        globals: true,
+        environment: 'node',
+        include: ['**/tests/**/*.test.ts'],
+        exclude: ['node_modules'],
+    },
 })
