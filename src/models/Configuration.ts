@@ -1,3 +1,5 @@
+import {BotanikaFeature} from "./BotanikaFeature";
+
 export interface Configuration extends Record<string, any> {
     display_hotkeys: boolean;
     language: string;
@@ -9,4 +11,5 @@ export interface Configuration extends Record<string, any> {
     provider: string;
     model: string;
     enableTts: boolean;
+    featureOptions: Record<BotanikaFeature, Record<string, any>>;
 }

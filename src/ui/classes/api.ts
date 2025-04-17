@@ -13,6 +13,10 @@ export class Api extends ApiBase {
         return this.get<Configuration>(ApiEndpoint.CONFIG);
     }
 
+    static setConfig(config: Configuration) {
+        return this.put(ApiEndpoint.CONFIG, config);
+    }
+
     static getConfigKey<T>(key: string) {
         return this.get<T>(`${ApiEndpoint.CONFIG_KEY}${key}`);
     }

@@ -8,6 +8,8 @@ import {Application} from "express";
 import {ApiEndpoint} from "../models/ApiEndpoints";
 import {getConfiguredFeatures} from "./features/configuredFeatures";
 import {execSync} from "child_process";
+import {BotanikaFeature} from "../models/BotanikaFeature";
+import {setConfig} from "./shortcuts/shortcuts";
 
 const configPath = path.join(appDataPath, 'config.json');
 CLI.log('Config path: ' + configPath);
@@ -22,7 +24,11 @@ if (!fs.existsSync(configPath)) {
 const config = JSON.parse(fs.readFileSync(configPath).toString()) as Configuration;
 
 export function getConfig() {
-    return config;
+    return Object.assign(defaultConfig, config);
+}
+
+export function getFeatureOption(feature: BotanikaFeature, optionKey: string) {
+    return getConfig().featureOptions[feature][optionKey] ?? null;
 }
 
 export function setConfigKey(key: string, value: any) {
@@ -36,6 +42,11 @@ export function getConfigKey(key: string) {
 
 export function addConfigEndpoints(app: Application) {
     app.get(ApiEndpoint.CONFIG, async (req, res) => {
+        res.status(200).send(getConfig());
+    });
+
+    app.put(ApiEndpoint.CONFIG, async (req, res) => {
+        setConfig(req.body);
         res.status(200).send(getConfig());
     });
 

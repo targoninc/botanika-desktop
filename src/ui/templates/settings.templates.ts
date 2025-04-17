@@ -1,4 +1,4 @@
-import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
+import {create, ifjs, nullElement, signalMap} from "../lib/fjsc/src/f2";
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
@@ -9,7 +9,7 @@ import {
     mcpConfig,
     shortCutConfig
 } from "../classes/store";
-import {SettingsConfiguration} from "./settingsConfiguration";
+import {SettingConfiguration} from "../../models/uiExtensions/SettingConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
 import {FJSC} from "../lib/fjsc";
@@ -19,10 +19,11 @@ import {createModal, toast} from "../classes/ui";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {shortcutNames} from "../../models/shortcuts/Shortcut";
 import {McpServerConfig} from "../../models/mcp/McpServerConfig";
+import {Configuration} from "../../models/Configuration";
 
 export class SettingsTemplates {
     static settings() {
-        const settings: SettingsConfiguration[] = [
+        const settings: SettingConfiguration[] = [
             {
                 key: "display_hotkeys",
                 icon: "keyboard",
@@ -84,7 +85,10 @@ export class SettingsTemplates {
                         ifjs(loading, GenericTemplates.spinner()),
                     ).build(),
                 GenericTemplates.heading(2, "General"),
-                ...settings.map(s => SettingsTemplates.setting(s, loading)),
+                ...settings.map(s => SettingsTemplates.setting(s, loading, (c, k, v) => ({
+                    ...c,
+                    [k]: v
+                }))),
                 SettingsTemplates.shortcuts(),
                 SettingsTemplates.configuredFeatures(),
                 SettingsTemplates.mcpConfig(),
@@ -94,14 +98,17 @@ export class SettingsTemplates {
             ).build();
     }
 
-    static setting(sc: SettingsConfiguration, loading: Signal<boolean>) {
+    static setting(sc: SettingConfiguration, loading: Signal<boolean>, updateFunction: (config: Configuration, key: string, value: any) => Configuration) {
+        const errors = signal<string[]>([]);
         async function updateKey(key: string, value: any) {
+            const valErrors = sc.validator(value);
+            errors.value = valErrors;
+            if (valErrors.length > 0) {
+                return;
+            }
             loading.value = true;
-            configuration.value = {
-                ...configuration.value,
-                [key]: value,
-            };
-            await Api.setConfigKey(key, value);
+            configuration.value = updateFunction(configuration.value, key, value);
+            await Api.setConfig(configuration.value);
             loading.value = false;
         }
 
@@ -121,11 +128,15 @@ export class SettingsTemplates {
                     ).build(),
                 create("p")
                     .text(sc.description)
-                    .build()
+                    .build(),
+                signalMap(errors, create("div").classes("flex-v"), e => create("span")
+                    .classes("error")
+                    .text(e)
+                    .build())
             ).build();
     }
 
-    private static settingImplementation(sc: SettingsConfiguration, value: Signal<any>, updateKey: (key: string, value: any) => Promise<void>) {
+    private static settingImplementation(sc: SettingConfiguration, value: Signal<any>, updateKey: (key: string, value: any) => Promise<void>) {
         switch (sc.type) {
             case "string":
                 return GenericTemplates.input(InputType.text, sc.key, value, sc.label, sc.label, sc.key, [], (newValue) => updateKey(sc.key, newValue));
@@ -174,6 +185,7 @@ export class SettingsTemplates {
                 ...Object.keys(apis).map(api => {
                     const name = api;
                     const feature = apis[api] as FeatureConfigurationInfo;
+                    const loading = signal(false);
 
                     return create("div")
                         .classes("flex-v", "card")
@@ -184,8 +196,19 @@ export class SettingsTemplates {
                                     GenericTemplates.icon(feature.enabled ? "check" : "key_off", [feature.enabled ? "positive" : "negative"]),
                                     create("b")
                                         .text(name),
+                                    ifjs(loading, GenericTemplates.spinner())
                                 ).build(),
                             feature.envVars && feature.envVars.length > 0 ? SettingsTemplates.configuredApiEnvVars(feature, load) : null,
+                            ...(feature.options && feature.options.length > 0 ? feature.options.map(s => SettingsTemplates.setting(s, loading, (c, k, v) => ({
+                                ...c,
+                                featureOptions: {
+                                    ...c.featureOptions,
+                                    [name]: {
+                                        ...c.featureOptions[name],
+                                        [k]: v,
+                                    }
+                                }
+                            }))) : []),
                         ).build();
                 })
             ).build();

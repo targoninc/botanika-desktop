@@ -1,4 +1,4 @@
-import {FeatureOption} from "./FeatureOption";
+import {SettingConfiguration} from "./uiExtensions/SettingConfiguration";
 
 export interface FeatureConfigurationInfo {
     enabled: boolean;
@@ -6,5 +6,5 @@ export interface FeatureConfigurationInfo {
         key: string;
         isSet: boolean;
     }[];
-    options: FeatureOption<any>[];
+    options: SettingConfiguration[];
 }
