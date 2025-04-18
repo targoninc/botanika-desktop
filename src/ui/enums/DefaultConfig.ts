@@ -1,4 +1,5 @@
 import {Configuration} from "../../models/Configuration";
+import {BotanikaFeature} from "../../models/features/BotanikaFeature";
 
 export const defaultConfig: Configuration = {
     display_hotkeys: true,
@@ -10,5 +11,15 @@ export const defaultConfig: Configuration = {
     provider: "groq",
     model: "llama-3.1-8b-instant",
     enableTts: false,
-    botDescription: ""
+    botDescription: "",
+    maxSteps: 5,
+    featureOptions: {
+        [BotanikaFeature.GoogleSearch]: {},
+        [BotanikaFeature.OpenAI]: {},
+        [BotanikaFeature.Groq]: {},
+        [BotanikaFeature.Ollama]: {},
+        [BotanikaFeature.Azure]: {},
+        [BotanikaFeature.OpenRouter]: {},
+        [BotanikaFeature.Spotify]: {}
+    },
 }

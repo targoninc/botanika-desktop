@@ -145,7 +145,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             const m = newAssistantMessage(response.text, provider, modelName);
             chatContext = await afterMessageFinished(m, chatContext, res);
         } else {
-            const maxSteps = 5;
+            const maxSteps = getConfig().maxSteps;
             const streamResponse = await streamResponseAsMessage(maxSteps, provider, modelName, model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
             const streamPromise = new Promise<void>((resolve, reject) => {

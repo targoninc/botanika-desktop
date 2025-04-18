@@ -11,5 +11,6 @@ export interface Configuration extends Record<string, any> {
     provider: string;
     model: string;
     enableTts: boolean;
+    maxSteps: number;
     featureOptions: Record<BotanikaFeature, Record<string, any>>;
 }

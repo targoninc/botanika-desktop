@@ -5,6 +5,7 @@ import {CLI} from "../../CLI";
 import {v4 as uuidv4} from "uuid";
 import {updateMessageFromStream} from "./functions";
 import {LanguageModelSourceV1} from "./models/LanguageModelSourceV1";
+import fs from "fs";
 
 export async function getSimpleResponse(model: LanguageModelV1, tools: ToolSet, messages: CoreMessage[], maxTokens: number = 1000): Promise<{
     thoughts: string;
@@ -58,6 +59,10 @@ export async function streamResponseAsMessage(maxSteps: number, provider: string
         presencePenalty: 0.6,
         frequencyPenalty: 0.6,
         maxSteps,
+        maxRetries: 0,
+        onError: event => {
+            CLI.error(JSON.stringify(event));
+        },
     });
 
     const messageId = uuidv4();
@@ -91,6 +96,8 @@ export async function streamResponseAsMessage(maxSteps: number, provider: string
             type: "resource-reference",
             snippet: source.id
         }));
+    }).catch((err) => {
+        console.error(err);
     });
 
     return {

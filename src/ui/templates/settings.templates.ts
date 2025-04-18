@@ -70,6 +70,13 @@ export class SettingsTemplates {
                 label: "Your birthdate",
                 description: "Will be given to the model(s) as context",
                 type: "date",
+            },
+            {
+                key: "maxSteps",
+                icon: "checklist",
+                label: "Maximum steps per call",
+                description: "Maximum amount of iterations each message you send will trigger",
+                type: "number",
             }
         ];
         const loading = signal(false);
@@ -275,7 +282,6 @@ export class SettingsTemplates {
 
     static mcpConfigInternal(c: McpConfiguration) {
         return create("div")
-            .classes("flex-v")
             .children(
                 GenericTemplates.heading(2, "Configured MCP servers"),
                 create("div")
