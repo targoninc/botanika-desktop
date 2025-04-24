@@ -22,4 +22,5 @@ export const defaultConfig: Configuration = {
         [BotanikaFeature.OpenRouter]: {},
         [BotanikaFeature.Spotify]: {}
     },
+    tintColor: "#00ff00",
 }

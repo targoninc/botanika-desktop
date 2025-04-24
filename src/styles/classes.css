@@ -154,7 +154,7 @@
 
 .card {
     background: var(--bg-3);
-    border: 1px solid var(--green-muted);
+    border: 1px solid var(--tint-muted);
 }
 
 .secondary-card {
@@ -186,7 +186,7 @@
 }
 
 .bordered-panel {
-    border: 1px solid var(--green-muted);
+    border: 1px solid var(--tint-muted);
 }
 
 .title {
@@ -518,8 +518,8 @@ kbd {
 .send-button {
     border-radius: var(--input-border-radius);
     background: var(--gradient-1);
-    color: var(--green-present);
-    border: 1px solid var(--green-muted);
+    color: var(--tint-present);
+    border: 1px solid var(--tint-muted);
     height: 1.5em;
     width: 1.5em;
     align-items: center;
@@ -532,7 +532,7 @@ kbd {
 
 .send-button:hover {
     background: var(--gradient-2);
-    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--green-present) 50%, transparent 50%);
+    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--tint-present) 50%, transparent 50%);
 }
 
 .chat-message:last-child:not(.chat-message.tool) {
@@ -581,7 +581,7 @@ kbd {
 .chat-list-item {
     cursor: pointer;
     border-radius: var(--input-border-radius);
-    border: 1px solid var(--green-muted);
+    border: 1px solid var(--tint-muted);
     padding: var(--gap-v);
     width: 100%;
 }
@@ -591,7 +591,7 @@ kbd {
 }
 
 .chat-list-item.active {
-    border-color: var(--green-present);
+    border-color: var(--tint-present);
     background: var(--bg);
 }
 
@@ -649,7 +649,7 @@ pre {
 
 .reference:hover, .reference.expanded {
     background: var(--bg);
-    border-color: var(--green);
+    border-color: var(--tint-main);
 }
 
 .snippet {
@@ -668,7 +668,7 @@ pre {
 }
 
 .positive {
-    color: var(--green);
+    color: var(--tint-main);
 }
 
 .negative {

@@ -72,11 +72,18 @@ export class ChatTemplates {
             scrollToLastMessage();
         });
 
+        const dedupHistory = context.history.reduce((prev, cur) => {
+            if (!prev.some(h => h.id === cur.id)) {
+                prev.push(cur);
+            }
+            return prev;
+        }, []);
+
         return create("div")
             .classes("flex-v", "flex-grow", "chat-history")
             .styles("overflow-y", "auto")
             .children(
-                ...context.history
+                ...dedupHistory
                     .sort((a, b) => a.time - b.time)
                     .map(message => ChatTemplates.chatMessage(message))
             ).build();

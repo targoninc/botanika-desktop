@@ -86,6 +86,8 @@ export async function streamResponseAsMessage(maxSteps: number, provider: string
             ...message.value,
             files: f
         };
+    }).catch((err) => {
+        console.error(err);
     });
 
     sources.then((s: LanguageModelSourceV1[]) => {

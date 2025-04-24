@@ -1,8 +1,10 @@
 :root {
-    --black: #080d07;
-    --black-2: #192019;
-    --black-3: #212520;
-    --black-4: #414641;
+    --tint: #0000ff;
+    --tint-strength: 7%;
+    --black: color-mix(in oklab, #101010, var(--tint) var(--tint-strength));
+    --black-2: color-mix(in oklab, #202020, var(--tint) var(--tint-strength));
+    --black-3: color-mix(in oklab, #303030, var(--tint) var(--tint-strength));;
+    --black-4: color-mix(in oklab, #353535, var(--tint) var(--tint-strength));
     --black-trans: rgba(10, 10, 13, 0.9);
     --white: #efe9e7ff;
     --white-2: #e7ddda;
@@ -17,9 +19,9 @@
     --gradient-2: linear-gradient(-180deg, var(--black-2), color-mix(in oklab, var(--black-2), var(--black-3) 50%));
 
     --blue: #0b72bc;
-    --green: #3ebf06;
-    --green-present: #5ead3a;
-    --green-muted: #415638;
+    --tint-main: color-mix(in oklab, #bdbdbd, var(--tint) calc(var(--tint-strength) * 2));
+    --tint-present: color-mix(in oklab, #a9a9a9, var(--tint) calc(var(--tint-strength) * 2));
+    --tint-muted: color-mix(in oklab, #525252, var(--tint) var(--tint-strength));
     --red: #c43e40;
     --yellow: #f0c929ff;
     --orange: #f09029;
@@ -40,8 +42,8 @@
     --tab-padding: .3em .8em;
 
     --fjsc-border-radius-small: var(--input-border-radius);
-    --fjsc-interactive-border-focused: var(--green-present);
-    --fjsc-interactive-border-active: var(--green-present);
+    --fjsc-interactive-border-focused: var(--tint-present);
+    --fjsc-interactive-border-active: var(--tint-present);
 
     --default-font-family: "Inter Tight", serif;
     --fjsc-font: var(--default-font-family);
@@ -154,25 +156,25 @@ button.no-border, input.no-border, textarea.no-border, select.no-border {
 }
 
 button.positive, input.positive, textarea.positive, select.positive {
-    border: var(--input-border-width) solid var(--green-muted);
-    color: var(--green);
+    border: var(--input-border-width) solid var(--tint-muted);
+    color: var(--tint-main);
     background: var(--gradient-1);
 }
 
 button.positive:hover, button.fjsc.positive:hover {
-    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--green-muted) 50%, transparent 50%);
+    box-shadow: 0 0 20px -5px color-mix(in oklab, var(--tint-muted) 50%, transparent 50%);
     background: var(--gradient-2);
 }
 
 button.message-action {
     background: var(--gradient-2);
-    border: var(--input-border-width) solid var(--green-muted);
+    border: var(--input-border-width) solid var(--tint-muted);
     color: var(--text-4);
 }
 
 button.message-action:hover {
     background: var(--gradient-1);
-    border-color: var(--green-present);
+    border-color: var(--tint-present);
 }
 
 button.negative, input.negative, textarea.negative, select.negative {
@@ -213,7 +215,7 @@ a .material-symbols-outlined {
 
 a:hover {
     text-decoration: underline;
-    color: var(--green);
+    color: var(--tint-main);
 }
 
 .align-center {
@@ -294,8 +296,8 @@ button:hover {
 
 .toast {
     background: var(--gradient-1);
-    border: var(--input-border-width) solid var(--green-muted) !important;
-    color: var(--green-present);
+    border: var(--input-border-width) solid var(--tint-muted) !important;
+    color: var(--tint-present);
     border-radius: var(--input-border-radius);
     padding: var(--gap-h) var(--gap-v);
     display: flex;
@@ -315,7 +317,7 @@ button:hover {
 }
 
 .toast.positive {
-    border-color: var(--green);
+    border-color: var(--tint-main);
 }
 
 .toast.sensitive {
@@ -331,7 +333,7 @@ button:hover {
 }
 
 .status-text.positive {
-    color: var(--green);
+    color: var(--tint-main);
 }
 
 .status-text.negative {

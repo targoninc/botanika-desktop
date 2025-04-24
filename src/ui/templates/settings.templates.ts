@@ -2,13 +2,7 @@ import {create, ifjs, nullElement, signalMap} from "../lib/fjsc/src/f2";
 import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
-import {
-    configuration,
-    configuredFeatures,
-    loadconfiguredFeatures,
-    mcpConfig,
-    shortCutConfig
-} from "../classes/store";
+import {configuration, configuredFeatures, loadconfiguredFeatures, mcpConfig, shortCutConfig} from "../classes/store";
 import {SettingConfiguration} from "../../models/uiExtensions/SettingConfiguration";
 import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
@@ -77,6 +71,13 @@ export class SettingsTemplates {
                 label: "Maximum steps per call",
                 description: "Maximum amount of iterations each message you send will trigger",
                 type: "number",
+            },
+            {
+                key: "tintColor",
+                icon: "colors",
+                label: "UI tint color",
+                description: "What color to slightly tint the UI with.",
+                type: "color",
             }
         ];
         const loading = signal(false);
@@ -152,6 +153,8 @@ export class SettingsTemplates {
         switch (sc.type) {
             case "string":
                 return GenericTemplates.input(InputType.text, sc.key, value, sc.label, sc.label, sc.key, [], (newValue) => updateKey(sc.key, newValue));
+            case "color":
+                return GenericTemplates.input(InputType.color, sc.key, value, sc.label, sc.label, sc.key, [], (newValue) => updateKey(sc.key, newValue));
             case "date":
                 return GenericTemplates.input(InputType.date, sc.key, value, sc.label, sc.label, sc.key, [], (newValue) => updateKey(sc.key, newValue));
             case "long-string":
@@ -282,6 +285,7 @@ export class SettingsTemplates {
 
     static mcpConfigInternal(c: McpConfiguration) {
         return create("div")
+            .classes("flex-v")
             .children(
                 GenericTemplates.heading(2, "Configured MCP servers"),
                 create("div")

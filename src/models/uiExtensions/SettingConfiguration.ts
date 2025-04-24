@@ -3,6 +3,6 @@ export interface SettingConfiguration {
     icon?: string;
     label: string,
     description: string,
-    type: "string" | "number" | "boolean" | "language" | "date" | "long-string";
+    type: "string" | "color" | "number" | "boolean" | "language" | "date" | "long-string";
     validator?: (value: any) => string[];
 }

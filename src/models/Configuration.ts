@@ -13,4 +13,5 @@ export interface Configuration extends Record<string, any> {
     enableTts: boolean;
     maxSteps: number;
     featureOptions: Record<BotanikaFeature, Record<string, any>>;
+    tintColor: string;
 }

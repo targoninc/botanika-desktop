@@ -16,6 +16,7 @@ import {ProviderDefinition} from "../../models/llms/ProviderDefinition";
 import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
 import {toast} from "./ui";
 import {ToastType} from "../enums/ToastType";
+import {setRootCssVar} from "./setRootCssVar";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);
@@ -31,6 +32,7 @@ export const currentText = signal<string>("");
 export function initializeStore() {
     configuration.subscribe(c => {
         language.value = c.language as Language;
+        setRootCssVar("--tint", c.tintColor ?? "#00ff00");
     });
 
     shortCutConfig.subscribe(async (sc, changed) => {

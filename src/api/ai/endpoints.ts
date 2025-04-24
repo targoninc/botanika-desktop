@@ -5,23 +5,18 @@ import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {ApiEndpoint} from "../../models/ApiEndpoints";
-import {
-    createChat,
-    getPromptMessages,
-    getWorldContext,
-    newAssistantMessage,
-    newUserMessage
-} from "./llms/messages";
+import {createChat, getPromptMessages, getWorldContext, newAssistantMessage, newUserMessage} from "./llms/messages";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatStorage} from "../storage/ChatStorage";
 import {getMcpTools} from "./initializer";
 import {CLI} from "../CLI";
-import {LlmProvider} from "../../models/llms/llmProvider";
 import {getTtsAudio} from "./tts/tts";
 import {AudioStorage} from "../storage/AudioStorage";
 import {getConfig, getConfigKey} from "../configuration";
-import {signal} from "../../ui/lib/fjsc/src/signals";
+import {Signal, signal} from "../../ui/lib/fjsc/src/signals";
 import {getSimpleResponse, streamResponseAsMessage} from "./llms/calls";
+import {LanguageModelV1, StepResult, ToolSet} from "ai";
+import {McpInfo} from "./mcp/models/McpInfo";
 
 export const currentChatContext = signal<ChatContext>(null);
 
@@ -59,6 +54,28 @@ function sendError(chatId: string, e: string, res: Response) {
     };
     res.write(chunk(JSON.stringify(update)));
     res.end();
+}
+
+function onContextChange(res: Response, chatContext: ChatContext) {
+    return async (c: ChatContext, changed: boolean) => {
+        if (changed) {
+            chatContext = await sendMessages([...c.history], c, res);
+        }
+    };
+}
+
+async function processSteps(streamResponse: {
+    message: Signal<ChatMessage>;
+    steps: Promise<Array<StepResult<ToolSet>>>
+}, maxSteps: number, model: LanguageModelV1, mcpInfo: McpInfo, chatContext: ChatContext, worldContext: Record<string, any>, provider: string, modelName: string, res: Response) {
+    const steps = await streamResponse.steps;
+    const toolResults = steps.flatMap(s => s.toolResults);
+    if (toolResults.length === maxSteps) {
+        const response = await getSimpleResponse(model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
+        const m = newAssistantMessage(response.text, provider, modelName);
+        chatContext = await afterMessageFinished(m, chatContext, res);
+    }
+    return chatContext;
 }
 
 export const chatEndpoint = async (req: Request, res: Response) => {
@@ -125,49 +142,26 @@ export const chatEndpoint = async (req: Request, res: Response) => {
             mcpInfo.tools = {};
         }
 
-        function onContextChange(c: ChatContext, changed: boolean) {
-            if (changed) {
-                const update = <ChatUpdate>{
-                    chatId,
-                    timestamp: Date.now(),
-                    messages: [...c.history]
-                };
-                res.write(chunk(JSON.stringify(update)));
-                chatContext = updateContext(chatContext, update);
-            }
-        }
-
-        currentChatContext.subscribe(onContextChange);
+        const onChange = onContextChange(res, chatContext);
+        currentChatContext.subscribe(onChange);
 
         const worldContext = getWorldContext();
-        if (provider === LlmProvider.openrouter) {
-            const response = await getSimpleResponse(model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
-            const m = newAssistantMessage(response.text, provider, modelName);
-            chatContext = await afterMessageFinished(m, chatContext, res);
-        } else {
-            const maxSteps = getConfig().maxSteps;
-            const streamResponse = await streamResponseAsMessage(maxSteps, provider, modelName, model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
+        const maxSteps = getConfig().maxSteps;
+        const streamResponse = await streamResponseAsMessage(maxSteps, provider, modelName, model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
 
-            const streamPromise = new Promise<void>((resolve, reject) => {
-                streamResponse.message.subscribe(async (m: ChatMessage) => {
-                    chatContext = await sendMessages([m], chatContext, res);
-                    if (m.finished) {
-                        chatContext = await afterMessageFinished(m, chatContext, res);
-                        resolve();
-                    }
-                });
+        const streamPromise = new Promise<void>((resolve) => {
+            streamResponse.message.subscribe(async (m: ChatMessage) => {
+                chatContext = await sendMessages([m], chatContext, res);
+                if (m.finished) {
+                    chatContext = await afterMessageFinished(m, chatContext, res);
+                    resolve();
+                }
             });
+        });
 
-            const steps = await streamResponse.steps;
-            const toolResults = steps.flatMap(s => s.toolResults);
-            if (toolResults.length === maxSteps) {
-                const response = await getSimpleResponse(model, mcpInfo.tools, getPromptMessages(chatContext.history, worldContext, getConfig()));
-                const m = newAssistantMessage(response.text, provider, modelName);
-                chatContext = await afterMessageFinished(m, chatContext, res);
-            }
-            await streamPromise;
-        }
-        currentChatContext.unsubscribe(onContextChange);
+        chatContext = await processSteps(streamResponse, maxSteps, model, mcpInfo, chatContext, worldContext, provider, modelName, res);
+        await streamPromise;
+        currentChatContext.unsubscribe(onChange);
         CLI.debug(`Closing MCP connections`);
         mcpInfo.onClose();
         await ChatStorage.writeChatContext(chatContext.id, chatContext);
@@ -240,6 +234,7 @@ export function deleteChatEndpoint(req: Request, res: Response) {
 }
 
 let models = {};
+
 export async function getModelsEndpoint(req: Request, res: Response) {
     if (Object.keys(models).length === 0) {
         models = await initializeLlms();
