@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.85",
+  "version": "1.0.86",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -52,7 +52,8 @@
     "vite-plugin-electron": "^0.29.0",
     "vite-plugin-native": "^2.2.2",
     "vitest": "^3.1.1",
-    "whisper-tnode": "^1.3.2"
+    "whisper-tnode": "^1.3.2",
+    "playwright": "^1.52.0"
   },
   "dependencies": {
     "@ai-sdk/azure": "^1.3.6",

@@ -3,814 +3,1195 @@ import { ModelDefinition } from "../../../../models/llms/ModelDefinition";
 export function getOllamaModels(): ModelDefinition[] {
     return [
         {
-            "id": "gemma3",
-            "displayName": "gemma3",
-            "supportsTools": false
-        },
-        {
-            "id": "qwq",
-            "displayName": "qwq",
-            "supportsTools": true
-        },
-        {
             "id": "deepseek-r1",
             "displayName": "deepseek-r1",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "gemma3",
+            "displayName": "gemma3",
+            "capabilities": [
+                3,
+                0
+            ]
+        },
+        {
+            "id": "qwen3",
+            "displayName": "qwen3",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "devstral",
+            "displayName": "devstral",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "llama4",
+            "displayName": "llama4",
+            "capabilities": [
+                3,
+                2,
+                0
+            ]
+        },
+        {
+            "id": "qwen2.5vl",
+            "displayName": "qwen2.5vl",
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
             "id": "llama3.3",
             "displayName": "llama3.3",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "phi4",
             "displayName": "phi4",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "llama3.2",
             "displayName": "llama3.2",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "llama3.1",
             "displayName": "llama3.1",
-            "supportsTools": true
-        },
-        {
-            "id": "nomic-embed-text",
-            "displayName": "nomic-embed-text",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "mistral",
             "displayName": "mistral",
-            "supportsTools": true
-        },
-        {
-            "id": "llama3",
-            "displayName": "llama3",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "qwen2.5",
             "displayName": "qwen2.5",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "qwen2.5-coder",
-            "displayName": "qwen2.5-coder",
-            "supportsTools": true
+            "id": "llama3",
+            "displayName": "llama3",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "llava",
             "displayName": "llava",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
-            "id": "qwen",
-            "displayName": "qwen",
-            "supportsTools": false
-        },
-        {
-            "id": "gemma",
-            "displayName": "gemma",
-            "supportsTools": false
-        },
-        {
-            "id": "qwen2",
-            "displayName": "qwen2",
-            "supportsTools": true
+            "id": "qwen2.5-coder",
+            "displayName": "qwen2.5-coder",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "gemma2",
             "displayName": "gemma2",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "qwen",
+            "displayName": "qwen",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "gemma",
+            "displayName": "gemma",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "qwen2",
+            "displayName": "qwen2",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "llama2",
             "displayName": "llama2",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "phi3",
             "displayName": "phi3",
-            "supportsTools": false
-        },
-        {
-            "id": "mxbai-embed-large",
-            "displayName": "mxbai-embed-large",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "codellama",
             "displayName": "codellama",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "llama3.2-vision",
             "displayName": "llama3.2-vision",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
             "id": "mistral-nemo",
             "displayName": "mistral-nemo",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "tinyllama",
             "displayName": "tinyllama",
-            "supportsTools": false
-        },
-        {
-            "id": "deepseek-v3",
-            "displayName": "deepseek-v3",
-            "supportsTools": false
-        },
-        {
-            "id": "starcoder2",
-            "displayName": "starcoder2",
-            "supportsTools": false
-        },
-        {
-            "id": "llama2-uncensored",
-            "displayName": "llama2-uncensored",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "minicpm-v",
             "displayName": "minicpm-v",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
-            "id": "bge-m3",
-            "displayName": "bge-m3",
-            "supportsTools": false
+            "id": "qwq",
+            "displayName": "qwq",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "deepseek-coder-v2",
-            "displayName": "deepseek-coder-v2",
-            "supportsTools": false
-        },
-        {
-            "id": "snowflake-arctic-embed",
-            "displayName": "snowflake-arctic-embed",
-            "supportsTools": false
-        },
-        {
-            "id": "deepseek-coder",
-            "displayName": "deepseek-coder",
-            "supportsTools": false
+            "id": "deepseek-v3",
+            "displayName": "deepseek-v3",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "dolphin3",
             "displayName": "dolphin3",
-            "supportsTools": false
-        },
-        {
-            "id": "mixtral",
-            "displayName": "mixtral",
-            "supportsTools": true
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "olmo2",
             "displayName": "olmo2",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "llama2-uncensored",
+            "displayName": "llama2-uncensored",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "mixtral",
+            "displayName": "mixtral",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "starcoder2",
+            "displayName": "starcoder2",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "llava-llama3",
             "displayName": "llava-llama3",
-            "supportsTools": false
-        },
-        {
-            "id": "codegemma",
-            "displayName": "codegemma",
-            "supportsTools": false
-        },
-        {
-            "id": "dolphin-mixtral",
-            "displayName": "dolphin-mixtral",
-            "supportsTools": false
-        },
-        {
-            "id": "openthinker",
-            "displayName": "openthinker",
-            "supportsTools": false
-        },
-        {
-            "id": "phi",
-            "displayName": "phi",
-            "supportsTools": false
-        },
-        {
-            "id": "smollm2",
-            "displayName": "smollm2",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
             "id": "mistral-small",
             "displayName": "mistral-small",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "smollm2",
+            "displayName": "smollm2",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "deepseek-coder-v2",
+            "displayName": "deepseek-coder-v2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "deepseek-coder",
+            "displayName": "deepseek-coder",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "codegemma",
+            "displayName": "codegemma",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "dolphin-mixtral",
+            "displayName": "dolphin-mixtral",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "phi",
+            "displayName": "phi",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "openthinker",
+            "displayName": "openthinker",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "wizardlm2",
             "displayName": "wizardlm2",
-            "supportsTools": false
-        },
-        {
-            "id": "all-minilm",
-            "displayName": "all-minilm",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "dolphin-mistral",
             "displayName": "dolphin-mistral",
-            "supportsTools": false
-        },
-        {
-            "id": "dolphin-llama3",
-            "displayName": "dolphin-llama3",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "orca-mini",
             "displayName": "orca-mini",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "command-r",
-            "displayName": "command-r",
-            "supportsTools": true
-        },
-        {
-            "id": "yi",
-            "displayName": "yi",
-            "supportsTools": false
-        },
-        {
-            "id": "hermes3",
-            "displayName": "hermes3",
-            "supportsTools": true
-        },
-        {
-            "id": "phi3.5",
-            "displayName": "phi3.5",
-            "supportsTools": false
-        },
-        {
-            "id": "zephyr",
-            "displayName": "zephyr",
-            "supportsTools": false
+            "id": "dolphin-llama3",
+            "displayName": "dolphin-llama3",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "codestral",
             "displayName": "codestral",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "command-r",
+            "displayName": "command-r",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "hermes3",
+            "displayName": "hermes3",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "phi3.5",
+            "displayName": "phi3.5",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "yi",
+            "displayName": "yi",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "smollm",
             "displayName": "smollm",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "zephyr",
+            "displayName": "zephyr",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "granite-code",
             "displayName": "granite-code",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "wizard-vicuna-uncensored",
             "displayName": "wizard-vicuna-uncensored",
-            "supportsTools": false
-        },
-        {
-            "id": "starcoder",
-            "displayName": "starcoder",
-            "supportsTools": false
-        },
-        {
-            "id": "vicuna",
-            "displayName": "vicuna",
-            "supportsTools": false
-        },
-        {
-            "id": "mistral-openorca",
-            "displayName": "mistral-openorca",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "moondream",
             "displayName": "moondream",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
-            "id": "llama2-chinese",
-            "displayName": "llama2-chinese",
-            "supportsTools": false
+            "id": "starcoder",
+            "displayName": "starcoder",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "openchat",
-            "displayName": "openchat",
-            "supportsTools": false
+            "id": "vicuna",
+            "displayName": "vicuna",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "codegeex4",
-            "displayName": "codegeex4",
-            "supportsTools": false
-        },
-        {
-            "id": "aya",
-            "displayName": "aya",
-            "supportsTools": false
-        },
-        {
-            "id": "codeqwen",
-            "displayName": "codeqwen",
-            "supportsTools": false
-        },
-        {
-            "id": "openhermes",
-            "displayName": "openhermes",
-            "supportsTools": false
-        },
-        {
-            "id": "deepseek-llm",
-            "displayName": "deepseek-llm",
-            "supportsTools": false
-        },
-        {
-            "id": "deepseek-v2",
-            "displayName": "deepseek-v2",
-            "supportsTools": false
-        },
-        {
-            "id": "mistral-large",
-            "displayName": "mistral-large",
-            "supportsTools": true
-        },
-        {
-            "id": "glm4",
-            "displayName": "glm4",
-            "supportsTools": false
-        },
-        {
-            "id": "stable-code",
-            "displayName": "stable-code",
-            "supportsTools": false
-        },
-        {
-            "id": "tinydolphin",
-            "displayName": "tinydolphin",
-            "supportsTools": false
-        },
-        {
-            "id": "nous-hermes2",
-            "displayName": "nous-hermes2",
-            "supportsTools": false
-        },
-        {
-            "id": "qwen2-math",
-            "displayName": "qwen2-math",
-            "supportsTools": false
-        },
-        {
-            "id": "command-r-plus",
-            "displayName": "command-r-plus",
-            "supportsTools": true
-        },
-        {
-            "id": "wizardcoder",
-            "displayName": "wizardcoder",
-            "supportsTools": false
-        },
-        {
-            "id": "bakllava",
-            "displayName": "bakllava",
-            "supportsTools": false
-        },
-        {
-            "id": "stablelm2",
-            "displayName": "stablelm2",
-            "supportsTools": false
-        },
-        {
-            "id": "neural-chat",
-            "displayName": "neural-chat",
-            "supportsTools": false
-        },
-        {
-            "id": "reflection",
-            "displayName": "reflection",
-            "supportsTools": false
-        },
-        {
-            "id": "wizard-math",
-            "displayName": "wizard-math",
-            "supportsTools": false
-        },
-        {
-            "id": "llama3-chatqa",
-            "displayName": "llama3-chatqa",
-            "supportsTools": false
-        },
-        {
-            "id": "llama3-gradient",
-            "displayName": "llama3-gradient",
-            "supportsTools": false
-        },
-        {
-            "id": "sqlcoder",
-            "displayName": "sqlcoder",
-            "supportsTools": false
-        },
-        {
-            "id": "bge-large",
-            "displayName": "bge-large",
-            "supportsTools": false
+            "id": "mistral-openorca",
+            "displayName": "mistral-openorca",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "phi4-mini",
             "displayName": "phi4-mini",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "samantha-mistral",
-            "displayName": "samantha-mistral",
-            "supportsTools": false
+            "id": "openchat",
+            "displayName": "openchat",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "granite3.1-dense",
-            "displayName": "granite3.1-dense",
-            "supportsTools": true
+            "id": "deepseek-v2",
+            "displayName": "deepseek-v2",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "dolphincoder",
-            "displayName": "dolphincoder",
-            "supportsTools": false
+            "id": "openhermes",
+            "displayName": "openhermes",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "xwinlm",
-            "displayName": "xwinlm",
-            "supportsTools": false
+            "id": "llama2-chinese",
+            "displayName": "llama2-chinese",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "llava-phi3",
-            "displayName": "llava-phi3",
-            "supportsTools": false
+            "id": "deepseek-llm",
+            "displayName": "deepseek-llm",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "nous-hermes",
-            "displayName": "nous-hermes",
-            "supportsTools": false
+            "id": "codeqwen",
+            "displayName": "codeqwen",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "phind-codellama",
-            "displayName": "phind-codellama",
-            "supportsTools": false
+            "id": "codegeex4",
+            "displayName": "codegeex4",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "starling-lm",
-            "displayName": "starling-lm",
-            "supportsTools": false
+            "id": "aya",
+            "displayName": "aya",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "solar",
-            "displayName": "solar",
-            "supportsTools": false
+            "id": "mistral-large",
+            "displayName": "mistral-large",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "yarn-llama2",
-            "displayName": "yarn-llama2",
-            "supportsTools": false
+            "id": "deepcoder",
+            "displayName": "deepcoder",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "yi-coder",
-            "displayName": "yi-coder",
-            "supportsTools": false
+            "id": "stable-code",
+            "displayName": "stable-code",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "athene-v2",
-            "displayName": "athene-v2",
-            "supportsTools": true
+            "id": "glm4",
+            "displayName": "glm4",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "wizardlm",
-            "displayName": "wizardlm",
-            "supportsTools": false
+            "id": "tinydolphin",
+            "displayName": "tinydolphin",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "internlm2",
-            "displayName": "internlm2",
-            "supportsTools": false
+            "id": "nous-hermes2",
+            "displayName": "nous-hermes2",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "nemotron-mini",
-            "displayName": "nemotron-mini",
-            "supportsTools": true
+            "id": "qwen2-math",
+            "displayName": "qwen2-math",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "deepscaler",
-            "displayName": "deepscaler",
-            "supportsTools": false
+            "id": "command-r-plus",
+            "displayName": "command-r-plus",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "falcon",
-            "displayName": "falcon",
-            "supportsTools": false
+            "id": "mistral-small3.1",
+            "displayName": "mistral-small3.1",
+            "capabilities": [
+                3,
+                2,
+                0
+            ]
         },
         {
-            "id": "nemotron",
-            "displayName": "nemotron",
-            "supportsTools": true
+            "id": "wizardcoder",
+            "displayName": "wizardcoder",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "dolphin-phi",
-            "displayName": "dolphin-phi",
-            "supportsTools": false
+            "id": "bakllava",
+            "displayName": "bakllava",
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
-            "id": "granite3-dense",
-            "displayName": "granite3-dense",
-            "supportsTools": true
+            "id": "neural-chat",
+            "displayName": "neural-chat",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "orca2",
-            "displayName": "orca2",
-            "supportsTools": false
+            "id": "stablelm2",
+            "displayName": "stablelm2",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "wizardlm-uncensored",
-            "displayName": "wizardlm-uncensored",
-            "supportsTools": false
+            "id": "sqlcoder",
+            "displayName": "sqlcoder",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "stable-beluga",
-            "displayName": "stable-beluga",
-            "supportsTools": false
-        },
-        {
-            "id": "llama3-groq-tool-use",
-            "displayName": "llama3-groq-tool-use",
-            "supportsTools": true
-        },
-        {
-            "id": "paraphrase-multilingual",
-            "displayName": "paraphrase-multilingual",
-            "supportsTools": false
+            "id": "cogito",
+            "displayName": "cogito",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "granite3.2",
             "displayName": "granite3.2",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "snowflake-arctic-embed2",
-            "displayName": "snowflake-arctic-embed2",
-            "supportsTools": false
+            "id": "llama3-chatqa",
+            "displayName": "llama3-chatqa",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "deepseek-v2.5",
-            "displayName": "deepseek-v2.5",
-            "supportsTools": false
+            "id": "reflection",
+            "displayName": "reflection",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "smallthinker",
-            "displayName": "smallthinker",
-            "supportsTools": false
+            "id": "wizard-math",
+            "displayName": "wizard-math",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "aya-expanse",
-            "displayName": "aya-expanse",
-            "supportsTools": true
+            "id": "llama3-gradient",
+            "displayName": "llama3-gradient",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "meditron",
-            "displayName": "meditron",
-            "supportsTools": false
+            "id": "granite3-dense",
+            "displayName": "granite3-dense",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "medllama2",
-            "displayName": "medllama2",
-            "supportsTools": false
+            "id": "granite3.3",
+            "displayName": "granite3.3",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "granite3-moe",
-            "displayName": "granite3-moe",
-            "supportsTools": true
+            "id": "granite3.1-dense",
+            "displayName": "granite3.1-dense",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "llama-pro",
-            "displayName": "llama-pro",
-            "supportsTools": false
+            "id": "llava-phi3",
+            "displayName": "llava-phi3",
+            "capabilities": [
+                3,
+                0
+            ]
         },
         {
-            "id": "falcon3",
-            "displayName": "falcon3",
-            "supportsTools": false
-        },
-        {
-            "id": "yarn-mistral",
-            "displayName": "yarn-mistral",
-            "supportsTools": false
-        },
-        {
-            "id": "nexusraven",
-            "displayName": "nexusraven",
-            "supportsTools": false
-        },
-        {
-            "id": "codeup",
-            "displayName": "codeup",
-            "supportsTools": false
-        },
-        {
-            "id": "everythinglm",
-            "displayName": "everythinglm",
-            "supportsTools": false
-        },
-        {
-            "id": "nous-hermes2-mixtral",
-            "displayName": "nous-hermes2-mixtral",
-            "supportsTools": false
-        },
-        {
-            "id": "granite3.1-moe",
-            "displayName": "granite3.1-moe",
-            "supportsTools": true
-        },
-        {
-            "id": "shieldgemma",
-            "displayName": "shieldgemma",
-            "supportsTools": false
-        },
-        {
-            "id": "reader-lm",
-            "displayName": "reader-lm",
-            "supportsTools": false
-        },
-        {
-            "id": "marco-o1",
-            "displayName": "marco-o1",
-            "supportsTools": false
-        },
-        {
-            "id": "exaone3.5",
-            "displayName": "exaone3.5",
-            "supportsTools": false
-        },
-        {
-            "id": "mathstral",
-            "displayName": "mathstral",
-            "supportsTools": false
+            "id": "samantha-mistral",
+            "displayName": "samantha-mistral",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "granite3.2-vision",
             "displayName": "granite3.2-vision",
-            "supportsTools": false
+            "capabilities": [
+                3,
+                2,
+                0
+            ]
         },
         {
-            "id": "llama-guard3",
-            "displayName": "llama-guard3",
-            "supportsTools": false
+            "id": "dolphincoder",
+            "displayName": "dolphincoder",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "solar-pro",
-            "displayName": "solar-pro",
-            "supportsTools": false
+            "id": "nous-hermes",
+            "displayName": "nous-hermes",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "falcon2",
-            "displayName": "falcon2",
-            "supportsTools": false
+            "id": "exaone3.5",
+            "displayName": "exaone3.5",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "stablelm-zephyr",
-            "displayName": "stablelm-zephyr",
-            "supportsTools": false
+            "id": "xwinlm",
+            "displayName": "xwinlm",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "magicoder",
-            "displayName": "magicoder",
-            "supportsTools": false
+            "id": "starling-lm",
+            "displayName": "starling-lm",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "codebooga",
-            "displayName": "codebooga",
-            "supportsTools": false
+            "id": "phind-codellama",
+            "displayName": "phind-codellama",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "duckdb-nsql",
-            "displayName": "duckdb-nsql",
-            "supportsTools": false
+            "id": "yi-coder",
+            "displayName": "yi-coder",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "mistrallite",
-            "displayName": "mistrallite",
-            "supportsTools": false
+            "id": "nemotron-mini",
+            "displayName": "nemotron-mini",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "wizard-vicuna",
-            "displayName": "wizard-vicuna",
-            "supportsTools": false
+            "id": "solar",
+            "displayName": "solar",
+            "capabilities": [
+                3
+            ]
         },
         {
-            "id": "command-r7b",
-            "displayName": "command-r7b",
-            "supportsTools": true
+            "id": "athene-v2",
+            "displayName": "athene-v2",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
-            "id": "granite-embedding",
-            "displayName": "granite-embedding",
-            "supportsTools": false
+            "id": "deepscaler",
+            "displayName": "deepscaler",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "yarn-llama2",
+            "displayName": "yarn-llama2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "internlm2",
+            "displayName": "internlm2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "wizardlm",
+            "displayName": "wizardlm",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "dolphin-phi",
+            "displayName": "dolphin-phi",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "falcon",
+            "displayName": "falcon",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "phi4-reasoning",
+            "displayName": "phi4-reasoning",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "nemotron",
+            "displayName": "nemotron",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "llama3-groq-tool-use",
+            "displayName": "llama3-groq-tool-use",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "wizardlm-uncensored",
+            "displayName": "wizardlm-uncensored",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "orca2",
+            "displayName": "orca2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "aya-expanse",
+            "displayName": "aya-expanse",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "stable-beluga",
+            "displayName": "stable-beluga",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "nous-hermes2-mixtral",
+            "displayName": "nous-hermes2-mixtral",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "smallthinker",
+            "displayName": "smallthinker",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "falcon3",
+            "displayName": "falcon3",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "meditron",
+            "displayName": "meditron",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "deepseek-v2.5",
+            "displayName": "deepseek-v2.5",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "medllama2",
+            "displayName": "medllama2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "granite3-moe",
+            "displayName": "granite3-moe",
+            "capabilities": [
+                3,
+                2
+            ]
         },
         {
             "id": "opencoder",
             "displayName": "opencoder",
-            "supportsTools": false
-        },
-        {
-            "id": "nuextract",
-            "displayName": "nuextract",
-            "supportsTools": false
-        },
-        {
-            "id": "megadolphin",
-            "displayName": "megadolphin",
-            "supportsTools": false
-        },
-        {
-            "id": "bespoke-minicheck",
-            "displayName": "bespoke-minicheck",
-            "supportsTools": false
-        },
-        {
-            "id": "notux",
-            "displayName": "notux",
-            "supportsTools": false
-        },
-        {
-            "id": "open-orca-platypus2",
-            "displayName": "open-orca-platypus2",
-            "supportsTools": false
-        },
-        {
-            "id": "notus",
-            "displayName": "notus",
-            "supportsTools": false
-        },
-        {
-            "id": "goliath",
-            "displayName": "goliath",
-            "supportsTools": false
-        },
-        {
-            "id": "tulu3",
-            "displayName": "tulu3",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "exaone-deep",
             "displayName": "exaone-deep",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "llama-pro",
+            "displayName": "llama-pro",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "yarn-mistral",
+            "displayName": "yarn-mistral",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "granite3.1-moe",
+            "displayName": "granite3.1-moe",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "nexusraven",
+            "displayName": "nexusraven",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "shieldgemma",
+            "displayName": "shieldgemma",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "codeup",
+            "displayName": "codeup",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "everythinglm",
+            "displayName": "everythinglm",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "llama-guard3",
+            "displayName": "llama-guard3",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "reader-lm",
+            "displayName": "reader-lm",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "r1-1776",
             "displayName": "r1-1776",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "stablelm-zephyr",
+            "displayName": "stablelm-zephyr",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "mathstral",
+            "displayName": "mathstral",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "solar-pro",
+            "displayName": "solar-pro",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "marco-o1",
+            "displayName": "marco-o1",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "command-r7b",
+            "displayName": "command-r7b",
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "falcon2",
+            "displayName": "falcon2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "duckdb-nsql",
+            "displayName": "duckdb-nsql",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "magicoder",
+            "displayName": "magicoder",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "mistrallite",
+            "displayName": "mistrallite",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "codebooga",
+            "displayName": "codebooga",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "wizard-vicuna",
+            "displayName": "wizard-vicuna",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "nuextract",
+            "displayName": "nuextract",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "bespoke-minicheck",
+            "displayName": "bespoke-minicheck",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "tulu3",
+            "displayName": "tulu3",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "megadolphin",
+            "displayName": "megadolphin",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "notux",
+            "displayName": "notux",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "open-orca-platypus2",
+            "displayName": "open-orca-platypus2",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "notus",
+            "displayName": "notus",
+            "capabilities": [
+                3
+            ]
+        },
+        {
+            "id": "goliath",
+            "displayName": "goliath",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "firefunction-v2",
             "displayName": "firefunction-v2",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "phi4-mini-reasoning",
+            "displayName": "phi4-mini-reasoning",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "dbrx",
             "displayName": "dbrx",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "granite3-guardian",
             "displayName": "granite3-guardian",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "alfred",
             "displayName": "alfred",
-            "supportsTools": false
-        },
-        {
-            "id": "sailor2",
-            "displayName": "sailor2",
-            "supportsTools": false
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "command-a",
             "displayName": "command-a",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
+        },
+        {
+            "id": "sailor2",
+            "displayName": "sailor2",
+            "capabilities": [
+                3
+            ]
         },
         {
             "id": "command-r7b-arabic",
             "displayName": "command-r7b-arabic",
-            "supportsTools": true
+            "capabilities": [
+                3,
+                2
+            ]
         }
     ];
 }
