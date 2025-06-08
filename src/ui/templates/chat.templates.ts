@@ -19,7 +19,7 @@ import {ResourceReference} from "../../models/chat/ResourceReference";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 import {ModelDefinition} from "../../models/llms/ModelDefinition";
 import {LlmProvider} from "../../models/llms/llmProvider";
-import {playAudio, stopAudio} from "../classes/audio";
+import {playAudio, stopAudio} from "../classes/audio/audio";
 import {ProviderDefinition} from "../../models/llms/ProviderDefinition";
 import {AudioTemplates} from "./audio.templates";
 import {compute, create, nullElement, signal, when} from "@targoninc/jess";
@@ -205,6 +205,18 @@ export class ChatTemplates {
                     await navigator.clipboard.writeText(message.text);
                     toast("Copied to clipboard");
                 }),
+                when(message.type === "user", ChatTemplates.messageAction("delete", "Delete history after this message", async (e) => {
+                    e.stopPropagation();
+                    createModal(GenericTemplates.confirmModal("Delete history after message", `Are you sure you want to delete all messages after this?`, "Yes", "No", async () => {
+                        const r = await Api.deleteAfterMessage(chatContext.value.id, message.id);
+                        if (r.success) {
+                            const c = structuredClone(chatContext.value);
+                            const messageIndex = c.history.map(m => m.id).indexOf(message.id);
+                            c.history.splice(messageIndex);
+                            chatContext.value = c;
+                        }
+                    }));
+                })),
                 GenericTemplates.icon("info", [], modelInfo)
             ).build();
     }

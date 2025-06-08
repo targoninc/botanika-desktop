@@ -1,6 +1,6 @@
 import {LayoutTemplates} from "./templates/layout.templates";
 import {activePage, initializeStore} from "./classes/store";
-import {addShortCutListener} from "./classes/shortcuts";
+import {addShortCutListener} from "./classes/shortcuts/shortcuts";
 
 initializeStore();
 

@@ -7,7 +7,7 @@ import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
 import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
-import {playAudio} from "./audio";
+import {playAudio} from "./audio/audio";
 import {ChatUpdate} from "../../models/chat/ChatUpdate";
 import {ShortcutConfiguration} from "../../models/shortcuts/ShortcutConfiguration";
 import {defaultShortcuts} from "../../models/shortcuts/defaultShortcuts";
@@ -72,7 +72,7 @@ export function initializeStore() {
 }
 
 export function loadconfiguredFeatures() {
-    Api.getconfiguredFeatures().then(res => {
+    Api.getConfiguredFeatures().then(res => {
         if (res.data) {
             configuredFeatures.value = res.data as ConfiguredFeatures;
         }

@@ -243,10 +243,26 @@ export async function getModelsEndpoint(req: Request, res: Response) {
     res.status(200).send(models);
 }
 
+export async function deleteAfterMessageEndpoint(req: Request, res: Response) {
+    const chatId = req.body.chatId;
+    const messageId = req.body.messageId;
+    if (!chatId || !messageId) {
+        res.status(400).send('Missing chatId or messageId parameter');
+    }
+
+    ChatStorage.readChatContext(chatId).then(async c => {
+        const messageIndex = c.history.map(m => m.id).indexOf(messageId);
+        c.history.splice(messageIndex);
+        await ChatStorage.writeChatContext(chatId, c);
+        res.status(200).send();
+    });
+}
+
 export function addChatEndpoints(app: Application) {
     app.post(ApiEndpoint.CHAT, chatEndpoint);
     app.get(`${ApiEndpoint.CHAT_BY_ID}:chatId`, getChatEndpoint);
     app.get(ApiEndpoint.CHATS, getChatIdsEndpoint);
     app.delete(`${ApiEndpoint.CHAT_BY_ID}:chatId`, deleteChatEndpoint);
+    app.post(ApiEndpoint.DELETE_AFTER_MESSAGE, deleteAfterMessageEndpoint);
     app.get(ApiEndpoint.MODELS, getModelsEndpoint);
 }

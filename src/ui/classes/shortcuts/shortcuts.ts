@@ -1,7 +1,7 @@
-import {activePage, shortCutConfig, target} from "./store";
+import {activePage, shortCutConfig, target} from "../store";
 import {shortCutActions} from "./shortCutActions";
-import {pages} from "../enums/pages";
-import {closeModal} from "./ui";
+import {pages} from "../../enums/pages";
+import {closeModal} from "../ui";
 
 export function addShortCutListener() {
     const blockShortcuts = ["INPUT", "TEXTAREA", "SELECT"];

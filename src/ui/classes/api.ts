@@ -50,7 +50,7 @@ export class Api extends ApiBase {
         return this.get<Record<string, ProviderDefinition>>(ApiEndpoint.MODELS);
     }
 
-    static getconfiguredFeatures() {
+    static getConfiguredFeatures() {
         return this.get<ConfiguredFeatures>(ApiEndpoint.CONFIGURED_APIS);
     }
 
@@ -98,5 +98,12 @@ export class Api extends ApiBase {
 
     static transcribe(formData: FormData) {
         return this.streamWithFormData(ApiEndpoint.TRANSCRIBE, formData, false);
+    }
+
+    static deleteAfterMessage(chatId: string, messageId: string) {
+        return this.post(ApiEndpoint.DELETE_AFTER_MESSAGE, {
+            chatId,
+            messageId,
+        });
     }
 }

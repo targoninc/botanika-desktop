@@ -1,6 +1,6 @@
-import {Shortcut} from "../../models/shortcuts/Shortcut";
-import {INITIAL_CONTEXT} from "../../models/chat/initialContext";
-import {activePage, chatContext} from "./store";
+import {Shortcut} from "../../../models/shortcuts/Shortcut";
+import {INITIAL_CONTEXT} from "../../../models/chat/initialContext";
+import {activePage, chatContext} from "../store";
 
 export const shortCutActions: Record<Shortcut, Function> = {
     [Shortcut.newChat]: () => {

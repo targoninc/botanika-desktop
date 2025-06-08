@@ -1,7 +1,7 @@
-import {Api} from "./api";
-import {terminator} from "../../models/chat/terminator";
-import {toast} from "./ui";
-import {chatContext, configuration, currentText, updateContextFromStream} from "./store";
+import {Api} from "../api";
+import {terminator} from "../../../models/chat/terminator";
+import {toast} from "../ui";
+import {chatContext, configuration, currentText, updateContextFromStream} from "../store";
 import {Signal} from "@targoninc/jess";
 
 export class VoiceRecorder {

@@ -1,5 +1,5 @@
 import {GenericTemplates} from "./generic.templates";
-import {VoiceRecorder} from "../classes/VoiceRecorder";
+import {VoiceRecorder} from "../classes/audio/VoiceRecorder";
 import {configuredFeatures} from "../classes/store";
 import {BotanikaFeature} from "../../models/features/BotanikaFeature";
 import {compute, create, signal} from "@targoninc/jess";
