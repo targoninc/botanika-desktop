@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.94",
+  "version": "1.0.95",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -15,7 +15,8 @@
     "copy-version-to-file": "node ./.scripts/copy-version.js",
     "bump-version": "npm version patch --no-git-tag-version && npm run copy-version-to-file && git add package.json package-lock.json version.txt",
     "prepare": "husky",
-    "test": "vitest run"
+    "test": "vitest run",
+    "setup": "git submodule update --init"
   },
   "author": {
     "name": "alexa",
