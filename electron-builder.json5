@@ -6,7 +6,7 @@
   "asar": false,
   "productName": "Botanika",
   "copyright": "Copyright © 2025 ${author}",
-  "icon": "src/assets/icon_256.png",
+  "icon": "botanika-web/src/assets/icon_256.png",
   "directories": {
     "output": "release/${version}"
   },

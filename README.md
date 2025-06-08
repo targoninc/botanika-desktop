@@ -53,6 +53,10 @@ pnpm whisper-tnode download --model large-v1
 **You can set your environment variables in the `.env` file or through the "Settings" page.**
 
 ```bash
+npm run setup
+```
+
+```bash
 npm install
 ```
 

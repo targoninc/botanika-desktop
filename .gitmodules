@@ -1,0 +1,3 @@
+[submodule "botanika-web"]
+	path = botanika-web
+	url = https://github.com/targoninc/botanika-web.git

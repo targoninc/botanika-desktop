@@ -2,7 +2,7 @@ import fs from "fs";
 
 const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf8"));
 const version = packageJson.version;
-const versionFilePath = "./src/assets/version.txt";
+const versionFilePath = "./version.txt";
 console.log("Version: " + version);
 fs.writeFileSync(versionFilePath, version);
 
