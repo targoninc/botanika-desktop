@@ -1,12 +1,21 @@
 import {closeModal, createModal, toast} from "../classes/ui";
-import {AnyElement, AnyNode, create, ifjs, signalMap, StringOrSignal, TypeOrSignal} from "../lib/fjsc/src/f2";
-import {compute, Signal, signal} from "../lib/fjsc/src/signals";
-import {FJSC} from "../lib/fjsc";
 import {Callback, configuration, target} from "../classes/store";
 import {Tab} from "../../models/uiExtensions/Tab";
 import {TextSegment} from "../../models/uiExtensions/TextSegment";
 import {ToastType} from "../enums/ToastType";
-import {InputType} from "../lib/fjsc/src/Types";
+import {
+    AnyElement,
+    AnyNode,
+    compute,
+    create,
+    InputType,
+    signal,
+    Signal, signalMap,
+    StringOrSignal,
+    TypeOrSignal,
+    when
+} from "@targoninc/jess";
+import {button, input, textarea, toggle} from "@targoninc/jess-components";
 
 export class GenericTemplates {
     static input<T>(type: InputType, name: StringOrSignal, value: any, placeholder: StringOrSignal, label: StringOrSignal, id: any, classes: StringOrSignal[] = [],
@@ -68,7 +77,7 @@ export class GenericTemplates {
             .onclick(onclick)
             .children(
                 GenericTemplates.icon(icon, iconClasses),
-                ifjs(text, create("span")
+                when(text, create("span")
                     .text(text)
                     .build()),
                 GenericTemplates.hotkey(hotkey),
@@ -81,7 +90,7 @@ export class GenericTemplates {
             .onclick(onclick)
             .children(
                 GenericTemplates.icon(icon, iconClasses),
-                ifjs(text, create("span")
+                when(text, create("span")
                     .text(text)
                     .build()),
                 GenericTemplates.hotkey(hotkey),
@@ -91,7 +100,7 @@ export class GenericTemplates {
     static hotkey(hotkey: StringOrSignal, alwaysDisplay = false) {
         const show = compute(c => alwaysDisplay || (c.display_hotkeys === true && hotkey != null), configuration);
 
-        return ifjs(show, create("kbd")
+        return when(show, create("kbd")
             .classes("hotkey")
             .text(hotkey)
             .build()) as AnyElement;
@@ -117,7 +126,7 @@ export class GenericTemplates {
         return create("div")
             .classes("flex", "align-center")
             .children(
-                ifjs(label, create("span")
+                when(label, create("span")
                     .text(label)
                     .build()),
                 create("div")
@@ -245,7 +254,7 @@ export class GenericTemplates {
                     const tabDef = tabDefs.value[i];
                     const active = compute(activeTab => activeTab === tabDef.id, activeTab);
 
-                    return ifjs(active, tab);
+                    return when(active, tab);
                 })
             ).build();
     }
@@ -257,11 +266,11 @@ export class GenericTemplates {
             .classes("flex", "align-center", "tab-button", activeClass, ...classes)
             .onclick(onClick)
             .children(
-                ifjs(tab.icon, GenericTemplates.icon(tab.icon)),
+                when(tab.icon, GenericTemplates.icon(tab.icon)),
                 create("span")
                     .text(tab.name)
                     .build(),
-                ifjs(tab.hotkey, GenericTemplates.hotkey(tab.hotkey)),
+                when(tab.hotkey, GenericTemplates.hotkey(tab.hotkey)),
             ).build();
     }
 
@@ -302,7 +311,7 @@ export class GenericTemplates {
                         shown.value = !shown.value;
                     }
                 }),
-                ifjs(shown, create("div")
+                when(shown, create("div")
                     .classes("flex-v", "card", "popout-below", "log-properties")
                     .children(
                         ...Object.keys(data).map(k => {

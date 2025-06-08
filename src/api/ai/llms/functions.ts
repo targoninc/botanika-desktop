@@ -1,5 +1,5 @@
-import {Signal} from "../../../ui/lib/fjsc/src/signals";
 import {ChatMessage} from "../../../models/chat/ChatMessage";
+import {Signal} from "@targoninc/jess";
 
 export async function updateMessageFromStream(message: Signal<ChatMessage>, stream: AsyncIterable<string> & ReadableStream<string>, text: Promise<string>) {
     const reader = stream.getReader();

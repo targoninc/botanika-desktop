@@ -30,7 +30,7 @@
     --font-size-base: 18px;
     --gap-h: 7px;
     --gap-v: 14px;
-    --fjsc-gap: var(--gap-h);
+    --jessc-gap: var(--gap-h);
     --input-padding-h: 0.75rem;
     --input-padding-v: 0.25rem;
     --input-border-radius: 1em;
@@ -41,12 +41,12 @@
     --tag-padding: 0.3em 0.3em 0.3em 0.6em;
     --tab-padding: .3em .8em;
 
-    --fjsc-border-radius-small: var(--input-border-radius);
-    --fjsc-interactive-border-focused: var(--tint-present);
-    --fjsc-interactive-border-active: var(--tint-present);
+    --jessc-border-radius-small: var(--input-border-radius);
+    --jessc-interactive-border-focused: var(--tint-present);
+    --jessc-interactive-border-active: var(--tint-present);
 
     --default-font-family: "Inter Tight", serif;
-    --fjsc-font: var(--default-font-family);
+    --jessc-font: var(--default-font-family);
     --mono-font: monospace;
 
     --bg: var(--black);
@@ -151,7 +151,7 @@ button.no-border, input.no-border, textarea.no-border, select.no-border {
     background: transparent;
 }
 
-.fjsc {
+.jessc {
     color: inherit;
 }
 

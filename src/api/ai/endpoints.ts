@@ -13,10 +13,10 @@ import {CLI} from "../CLI";
 import {getTtsAudio} from "./tts/tts";
 import {AudioStorage} from "../storage/AudioStorage";
 import {getConfig, getConfigKey} from "../configuration";
-import {Signal, signal} from "../../ui/lib/fjsc/src/signals";
 import {getSimpleResponse, streamResponseAsMessage} from "./llms/calls";
 import {LanguageModelV1, StepResult, ToolSet} from "ai";
 import {McpInfo} from "./mcp/models/McpInfo";
+import {Signal, signal} from "@targoninc/jess";
 
 export const currentChatContext = signal<ChatContext>(null);
 
