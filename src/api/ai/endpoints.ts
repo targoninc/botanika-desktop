@@ -17,6 +17,7 @@ import {getSimpleResponse, streamResponseAsMessage} from "./llms/calls";
 import {LanguageModelV1, StepResult, ToolSet} from "ai";
 import {McpInfo} from "./mcp/models/McpInfo";
 import {Signal, signal} from "@targoninc/jess";
+import {ModelCapability} from "../../models/llms/ModelCapability";
 
 export const currentChatContext = signal<ChatContext>(null);
 
@@ -138,7 +139,7 @@ export const chatEndpoint = async (req: Request, res: Response) => {
     try {
         currentChatContext.value = chatContext;
         const mcpInfo = await getMcpTools();
-        if (!modelDefinition.supportsTools) {
+        if (!modelDefinition.capabilities.includes(ModelCapability.tools)) {
             mcpInfo.tools = {};
         }
 
