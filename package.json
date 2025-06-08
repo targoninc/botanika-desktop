@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.88",
+  "version": "1.0.89",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -11,6 +11,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "server-only": "bun src/start-server.ts",
     "build": "vite build && electron-builder -p always",
     "copy-version-to-file": "node ./.scripts/copy-version.js",
     "bump-version": "npm version patch --no-git-tag-version && npm run copy-version-to-file && git add package.json package-lock.json src/assets/version.txt",

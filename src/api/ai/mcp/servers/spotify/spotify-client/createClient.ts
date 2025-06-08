@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-import {shell} from "electron";
-import {app, currentWindow} from "../../../../../../server-utils";
+import {currentWindow} from "../../../../../../../electron/electron-server";
 import {setEnvironmentVariable} from "../../../../../features/environment";
 import {CLI} from "../../../../../CLI";
 import {featureEnabled} from "../../../../../features/configuredFeatures";
 import {BotanikaFeature} from "../../../../../../models/features/BotanikaFeature";
+import {app} from "../../../../../../start-server";
 
 const SpotifyWebApi = require("spotify-web-api-node");
 
@@ -44,7 +44,7 @@ async function authorize() {
 
         const authorizeURL = api.createAuthorizeURL(scopes, "");
         CLI.info(`Opening Spotify authorization page: ${authorizeURL}`);
-        await shell.openExternal(authorizeURL);
+        throw new Error(`Must authorize: ${authorizeURL}`);
 
         await new Promise<void>((resolve, _) => {
             const interval = setInterval(() => {

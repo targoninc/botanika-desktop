@@ -1,6 +1,6 @@
 import path from 'path'
 import { app } from 'electron'
-import {createWindow} from "../src/server-utils";
+import {createWindow} from "./electron-server";
 
 console.log('Starting app...');
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
