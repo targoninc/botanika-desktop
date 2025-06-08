@@ -2,7 +2,6 @@ import {Api} from "./api";
 import {Configuration} from "../../models/Configuration";
 import {language} from "./i8n/translation";
 import {Language} from "./i8n/language";
-import {signal} from "../lib/fjsc/src/signals";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {terminator} from "../../models/chat/terminator";
 import {updateContext} from "../../models/updateContext";
@@ -17,6 +16,7 @@ import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
 import {toast} from "./ui";
 import {ToastType} from "../enums/ToastType";
 import {setRootCssVar} from "./setRootCssVar";
+import {signal} from "@targoninc/jess";
 
 export const activePage = signal<string>("chat");
 export const configuration = signal<Configuration>({} as Configuration);

@@ -1,9 +1,8 @@
-import {AnyNode, create, StringOrSignal} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {pages} from "../enums/pages";
 import {SettingsTemplates} from "./settings.templates";
-import {Signal, signal} from "../lib/fjsc/src/signals";
 import {ChatTemplates} from "./chat.templates";
+import {AnyNode, create, signal, Signal} from "@targoninc/jess";
 
 export class LayoutTemplates {
     static app(activePage: Signal<string>) {

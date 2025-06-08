@@ -1,4 +1,3 @@
-import {compute, signal} from "../lib/fjsc/src/signals";
 import {
     activateChat, availableModels,
     chats,
@@ -8,13 +7,11 @@ import {
     target,
     updateContextFromStream, shortCutConfig, configuredFeatures, currentText
 } from "../classes/store";
-import {create, ifjs, nullElement} from "../lib/fjsc/src/f2";
 import {GenericTemplates} from "./generic.templates";
 import {ChatContext} from "../../models/chat/ChatContext";
 import {ChatMessage} from "../../models/chat/ChatMessage";
 import {Api} from "../classes/api";
 import {attachCodeCopyButtons, createModal, scrollToLastMessage, toast} from "../classes/ui";
-import {FJSC} from "../lib/fjsc";
 import {marked} from "marked";
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
@@ -25,6 +22,8 @@ import {LlmProvider} from "../../models/llms/llmProvider";
 import {playAudio, stopAudio} from "../classes/audio";
 import {ProviderDefinition} from "../../models/llms/ProviderDefinition";
 import {AudioTemplates} from "./audio.templates";
+import {compute, create, nullElement, signal, when} from "@targoninc/jess";
+import {button} from "@targoninc/jess-components";
 
 export class ChatTemplates {
     static chat() {
@@ -163,7 +162,7 @@ export class ChatTemplates {
                             .build();
                     }
 
-                    return FJSC.button({
+                    return button({
                         icon: {icon: "download"},
                         text: "File",
                         onclick: () => {
@@ -185,7 +184,7 @@ export class ChatTemplates {
         return create("div")
             .classes("flex", "align-center")
             .children(
-                message.hasAudio ? FJSC.button({
+                message.hasAudio ? button({
                     disabled: audioDisabled,
                     icon: { icon: compute(a => a === message.id ? "stop_circle" : "volume_up", currentlyPlayingAudio) },
                     onclick: () => {
@@ -207,7 +206,7 @@ export class ChatTemplates {
     }
 
     static messageAction(icon: string, text: string, onclick: (e: any) => void) {
-        return FJSC.button({
+        return button({
             icon: { icon },
             classes: ["flex", "align-center", "message-action"],
             onclick
@@ -373,7 +372,7 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "bordered-panel", "chat-list")
             .children(
-                FJSC.button({
+                button({
                     disabled: newDisabled,
                     icon: {
                         icon: "create"
@@ -392,7 +391,7 @@ export class ChatTemplates {
         return create("div")
             .classes("flex-v", "flex-grow")
             .children(
-                ifjs(chat.length === 0, create("span")
+                when(chat.length === 0, create("span")
                     .text("No chats yet")
                     .build()
                 ),
@@ -414,7 +413,7 @@ export class ChatTemplates {
                         create("span")
                             .text(chat.name)
                             .build(),
-                        FJSC.button({
+                        button({
                             icon: {
                                 icon: "delete",
                             },

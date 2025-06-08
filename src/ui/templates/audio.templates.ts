@@ -1,10 +1,9 @@
-import {compute, signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {VoiceRecorder} from "../classes/VoiceRecorder";
-import {create} from "../lib/fjsc/src/f2";
 import {configuredFeatures} from "../classes/store";
-import {FJSC} from "../lib/fjsc";
 import {BotanikaFeature} from "../../models/features/BotanikaFeature";
+import {compute, create, signal} from "@targoninc/jess";
+import {button} from "@targoninc/jess-components";
 
 const currentLoudness = signal(0);
 let recorder: VoiceRecorder;
@@ -22,7 +21,7 @@ export class AudioTemplates {
             .classes("flex", "align-children")
             .children(
                 GenericTemplates.redDot(onState, currentLoudness),
-                FJSC.button({
+                button({
                     text: textState,
                     icon: {icon: iconState},
                     classes: ["flex", "align-children"],

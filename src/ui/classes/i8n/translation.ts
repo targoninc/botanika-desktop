@@ -2,7 +2,7 @@ import {TranslationKey} from "./translationKey";
 import {Language} from "./language";
 import {de} from "./lang/de";
 import {en} from "./lang/en";
-import {compute, signal} from "../../lib/fjsc/src/signals";
+import {compute, signal} from "@targoninc/jess";
 
 export const language = signal(Language.en);
 

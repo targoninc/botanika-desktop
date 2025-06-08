@@ -1,12 +1,8 @@
-import {create, ifjs, nullElement, signalMap} from "../lib/fjsc/src/f2";
-import {compute, signal, Signal} from "../lib/fjsc/src/signals";
 import {GenericTemplates} from "./generic.templates";
 import {Api} from "../classes/api";
 import {configuration, configuredFeatures, loadconfiguredFeatures, mcpConfig, shortCutConfig} from "../classes/store";
 import {SettingConfiguration} from "../../models/uiExtensions/SettingConfiguration";
-import {InputType} from "../lib/fjsc/src/Types";
 import {McpConfiguration} from "../../models/mcp/McpConfiguration";
-import {FJSC} from "../lib/fjsc";
 import {ConfiguredFeatures} from "../../models/features/ConfiguredFeatures";
 import {FeatureConfigurationInfo} from "../../models/features/FeatureConfigurationInfo";
 import {createModal, toast} from "../classes/ui";
@@ -15,6 +11,8 @@ import {shortcutNames} from "../../models/shortcuts/Shortcut";
 import {McpServerConfig} from "../../models/mcp/McpServerConfig";
 import {Configuration} from "../../models/Configuration";
 import {featureOptions} from "../../models/features/featureOptions";
+import {compute, create, InputType, nullElement, Signal, signal, signalMap, when} from "@targoninc/jess";
+import {button, input} from "@targoninc/jess-components";
 
 export class SettingsTemplates {
     static settings() {
@@ -91,7 +89,7 @@ export class SettingsTemplates {
                         create("span")
                             .text("Settings")
                             .build(),
-                        ifjs(loading, GenericTemplates.spinner()),
+                        when(loading, GenericTemplates.spinner()),
                     ).build(),
                 GenericTemplates.heading(2, "General"),
                 ...settings.map(s => SettingsTemplates.setting(s, loading, c => c[s.key], (c, k, v) => ({
@@ -212,7 +210,7 @@ export class SettingsTemplates {
                                     GenericTemplates.icon(feature.enabled ? "check" : "key_off", [feature.enabled ? "positive" : "negative"]),
                                     create("b")
                                         .text(name),
-                                    ifjs(loading, GenericTemplates.spinner())
+                                    when(loading, GenericTemplates.spinner())
                                 ).build(),
                             feature.envVars && feature.envVars.length > 0 ? SettingsTemplates.configuredApiEnvVars(feature, load) : null,
                             ...(fOptions && fOptions.length > 0 ? fOptions.map(s => SettingsTemplates.setting(s, loading, c => {
@@ -243,7 +241,7 @@ export class SettingsTemplates {
                         .classes("flex", "align-center", "indent-left")
                         .children(
                             GenericTemplates.icon(envVar.isSet ? "key" : "key_off", [envVar.isSet ? "positive" : "negative"]),
-                            FJSC.input({
+                            input({
                                 type: InputType.text,
                                 value: "",
                                 name: envVar.key,
@@ -252,7 +250,7 @@ export class SettingsTemplates {
                                     value.value = newVal;
                                 }
                             }),
-                            FJSC.button({
+                            button({
                                 icon: {icon: "save"},
                                 text: "Set",
                                 disabled: compute(v => !v || v.length === 0, value),
@@ -312,7 +310,7 @@ export class SettingsTemplates {
                 create("div")
                     .classes("flex", "align-center")
                     .children(
-                        FJSC.input({
+                        input({
                             type: InputType.text,
                             value: name,
                             name: "name",
@@ -320,7 +318,7 @@ export class SettingsTemplates {
                             placeholder: "Name",
                             onchange: (value) => name.value = value
                         }),
-                        FJSC.input({
+                        input({
                             type: InputType.text,
                             value: url,
                             name: "url",
@@ -329,7 +327,7 @@ export class SettingsTemplates {
                             onchange: (value) => url.value = value
                         })
                     ).build(),
-                FJSC.button({
+                button({
                     text: "Add",
                     disabled: compute((n, u) => n.length === 0 || u.length === 0, name, url),
                     icon: {
@@ -359,7 +357,7 @@ export class SettingsTemplates {
                         create("div")
                             .classes("flex", "align-center")
                             .children(
-                                FJSC.input({
+                                input({
                                     type: InputType.text,
                                     value: server.name,
                                     name: "name",
@@ -376,7 +374,7 @@ export class SettingsTemplates {
                                         });
                                     }
                                 }),
-                                FJSC.input({
+                                input({
                                     type: InputType.text,
                                     value: server.url,
                                     name: "url",
@@ -452,7 +450,7 @@ export class SettingsTemplates {
                             create("span")
                                 .text("+")
                                 .build(),
-                            FJSC.input({
+                            input({
                                 type: InputType.text,
                                 value: key,
                                 name: action,
@@ -461,7 +459,7 @@ export class SettingsTemplates {
                                     key.value = value;
                                 }
                             }),
-                            FJSC.button({
+                            button({
                                 icon: {
                                     icon: "save",
                                 },

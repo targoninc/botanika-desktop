@@ -1,7 +1,7 @@
 {
   "name": "botanika",
   "productName": "Botanika",
-  "version": "1.0.80",
+  "version": "1.0.81",
   "description": "A local LLM client",
   "main": "dist-electron/main.js",
   "repository": {
@@ -51,6 +51,8 @@
     "@modelcontextprotocol/sdk": "^1.8.0",
     "@openrouter/ai-sdk-provider": "^0.4.5",
     "@rollup/plugin-commonjs": "^28.0.3",
+    "@targoninc/jess": "^0.0.15",
+    "@targoninc/jess-components": "^0.0.15",
     "@types/uuid": "^10.0.0",
     "ai": "^4.3.9",
     "axios": "^1.8.4",

@@ -1,8 +1,8 @@
 import {Api} from "./api";
-import { Signal } from "../lib/fjsc/src/signals";
 import {terminator} from "../../models/chat/terminator";
 import {toast} from "./ui";
 import {chatContext, configuration, currentText, updateContextFromStream} from "./store";
+import {Signal} from "@targoninc/jess";
 
 export class VoiceRecorder {
     private readonly threshold = 0.015;

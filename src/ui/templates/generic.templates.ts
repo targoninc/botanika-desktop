@@ -12,7 +12,7 @@ export class GenericTemplates {
     static input<T>(type: InputType, name: StringOrSignal, value: any, placeholder: StringOrSignal, label: StringOrSignal, id: any, classes: StringOrSignal[] = [],
                     onchange: Callback<[T]> = () => {
                     }, attributes: StringOrSignal[] = [], required = false) {
-        return FJSC.input<T>({
+        return input<T>({
             type,
             name,
             value,
@@ -209,7 +209,7 @@ export class GenericTemplates {
     }
 
     static textArea(value: any, label: StringOrSignal, id: StringOrSignal, oninput: Callback<[string]>) {
-        return FJSC.textarea({
+        return textarea({
             classes: ["full-width"],
             name: "textarea",
             value,
@@ -221,7 +221,7 @@ export class GenericTemplates {
 
     static toggle(text: StringOrSignal, checked: TypeOrSignal<boolean> = false, callback: Callback<[boolean]> = () => {
     }, extraClasses: StringOrSignal[] = [], id: StringOrSignal = null) {
-        return FJSC.toggle({
+        return toggle({
             classes: [...extraClasses],
             text,
             checked,
@@ -295,7 +295,7 @@ export class GenericTemplates {
             .classes("flex-v")
             .styles("position", "relative")
             .children(
-                FJSC.button({
+                button({
                     text: "Info",
                     icon: {icon: "info"},
                     onclick: () => {
@@ -365,7 +365,7 @@ export class GenericTemplates {
 
     static iconButton(icon: string, onclick = () => {
     }) {
-        return FJSC.button({
+        return button({
             icon: {icon},
             classes: ["flex"],
             onclick
@@ -389,7 +389,7 @@ export class GenericTemplates {
                                 return create("div")
                                     .classes("flex", "align-center")
                                     .children(
-                                        FJSC.input({
+                                        input({
                                             type: InputType.text,
                                             value: key,
                                             name: "key",
@@ -398,7 +398,7 @@ export class GenericTemplates {
                                                 key$.value = newVal;
                                             }
                                         }),
-                                        FJSC.input({
+                                        input({
                                             type: InputType.text,
                                             value: val$,
                                             name: key,
@@ -407,7 +407,7 @@ export class GenericTemplates {
                                                 val$.value = newVal;
                                             }
                                         }),
-                                        FJSC.button({
+                                        button({
                                             icon: {icon: "save"},
                                             text: "Set",
                                             disabled: compute(nv => !nv || nv.length === 0 || nv === v[key], val$),
@@ -434,7 +434,7 @@ export class GenericTemplates {
                             })
                         ).build();
                 }, value),
-                FJSC.button({
+                button({
                     text: "Add header",
                     icon: {
                         icon: "add",

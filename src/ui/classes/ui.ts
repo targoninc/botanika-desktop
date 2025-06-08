@@ -1,7 +1,7 @@
 import {LayoutTemplates} from "../templates/layout.templates";
-import {AnyNode, create} from "../lib/fjsc/src/f2";
 import {ToastType} from "../enums/ToastType";
 import {GenericTemplates} from "../templates/generic.templates";
+import {AnyNode, create} from "@targoninc/jess";
 
 export const container = document.body;
 
