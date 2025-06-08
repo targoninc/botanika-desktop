@@ -82,9 +82,13 @@ export class ChatTemplates {
             .classes("flex-v", "flex-grow", "chat-history")
             .styles("overflow-y", "auto")
             .children(
-                ...dedupHistory
-                    .sort((a, b) => a.time - b.time)
-                    .map(message => ChatTemplates.chatMessage(message))
+                create("div")
+                    .classes("restrict-width-small", "flex-v")
+                    .children(
+                        ...dedupHistory
+                            .sort((a, b) => a.time - b.time)
+                            .map(message => ChatTemplates.chatMessage(message))
+                    ).build()
             ).build();
     }
 

@@ -541,6 +541,7 @@ kbd {
 
 .message-content {
     width: max-content;
+    max-width: 90%;
     overflow-x: auto;
 }
 
@@ -690,10 +691,9 @@ pre {
 }
 
 .chat-history {
-    max-width: min(1000px, 100%);
-    align-self: center;
     padding-top: var(--gap-h);
     padding-right: var(--gap-h);
+    width: 100%;
 }
 
 .bot-name {
@@ -733,8 +733,12 @@ pre {
     border-radius: 50%;
 }
 
-.restrict-width {
+.restrict-width, .restrict-width-small {
     max-width: 1200px;
     width: 100%;
     align-self: center;
+}
+
+.restrict-width-small {
+    max-width: 800px;
 }
