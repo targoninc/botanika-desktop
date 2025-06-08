@@ -52,12 +52,12 @@ async function searchToolCall(input: SpotifySearchOptions) {
 
 export function spotifySearchTool() {
     return {
-        id: "spotify.search",
+        id: "spotify-search",
         description: "Spotify search. Useful for when you need to search for music or podcasts.",
         parameters: {
             query: z.string().describe('What to search for'),
             searchTypes: z.array(z.nativeEnum(SearchType)).describe('What types to search for. Must be an array.'),
         },
-        execute: wrapTool("spotify.search", searchToolCall),
+        execute: wrapTool("spotify-search", searchToolCall),
     };
 }

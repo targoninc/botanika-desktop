@@ -32,9 +32,9 @@ async function getCurrentPlaybackToolCall() {
 
 export function spotifyGetCurrentPlaybackTool() {
     return {
-        id: "spotify.getCurrentPlayback",
+        id: "spotify-getCurrentPlayback",
         description: "Get what is currently playing on Spotify.",
         parameters: {},
-        execute: wrapTool("spotify.getCurrentPlayback", getCurrentPlaybackToolCall),
+        execute: wrapTool("spotify-getCurrentPlayback", getCurrentPlaybackToolCall),
     };
 }

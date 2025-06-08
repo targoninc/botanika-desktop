@@ -30,12 +30,12 @@ async function addToQueueToolCall(input: any) {
 
 export function spotifyAddToQueueTool() {
     return {
-        id: "spotify.addToQueue",
+        id: "spotify-addToQueue",
         description: "Add a Spotify URI to the queue.",
         parameters: {
             uri: z.string().describe('The URI to add to the queue'),
             deviceId: z.string().describe('The device ID to add to the queue on'),
         },
-        execute: wrapTool("spotify.addToQueue", addToQueueToolCall),
+        execute: wrapTool("spotify-addToQueue", addToQueueToolCall),
     };
 }

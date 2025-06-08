@@ -35,9 +35,9 @@ async function getDevicesToolCall() {
 
 export function spotifyGetDevicesTool() {
     return {
-        id: "spotify.getDevices",
+        id: "spotify-getDevices",
         description: "Get Spotify devices.",
         parameters: {},
-        execute: wrapTool("spotify.getDevices", getDevicesToolCall),
+        execute: wrapTool("spotify-getDevices", getDevicesToolCall),
     };
 }
