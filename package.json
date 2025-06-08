@@ -21,6 +21,16 @@
     "name": "alexa",
     "email": "alex@targoninc.com"
   },
+  "contributors": [
+    {
+      "name": "alexa",
+      "email": "alex@targoninc.com"
+    },
+    {
+      "name": "MarioCake",
+      "email": "github@mariocake.de"
+    }
+  ],
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/electron-squirrel-startup": "^1.0.2",

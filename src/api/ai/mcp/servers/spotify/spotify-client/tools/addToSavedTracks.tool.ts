@@ -28,11 +28,11 @@ async function addToSavedTracksToolCall(input: any) {
 
 export function spotifyAddToSavedTracksTool() {
     return {
-        id: "spotify.addToSavedTracks",
+        id: "spotify-addToSavedTracks",
         description: "Add a list of Spotify tracks to the library",
         parameters: {
             trackIds: z.array(z.string()).describe("List of Spotify track IDs")
         },
-        execute: wrapTool("spotify.addToSavedTracks", addToSavedTracksToolCall),
+        execute: wrapTool("spotify-addToSavedTracks", addToSavedTracksToolCall),
     };
 }

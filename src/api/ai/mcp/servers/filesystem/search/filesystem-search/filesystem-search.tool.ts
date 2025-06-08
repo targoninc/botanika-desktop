@@ -66,11 +66,11 @@ async function toolCall(input: any) {
 
 export function filesystemSearchTool() {
     return {
-        id: "filesystem.search",
+        id: "filesystem-search",
         description: "Search for files and content on the local filesystem. Searches user documents, downloads, desktop, and other common folders.",
         parameters: {
             query: z.string().describe('The text to search for in filenames and file contents'),
         },
-        execute: wrapTool("filesystem.search", toolCall),
+        execute: wrapTool("filesystem-search", toolCall),
     };
 }

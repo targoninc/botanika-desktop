@@ -35,9 +35,9 @@ async function getProfileToolCall() {
 
 export function spotifyGetProfileTool() {
     return {
-        id: "spotify.getProfile",
+        id: "spotify-getProfile",
         description: "Get Spotify profile of the current user.",
         parameters: {},
-        execute: wrapTool("spotify.getProfile", getProfileToolCall),
+        execute: wrapTool("spotify-getProfile", getProfileToolCall),
     };
 }

@@ -31,11 +31,11 @@ async function pauseToolCall(input: SpotifyPauseOptions) {
 
 export function spotifyPauseTool() {
     return {
-        id: "spotify.pause",
+        id: "spotify-pause",
         description: "Pause Spotify playback.",
         parameters: {
             deviceId: z.string().describe('The device ID to pause on'),
         },
-        execute: wrapTool("spotify.pause", pauseToolCall),
+        execute: wrapTool("spotify-pause", pauseToolCall),
     };
 }

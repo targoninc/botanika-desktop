@@ -46,7 +46,7 @@ async function playToolCall(input: SpotifyPlayOptions) {
 
 export function spotifyPlayTool() {
     return {
-        id: "spotify.play",
+        id: "spotify-play",
         description: "Play a song, album or playlist on Spotify. If you don't know the URIs, use the Spotify search tool first.",
         parameters: {
             deviceId: z.string().describe('The device ID to play on'),
@@ -54,6 +54,6 @@ export function spotifyPlayTool() {
             uris: z.array(z.string()).describe('The URIs to play').optional(),
             positionMs: z.number().describe('The position in milliseconds to start playing from'),
         },
-        execute: wrapTool("spotify.play", playToolCall),
+        execute: wrapTool("spotify-play", playToolCall),
     };
 }

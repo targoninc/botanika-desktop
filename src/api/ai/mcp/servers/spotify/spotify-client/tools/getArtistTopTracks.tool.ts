@@ -36,12 +36,12 @@ async function getArtistTopTracksToolCall(input: any) {
 
 export function spotifyGetArtistTopTracksTool() {
     return {
-        id: "spotify.getArtistTopTracks",
+        id: "spotify-getArtistTopTracks",
         description: "Get a list of Spotify top tracks for an artist",
         parameters: {
             artistId: z.string().describe("Spotify artist ID, format is base62"),
             countryCode: z.string().nullable().optional().describe("The country/territory where the tracks are most popular. (format: ISO 3166-1 alpha-2")
         },
-        execute: wrapTool("spotify.getArtistTopTracks", getArtistTopTracksToolCall),
+        execute: wrapTool("spotify-getArtistTopTracks", getArtistTopTracksToolCall),
     };
 }
