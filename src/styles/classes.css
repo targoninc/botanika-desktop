@@ -732,3 +732,9 @@ pre {
     background: var(--red);
     border-radius: 50%;
 }
+
+.restrict-width {
+    max-width: 1200px;
+    width: 100%;
+    align-self: center;
+}

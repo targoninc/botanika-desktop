@@ -209,6 +209,7 @@ export class ChatTemplates {
         return button({
             icon: { icon },
             classes: ["flex", "align-center", "message-action"],
+            title: text,
             onclick
         });
     }

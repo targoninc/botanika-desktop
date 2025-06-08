@@ -57,11 +57,11 @@ async function toolCall(input: any) {
 
 export function googleSearchTool() {
     return {
-        id: "google.search-engine",
+        id: "google-search-engine",
         description: "Web search. Useful for when you need to answer search questions. Input should be a search query.",
         parameters: {
             query: z.string().describe('The query to search for'),
         },
-        execute: wrapTool("google.search-engine", toolCall),
+        execute: wrapTool("google-search-engine", toolCall),
     };
 }

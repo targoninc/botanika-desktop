@@ -83,25 +83,29 @@ export class SettingsTemplates {
         return create("div")
             .classes("flex-v", "bordered-panel", "overflow")
             .children(
-                create("h1")
-                    .classes("flex")
+                create("div")
+                    .classes("flex-v", "restrict-width")
                     .children(
-                        create("span")
-                            .text("Settings")
-                            .build(),
-                        when(loading, GenericTemplates.spinner()),
-                    ).build(),
-                GenericTemplates.heading(2, "General"),
-                ...settings.map(s => SettingsTemplates.setting(s, loading, c => c[s.key], (c, k, v) => ({
-                    ...c,
-                    [k]: v
-                }))),
-                SettingsTemplates.shortcuts(),
-                SettingsTemplates.configuredFeatures(),
-                SettingsTemplates.mcpConfig(),
-                GenericTemplates.buttonWithIcon("folder_open", "Open app data folder", async () => {
-                    await Api.openAppDataPath();
-                }),
+                        create("h1")
+                            .classes("flex")
+                            .children(
+                                create("span")
+                                    .text("Settings")
+                                    .build(),
+                                when(loading, GenericTemplates.spinner()),
+                            ).build(),
+                        GenericTemplates.heading(2, "General"),
+                        ...settings.map(s => SettingsTemplates.setting(s, loading, c => c[s.key], (c, k, v) => ({
+                            ...c,
+                            [k]: v
+                        }))),
+                        SettingsTemplates.shortcuts(),
+                        SettingsTemplates.configuredFeatures(),
+                        SettingsTemplates.mcpConfig(),
+                        GenericTemplates.buttonWithIcon("folder_open", "Open app data folder", async () => {
+                            await Api.openAppDataPath();
+                        }),
+                    ).build()
             ).build();
     }
 
@@ -193,7 +197,7 @@ export class SettingsTemplates {
                 create("div")
                     .classes("card")
                     .children(
-                        GenericTemplates.warning("You might have to restart the application after changing environment variables")
+                        GenericTemplates.warning("You might have to restart the application after changing API configuration")
                     ).build(),
                 ...Object.keys(apis).map(api => {
                     const name = api;
@@ -289,7 +293,7 @@ export class SettingsTemplates {
                 create("div")
                     .classes("card")
                     .children(
-                        GenericTemplates.warning("You might have to restart the application after changing environment variables")
+                        GenericTemplates.warning("You might have to restart the application after changing MCP server configuration")
                     ).build(),
                 ...Object.keys(c?.servers ?? {}).map(server => {
                     return SettingsTemplates.existingMcpServer(c.servers[server]);
