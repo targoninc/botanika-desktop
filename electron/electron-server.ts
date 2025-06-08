@@ -1,6 +1,6 @@
 import {BrowserWindow, shell} from "electron";
 import path from "path";
-import {startServer} from "../src/start-server"
+import {apiServer} from "../botanika-web/src/api/api-server";
 
 export let currentWindow: BrowserWindow;
 
@@ -15,11 +15,11 @@ export function createWindow() {
             nodeIntegration: true,
             preload: path.join(__dirname, 'preload.js'),
         },
-        icon: 'src/assets/icon_512.png',
+        icon: 'botanika-web/src/assets/icon_512.png',
     });
     win.maximize();
 
-    startServer().then();
+    apiServer().then();
     win.show();
     if (process.env.VITE_DEV_SERVER_URL) {
         win.loadURL(process.env.VITE_DEV_SERVER_URL)
